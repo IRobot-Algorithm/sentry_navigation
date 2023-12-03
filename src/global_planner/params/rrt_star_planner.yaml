@@ -1,0 +1,8 @@
+RRTstarPlannerROS:
+    search_radius: 2.0 #搜索附近的节点的搜索范围
+    goal_radius: 0.2  #认为搜索到目标点的范围
+    epsilon_min: 0.001 #节点之间的最小允许距离
+    epsilon_max: 0.1 #节点之间的最大允许距离
+    max_nodes_num: 2000000000.0 #节点数的最大值，最大迭代次数
+    plan_time_out: 10.0 #规划超时，默认10s
+

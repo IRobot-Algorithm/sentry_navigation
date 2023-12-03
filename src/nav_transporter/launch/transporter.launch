@@ -1,0 +1,7 @@
+<launch>
+
+	<param name="config_path" type="string" value="$(find nav_transporter)/config/params.yaml"/>
+
+    <node pkg="nav_transporter" type="nav_transporter" respawn="true" name="nav_transporter" output="screen" />
+
+</launch>

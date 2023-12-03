@@ -1,0 +1,6 @@
+<launch>
+    <include file="./src/livox_ros_driver2/launch_ROS1/msg_MID360_p.launch" />
+    <include file="./src/LIO-Livox/launch/mid360.launch" />
+    <include file="./src/LIO-Livox/launch/real_robot.launch" />
+    <!-- <include file="./src/far_planner/src/far_planner/launch/far_planner.launch"/> -->
+</launch>

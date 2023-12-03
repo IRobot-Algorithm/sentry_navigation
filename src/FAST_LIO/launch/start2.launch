@@ -1,0 +1,13 @@
+<launch>
+    <include file="./src/livox_ros_driver2/launch_ROS1/msg_MID360_c.launch" />
+    <!-- <include file="./src/Point-LIO/launch/mapping_mid360.launch" /> -->
+    <!-- <include file="./src/FAST_LIO/launch/mapping_mid360.launch" /> -->
+    <include file="./src/faster-lio/launch/mapping_mid360.launch" />
+    <include file="./src/realsense-ros/realsense2_camera/launch/rs_camera.launch" />
+    <include file="./src/livox_repub/livox_repub/livox_repub.launch" />
+    <include file="./src/LIO-Livox/launch/real_robot.launch" />
+    <include file="./src/planner/waypoint_example/launch/waypoint_example_garage.launch" />
+    <!-- <include file="./src/global_planner/launch/AStar_node.launch" /> -->
+    <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
+
+</launch>

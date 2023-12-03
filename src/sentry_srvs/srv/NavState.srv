@@ -1,0 +1,6 @@
+int8 state
+bool stop
+bool stay
+geometry_msgs/Pose pose
+---
+bool success

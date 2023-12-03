@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find auto_nav)/map/map.yaml" output="screen">
+  <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find auto_nav)/map/rmuc_map_draw.yaml" output="screen"> -->
+   <param name="frame_id" value="map" />
+  </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find auto_nav)/config/rviz/auto_navi_demo.rviz"/>
+
+  <!-- <include file="$(find auto_nav)/launch/amcl_simple_meca_car.launch"/> -->
+  <!-- <include file="$(find scan_to_map)/launch/scan_to_map_location.launch"/>先不用ICP -->
+  <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher_baselink" args="0 0 0 0 0 0 base_link base_footprint 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher_map" args="0 0 0 0 0 0 map odom 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="vehicleTransPublisher_lidar" args="0.20 0 0 0 0 0 base_link lidar_link 100"/>
+
+  
+  <!--Launch the move base with time elastic band-->
+  <param name="/use_sim_time" value="false"/>
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find auto_nav)/config/point_pid_params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find auto_nav)/config/point_pid_params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find auto_nav)/config/point_pid_params/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find auto_nav)/config/point_pid_params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find auto_nav)/config/point_pid_params/teb_local_planner_params.yaml" command="load" />
+    
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <!--<param name="neutral_cost" value="220" />-->
+    <param name="planner_frequency" value="3.0" />
+    <param name="planner_patience" value="5.0" />
+    <param name="use_dijkstra" value="false" />
+    
+    <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <param name="controller_frequency" value="20.0" />
+    <param name="controller_patience" value="15.0" /> -->
+
+    <param name="clearing_rotation_allowed" value="false" />
+    <remap from="/cmd_vel" to="/" />
+  </node>
+
+  <!-- <include file="$(find auto_nav)/launch/pid_follow_planner.launch"/>局部规划 -->
+
+</launch>

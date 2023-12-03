@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="pointcloud_repub" type="pointcloud_repub" name="pointcloud_repub" output="screen" />
+
+</launch>
