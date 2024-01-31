@@ -4,22 +4,25 @@
     <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
     <include file="$(find realsense2_camera)/launch/rs_camera.launch" />
     <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" />
-    <!-- <include file="$(find Point-LIO)/launch/mapping_mid360.launch" /> -->
+    <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" />
 
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
 
+    <!-- <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" /> -->
+
     <include file="$(find local_planner)/launch/local_planner.launch" />
 
     <!-- <include file="./src/planner/waypoint_example/launch/waypoint_example_garage.launch" /> -->
-    <include file="$(find global_planner)/launch/AStar_node.launch" />
+    <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
 
+    <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
     <include file="$(find nav_transporter)/launch/transporter.launch" />
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
     <!-- /////////////////////// rviz /////////////////////// -->
-    <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" />
-    <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find vehicle_simulator)/rviz/vehicle_simulator.rviz" required="false" />
+    <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
+    <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find vehicle_simulator)/rviz/vehicle_simulator.rviz" required="false" /> -->
 
 </launch>

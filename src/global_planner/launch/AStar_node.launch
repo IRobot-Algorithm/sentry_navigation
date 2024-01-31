@@ -9,6 +9,4 @@
     <rosparam file="$(find global_planner)/params/A_star_planner.yaml" command="load"/>
   </node>
 
-  <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
-
 </launch>
