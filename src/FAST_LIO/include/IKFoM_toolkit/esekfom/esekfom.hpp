@@ -1952,7 +1952,7 @@ public:
 	const cov& get_P() const {
 		return P_;
 	}
-private:
+public:
 	state x_;
 	measurement m_;
 	cov P_;

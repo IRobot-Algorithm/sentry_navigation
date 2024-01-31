@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 map odom 5" />
-  <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0.18 0 0 0 0 0 base_link lidar_link 5" />
-  <node pkg="tf" type="static_transform_publisher" name="base_camera_broadcaster" args="-0.12 0 0 3.1415 0 0 base_link camera_link 5" />
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 map odom 1" />
+  <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0.18 0 0 0 0 0 base_link lidar_link 1" />
+  <node pkg="tf" type="static_transform_publisher" name="base_camera_broadcaster" args="-0.12 0 0 3.1415 0 0 base_link camera_link 1" />
 
 </launch>

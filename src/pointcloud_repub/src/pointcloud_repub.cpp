@@ -17,15 +17,20 @@ void PointCloudProcess::SubAndPubToROS(ros::NodeHandle &nh)
   // ROS subscribe initialization
   sub_livox_msg_ = nh.subscribe<livox_ros_driver2::CustomMsg>("/livox/lidar", 5,
                                             [this](const livox_ros_driver2::CustomMsg::ConstPtr &msg) {LivoxMsgHandler(msg);});
+
+  sub_livox_cloud_ = nh.subscribe<sensor_msgs::PointCloud2>("/cloud_registered", 5, 
+                                            [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {LivoxCloudHandler(msg);});
  
   sub_D435_cloud_ = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth/color/points", 5,
                                             [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {D435CloudHandler(msg);});
 
   // ROS publisher initialization
   pub_livox_msg_ = nh.advertise<livox_ros_driver2::CustomMsg>("/livox/repub", 5);
+  pub_registered_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/registered_scan", 5);
+
+  // test
   pub_livox_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/livox_pcl", 5);
   pub_D435_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/D435_pcl", 5);
-  pub_registered_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/registered_scan", 5);
 }
 
 bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out, 
@@ -93,7 +98,7 @@ void PointCloudProcess::CustomMsg2PointCloud(const livox_ros_driver2::CustomMsg&
 
 bool PointCloudProcess::transformPointCloud(const std::string &source_frame, const std::string &target_frame, 
                                             const pcl::PointCloud<pcl::PointXYZI> &in, pcl::PointCloud<pcl::PointXYZI> &out, 
-                                            const tf::TransformListener &tf_listener)
+                                            const ros::Time &time, const tf::TransformListener &tf_listener)
 {
   if (source_frame == target_frame)
   {
@@ -101,22 +106,18 @@ bool PointCloudProcess::transformPointCloud(const std::string &source_frame, con
     return true;
   }
 
-  // Get the TF transform
-  tf::StampedTransform transform;
-  std::string error_msg;
-  if (!tf_listener.canTransform(target_frame, source_frame, ros::Time(0), &error_msg))
+  if(tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.1)))
   {
-    ROS_ERROR_STREAM_THROTTLE(1.0, "can not transform: " << source_frame << " to " << target_frame);
-    return false;
+    tf::StampedTransform transform;
+    tf_listener.lookupTransform(target_frame, source_frame, time, transform);
+    // Convert the TF transform to Eigen format  
+    Eigen::Matrix4f eigen_transform;
+    pcl_ros::transformAsMatrix(transform, eigen_transform);
+    pcl::transformPointCloud(in, out, eigen_transform);
+    return true;
   }
-  
-  tf_listener.lookupTransform(target_frame, source_frame, ros::Time(0), transform);
-  // Convert the TF transform to Eigen format  
-  Eigen::Matrix4f eigen_transform;
-  pcl_ros::transformAsMatrix(transform, eigen_transform);
-  pcl::transformPointCloud(in, out, eigen_transform);
-  
-  return true;
+    
+  return false;
 }
 
 void PointCloudProcess::LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstPtr& livox_msg_in)
@@ -124,32 +125,23 @@ void PointCloudProcess::LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstP
   livox_ros_driver2::CustomMsg livox_msg_cutted;
   // 转换和裁切
   if (cutCustomMsg(*livox_msg_in, livox_msg_cutted, tf_));
-  {
     pub_livox_msg_.publish(livox_msg_cutted);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud(new pcl::PointCloud<pcl::PointXYZI>());
-    CustomMsg2PointCloud(livox_msg_cutted, *livox_cloud);
+}
 
-    pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_out(new pcl::PointCloud<pcl::PointXYZI>());
-    if (transformPointCloud(livox_msg_in->header.frame_id, "map", *livox_cloud, *livox_cloud_out, tf_))
-    {
-      ////////////////////////////////////////
-      // 发布livox cloudpoint2
-      // sensor_msgs::PointCloud2 livox_cloud_updated;
-      // pcl::toROSMsg(*livox_cloud_out, livox_cloud_updated);
-      // livox_cloud_updated.header.stamp = livox_msg_in->header.stamp;
-      // livox_cloud_updated.header.frame_id = "map";
-      // pub_livox_cloud_.publish(livox_cloud_updated);
-      ////////////////////////////////////////
+void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr& livox_cloud_in)
+{
+  pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_out(new pcl::PointCloud<pcl::PointXYZI>());
+  pcl::fromROSMsg(*livox_cloud_in, *livox_cloud_out);
+
 
       pcl::PointCloud<pcl::PointXYZI> registered_cloud_out = *livox_cloud_out + *D435_cloud_out_; //点云融合
 
       sensor_msgs::PointCloud2 registered_cloud;
       pcl::toROSMsg(registered_cloud_out, registered_cloud);
-      registered_cloud.header.stamp = livox_msg_in->header.stamp;
+      registered_cloud.header.stamp = livox_cloud_in->header.stamp;
       registered_cloud.header.frame_id = "map";
       pub_registered_cloud_.publish(registered_cloud);
-    }
-  }
+  
 }
 
 void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr& D435_cloud_in)
@@ -161,13 +153,20 @@ void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr&
   pcl::PointCloud<pcl::PointXYZI>::Ptr D435_used_cloud(new pcl::PointCloud<pcl::PointXYZI>());
   pcl::UniformSampling<pcl::PointXYZI> us;
   us.setInputCloud(D435_cloud);
-  us.setRadiusSearch(0.030f);
+  us.setRadiusSearch(0.005f);
   us.filter(*D435_used_cloud);
+
+  // pcl::PointCloud<pcl::PointXYZI>::Ptr D435_radiused_cloud(new pcl::PointCloud<pcl::PointXYZI>());
+  // pcl::RadiusOutlierRemoval<pcl::PointXYZI> outrem;
+  // outrem.setInputCloud(D435_cloud);
+  // outrem.setRadiusSearch(0.2);
+  // outrem.setMinNeighborsInRadius(1);
+  // outrem.filter(*D435_radiused_cloud);
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr D435_filterd_cloud(new pcl::PointCloud<pcl::PointXYZI>());
   pcl::VoxelGrid<pcl::PointXYZI> D435;
   D435.setInputCloud(D435_used_cloud);
-  D435.setLeafSize(0.1f,0.1f,0.1f);//0.04f,0.04f,0.04f
+  D435.setLeafSize(0.05f,0.05f,0.05f);//0.04f,0.04f,0.04f
   D435.filter(*D435_filterd_cloud);
 
   //对D435点云进行剪裁
@@ -178,23 +177,22 @@ void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr&
   {
     point = D435_filterd_cloud->points[i];
     float dis = sqrt(point.x * point.x + point.y * point.y);
-    if (dis<1.0 && dis>0.13)
+    if (dis<1.0 && dis>0.15)
     {
       D435_cutted_cloud->push_back(std::move(point));
     }
   }
 
-  D435_cloud_out_->points.clear();
-  if (transformPointCloud(D435_cloud_in->header.frame_id, "map", *D435_cutted_cloud, *D435_cloud_out_, tf_))
+  if (transformPointCloud(D435_cloud_in->header.frame_id, "map", *D435_cutted_cloud, *D435_cloud_out_, D435_cloud_in->header.stamp, tf_))
   {
-    ////////////////////////////////////////
+    //////////////////////////////////////
     // 发布PointCloud2
-    // sensor_msgs::PointCloud2 D435_cloud_updated;
-    // pcl::toROSMsg(*D435_cloud_out_, D435_cloud_updated);
-    // D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
-    // D435_cloud_updated.header.frame_id = "map";
-    // pub_D435_cloud_.publish(D435_cloud_updated);
-    ////////////////////////////////////////
+    sensor_msgs::PointCloud2 D435_cloud_updated;
+    pcl::toROSMsg(*D435_cutted_cloud, D435_cloud_updated);
+    D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
+    D435_cloud_updated.header.frame_id = D435_cloud_in->header.frame_id;
+    pub_D435_cloud_.publish(D435_cloud_updated);
+    //////////////////////////////////////
   }
 }
 

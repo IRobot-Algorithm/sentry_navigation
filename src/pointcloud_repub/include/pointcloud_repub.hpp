@@ -15,6 +15,7 @@
 #include <pcl/filters/uniform_sampling.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/radius_outlier_removal.h>
 #include <pcl_ros/transforms.h>
 
 #include "geometry_msgs/Twist.h"
@@ -43,6 +44,8 @@ public:
 
   void LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstPtr& livox_msg_in);
 
+  void LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr& livox_cloud_in);
+
   void D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr& D435CloudIn);
 
 private:
@@ -54,12 +57,13 @@ private:
 
   bool transformPointCloud(const std::string &source_frame, const std::string &target_frame, 
                            const pcl::PointCloud<pcl::PointXYZI> &in, pcl::PointCloud<pcl::PointXYZI> &out, 
-                           const tf::TransformListener &tf_listener);
+                           const ros::Time &time, const tf::TransformListener &tf_listener);
 
 private:
   tf::TransformListener tf_;
 
   ros::Subscriber sub_livox_msg_;
+  ros::Subscriber sub_livox_cloud_;
   ros::Subscriber sub_D435_cloud_;
 
   ros::Publisher pub_livox_msg_;

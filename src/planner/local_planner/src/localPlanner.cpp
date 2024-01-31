@@ -7,6 +7,7 @@
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
+#include <tf/transform_listener.h>
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/Float32.h>
@@ -87,7 +88,6 @@ float gridVoxelOffsetX = 3.2;//3.2
 float gridVoxelOffsetY = 4.5;//4.5
 const int gridVoxelNumX = 161;//161
 const int gridVoxelNumY = 451;//451
-
 
 // float searchRadius = 1.0;//1.0;//0.45
 // float gridVoxelOffsetX = 3.2;//3.2;//3.2
@@ -638,7 +638,7 @@ int main(int argc, char** argv)
 
   printf ("\nInitialization complete.\n\n");
 
-  ros::Rate rate(100);
+  ros::Rate rate(200);
   bool status = ros::ok();
   while (status) {
     ros::spinOnce();
