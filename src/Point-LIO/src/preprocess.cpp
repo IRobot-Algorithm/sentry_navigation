@@ -91,12 +91,12 @@ void Preprocess::process(const sensor_msgs::PointCloud2::ConstPtr &msg, PointClo
 void Preprocess::avia_handler(const livox_ros_driver2::CustomMsg::ConstPtr &msg)
 {
   pl_surf.clear();
-  pl_corn.clear();
+  // pl_corn.clear();
   pl_full.clear();
   double t1 = omp_get_wtime();
   int plsize = msg->point_num;
 
-  pl_corn.reserve(plsize);
+  // pl_corn.reserve(plsize);
   pl_surf.reserve(plsize);
   pl_full.resize(plsize);
 
@@ -118,9 +118,9 @@ void Preprocess::avia_handler(const livox_ros_driver2::CustomMsg::ConstPtr &msg)
         if (i==0) pl_full[i].curvature = fabs(pl_full[i].curvature) < 1.0 ? pl_full[i].curvature : 0.0;
         else pl_full[i].curvature = fabs(pl_full[i].curvature - pl_full[i-1].curvature) < 1.0 ? pl_full[i].curvature : pl_full[i-1].curvature + 0.004166667f;
 
-        if((abs(pl_full[i].x - pl_full[i-1].x) > 1e-7) 
+        if(((abs(pl_full[i].x - pl_full[i-1].x) > 1e-7) 
             || (abs(pl_full[i].y - pl_full[i-1].y) > 1e-7)
-            || (abs(pl_full[i].z - pl_full[i-1].z) > 1e-7)
+            || (abs(pl_full[i].z - pl_full[i-1].z) > 1e-7))
             && (pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z > (blind * blind)))
         {
           pl_surf.push_back(pl_full[i]);
@@ -134,12 +134,12 @@ void Preprocess::avia_handler(const livox_ros_driver2::CustomMsg::ConstPtr &msg)
 void Preprocess::oust64_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
   pl_surf.clear();
-  pl_corn.clear();
-  pl_full.clear();
+  // pl_corn.clear();
+  // pl_full.clear();
   pcl::PointCloud<ouster_ros::Point> pl_orig;
   pcl::fromROSMsg(*msg, pl_orig);
   int plsize = pl_orig.size();
-  pl_corn.reserve(plsize);
+  // pl_corn.reserve(plsize);
   pl_surf.reserve(plsize);
   
   
@@ -168,15 +168,13 @@ void Preprocess::oust64_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
     pl_surf.points.push_back(added_pt);
   }
   
-  // pub_func(pl_surf, pub_full, msg->header.stamp);
-  // pub_func(pl_surf, pub_corn, msg->header.stamp);
 }
 
 void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
     pl_surf.clear();
-    pl_corn.clear();
-    pl_full.clear();
+    // pl_corn.clear();
+    // pl_full.clear();
 
     pcl::PointCloud<velodyne_ros::Point> pl_orig;
     pcl::fromROSMsg(*msg, pl_orig);
@@ -271,8 +269,8 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
 void Preprocess::hesai_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
 {
     pl_surf.clear();
-    pl_corn.clear();
-    pl_full.clear();
+    // pl_corn.clear();
+    // pl_full.clear();
 
     pcl::PointCloud<hesai_ros::Point> pl_orig;
     pcl::fromROSMsg(*msg, pl_orig);

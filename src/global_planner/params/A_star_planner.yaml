@@ -11,7 +11,7 @@ costmap:
     robot_radius: 0.15        #base_footprint
     plugins:
       - {name: static_layer,            type: "costmap_2d::StaticLayer"}
-      # - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}
+      - {name: obstacle_layer,          type: "costmap_2d::ObstacleLayer"}
       - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
 
     static_layer:
@@ -48,7 +48,7 @@ costmap:
         scan_matched:
            # sensor_frame: laser
            data_type: PointCloud2
-           topic: /registered_scan
+           topic: /terrain_map
            marking: true
            clearing: true
            observation_persistence: 0.0
