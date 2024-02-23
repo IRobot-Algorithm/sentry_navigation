@@ -374,9 +374,9 @@ void LaserMapping::StandardPCLCallBack(const sensor_msgs::PointCloud2::ConstPtr 
 }
 
 void LaserMapping::LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr &msg) {
-    // mtx_buffer_.lock();
     Timer::Evaluate(
         [&, this]() {
+            mtx_buffer_.lock();
             scan_count_++;
             if (msg->header.stamp.toSec() < last_timestamp_lidar_) {
                 LOG(WARNING) << "lidar loop back, clear buffer";
@@ -397,6 +397,7 @@ void LaserMapping::LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr 
                 timediff_lidar_wrt_imu_ = last_timestamp_lidar_ + 0.1 - last_timestamp_imu_;
                 LOG(INFO) << "Self sync IMU and LiDAR, time diff is " << timediff_lidar_wrt_imu_;
             }
+            mtx_buffer_.unlock();
 
             PointCloudType::Ptr ptr(new PointCloudType());
             preprocess_->Process(msg, ptr);
@@ -418,16 +419,13 @@ void LaserMapping::LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr 
             }
 
             lidar_bag.lidar_end_time = lidar_end_time_;
-
+            
+            mtx_buffer_.lock();
             p_imu_->lidar_buffer_.emplace_back(lidar_bag);
-
-// #ifdef debug
-    std::cout << "**********delay**********" << last_timestamp_imu_ - lidar_end_time_ << std::endl;
-// #endif
+            mtx_buffer_.unlock();
 
         },
         "Preprocess (Livox)");
-    // mtx_buffer_.unlock();
 }
 
 void LaserMapping::IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in) {

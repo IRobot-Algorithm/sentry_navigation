@@ -269,7 +269,6 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
     sensor_msgs::Imu::Ptr msg;
     if (last_imu_->header.stamp.toSec() > pcl_end_time)
     {
-        std::cout << "****************back****************" << std::endl;
         while (!front_imu_.empty()) {
             auto &&p_imu = front_imu_.back();
 
@@ -312,7 +311,6 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
     }
     else
     {
-        std::cout << "****************forward****************" << std::endl;
         while (!back_imu_.empty())
         {
             auto &&p_imu = back_imu_.front();
