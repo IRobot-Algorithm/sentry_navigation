@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <thread>
+#include <chrono>
 #include <iostream>
 #include <execution>
 
@@ -63,11 +65,13 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
 
     // 裁切
     double d = res[0] * res[0] + res[1] * res[1];
-    if(!(d < 0.29 * 0.29 && res[2] < 1.0))
+    // if(!(d < 0.29 * 0.29 && res[2] < 1.0))
     {
       out.points.push_back(std::move(in.points[i]));
     }
   }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
   out.header.frame_id = in.header.frame_id;
   out.header.stamp = in.header.stamp;

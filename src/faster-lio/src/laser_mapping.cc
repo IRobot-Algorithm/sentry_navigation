@@ -281,11 +281,11 @@ void LaserMapping::Run() {
         /// the first scan
         if (flg_first_scan_) {
             ivox_->AddPoints(scan_undistort_->points);
-            first_lidar_time_ = measures_.lidar_bag_time_;
+            first_lidar_time_ = p_imu_->last_imu_->header.stamp.toSec();
             flg_first_scan_ = false;
             return;
         }
-        flg_EKF_inited_ = (measures_.lidar_bag_time_ - first_lidar_time_) >= options::INIT_TIME;
+        flg_EKF_inited_ = (p_imu_->last_imu_->header.stamp.toSec() - first_lidar_time_) >= options::INIT_TIME;
 
         /// downsample
         Timer::Evaluate(
@@ -314,7 +314,7 @@ void LaserMapping::Run() {
                 // update the observation model, will call nn and point-to-plane residual computation
                 kf_.update_iterated_dyn_share_modified(options::LASER_POINT_COV, solve_H_time);
                 // save the state
-                // state_point_ = kf_.get_x();
+                state_point_ = kf_.get_x();
                 euler_cur_ = SO3ToEuler(state_point_.rot);
                 pos_lidar_ = state_point_.pos + state_point_.rot * state_point_.offset_T_L_I;
             },
@@ -330,7 +330,7 @@ void LaserMapping::Run() {
     if (p_imu_->new_odom_)
     {
         state_point_ = kf_.get_x();
-        SetPosestamp(odom_.pose);
+        SetPosestamp(odom_, p_imu_->last_imu_->angular_velocity);
         odom_.header.stamp = ros::Time().fromSec(p_imu_->last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
         if (pub_odom_aft_mapped_)
             PublishOdometry(pub_odom_aft_mapped_, odom_);
@@ -653,10 +653,12 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     odom_lidar.header.frame_id = "odom";
     odom_lidar.child_frame_id = "lidar_link";
 
+    // TODO:对速度角速度作坐标变换
     nav_msgs::Odometry odom_base;
     odom_base.header.frame_id = "odom";
     odom_base.child_frame_id = "base_link";
     odom_base.header.stamp = odom_lidar.header.stamp;
+    odom_base.twist = odom_lidar.twist;
 
     // 获得odom为odom->lidar_link 转变为odom->base_link后发布
     // Get the TF transform
@@ -815,8 +817,23 @@ void LaserMapping::Savetrajectory(const std::string &traj_file) {
 }
 
 ///////////////////////////  private method /////////////////////////////////////////////////////////////////////
-template <typename T>
-void LaserMapping::SetPosestamp(T &out) {
+void LaserMapping::SetPosestamp(nav_msgs::Odometry &out, geometry_msgs::Vector3 angvel) {
+    out.pose.pose.position.x = state_point_.pos(0);
+    out.pose.pose.position.y = state_point_.pos(1);
+    out.pose.pose.position.z = state_point_.pos(2);
+    out.pose.pose.orientation.x = state_point_.rot.coeffs()[0];
+    out.pose.pose.orientation.y = state_point_.rot.coeffs()[1];
+    out.pose.pose.orientation.z = state_point_.rot.coeffs()[2];
+    out.pose.pose.orientation.w = state_point_.rot.coeffs()[3];
+    out.twist.twist.linear.x = state_point_.vel(0);
+    out.twist.twist.linear.y = state_point_.vel(1);
+    out.twist.twist.linear.z = state_point_.vel(2);
+    out.twist.twist.angular.x = angvel.x - state_point_.bg(0);
+    out.twist.twist.angular.x = angvel.y - state_point_.bg(1);
+    out.twist.twist.angular.x = angvel.z - state_point_.bg(2);
+}
+
+void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out) {
     out.pose.position.x = state_point_.pos(0);
     out.pose.position.y = state_point_.pos(1);
     out.pose.position.z = state_point_.pos(2);

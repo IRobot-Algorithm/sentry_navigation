@@ -63,8 +63,8 @@ class LaserMapping {
     void ImuUpdateOdom(const sensor_msgs::Imu::ConstPtr& imu_msg);
 
    private:
-    template <typename T>
-    void SetPosestamp(T &out);
+    void SetPosestamp(nav_msgs::Odometry &out, geometry_msgs::Vector3 angvel);
+    void SetPosestamp(geometry_msgs::PoseStamped &out);
 
     void PointBodyToWorld(PointType const *pi, PointType *const po);
     void PointBodyToWorld(const common::V3F &pi, PointType *const po);
@@ -149,7 +149,6 @@ class LaserMapping {
     ///////////////////////// EKF inputs and output ///////////////////////////////////////////////////////
     common::MeasureGroup measures_;                    // sync IMU and lidar scan
     esekfom::esekf<state_ikfom, 12, input_ikfom> kf_;  // esekf
-    esekfom::esekf<state_ikfom, 12, input_ikfom> kf_imu_;  // esekf
     state_ikfom state_point_;                          // ekf current state
     vect3 pos_lidar_;                                  // lidar position after eskf update
     common::V3D euler_cur_ = common::V3D::Zero();      // rotation in euler angles

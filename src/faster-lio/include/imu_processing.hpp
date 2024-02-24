@@ -5,6 +5,7 @@
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <tf/transform_datatypes.h>
 #include <cmath>
 #include <deque>
 #include <fstream>
@@ -214,7 +215,13 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
     std::cout << std::endl << "----------UNDISTORLPCL----------" << std::endl << "UNCUTTED_POSE:" << std::endl; 
     for (auto it = IMUpose_.begin(); it != IMUpose_.end(); it++) {
         auto &&p = *(it);
-        std::cout << p.offset_time - start_time_ << " ";
+        common::M3D R = common::MatFromArray(it->rot);
+        tf::Matrix3x3 tf_R(R(0,0), R(0,1), R(0,2),
+                           R(1,0), R(1,1), R(1,2),
+                           R(2,0), R(2,1), R(2,2));
+        double roll, pitch, yaw;
+        tf_R.getRPY(roll, pitch, yaw);
+        std::cout << p.offset_time - start_time_ << ":" << std::endl << common::VecFromArray(it->pos) << std::endl << roll << " " << pitch << " " << yaw << std::endl << "***" << std::endl;
     }
     std::cout << std::endl << "lidar_bag_time:" << pcl_beg_time - start_time_ << std::endl; 
     std::cout << "pcl_end_time:" << pcl_end_time - start_time_ << std::endl; 
@@ -243,9 +250,7 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
     }
     std::cout << std::endl << "lidar_bag_time:" << pcl_beg_time - start_time_ << std::endl; 
     std::cout << "pcl_end_time:" << pcl_end_time - start_time_ << std::endl; 
-#endif
 
-#ifdef debug
     std::cout << std::endl << "----------BEFORESORT----------" << std::endl << "front_imu:" << std::endl; 
     for (auto it = front_imu_.begin(); it != front_imu_.end(); it++) {
         auto &&p = *(it);
@@ -300,6 +305,11 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
             kf_state.predict(dt, Q_, in);
             
 #ifdef debug
+            state_ikfom imu_state = kf_state.get_x();
+            tf::Quaternion q(imu_state.rot.coeffs()[0], imu_state.rot.coeffs()[1], imu_state.rot.coeffs()[2], imu_state.rot.coeffs()[3]);
+            double roll, pitch, yaw;
+            tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+            std::cout << "******" << std::endl << p_imu->header.stamp.toSec() - start_time_ << ":" << std::endl << kf_state.get_x().pos << std::endl  << roll << " " << pitch << " " << yaw << std::endl << "********" << std::endl;
     std::cout << std::endl << "----------UNDISTORLPCL----------" << std::endl << "DT:" << dt << std::endl; 
 #endif
 
@@ -387,6 +397,20 @@ void ImuProcess::UndistortPcl(esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_s
         std::cout << p->header.stamp.toSec() - start_time_ << " ";
     }
     std::cout << std::endl << "last_odom_time_:" << last_imu_->header.stamp.toSec() - start_time_ << std::endl; 
+
+    std::cout << std::endl << "----------UNDISTORLPCL----------" << std::endl << "AFTER_POSE:" << std::endl; 
+    for (auto it = IMUpose_.begin(); it != IMUpose_.end(); it++) {
+        auto &&p = *(it);
+        common::M3D R = common::MatFromArray(it->rot);
+        tf::Matrix3x3 tf_R(R(0,0), R(0,1), R(0,2),
+                             R(1,0), R(1,1), R(1,2),
+                             R(2,0), R(2,1), R(2,2));
+        double roll, pitch, yaw;
+        tf_R.getRPY(roll, pitch, yaw);
+        std::cout << p.offset_time - start_time_ << ":" << std::endl << common::VecFromArray(it->pos) << std::endl << roll << " " << pitch << " " << yaw << std::endl << "***" << std::endl;
+    }
+    std::cout << std::endl << "lidar_bag_time:" << pcl_beg_time - start_time_ << std::endl; 
+    std::cout << "pcl_end_time:" << pcl_end_time - start_time_ << std::endl; 
 #endif
 
     /*** undistort each lidar point (backward propagation) ***/
