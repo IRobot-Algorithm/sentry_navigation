@@ -268,8 +268,6 @@ class esekf {
 
     // iterated error state EKF propogation
     void predict(double &dt, processnoisecovariance &Q, const input &i_in) {
-        // auto start = std::chrono::high_resolution_clock::now();
-
         flatted_state f_ = f(x_, i_in);
         cov_ f_x_ = f_x(x_, i_in);
         cov f_x_final;
@@ -278,13 +276,6 @@ class esekf {
         Matrix<scalar_type, n, process_noise_dof> f_w_final;
         state x_before = x_;
         x_.oplus(f_, dt);
-
-        // bool is_backward = false;
-        // if (dt < 0)
-        // {
-        //     dt = -dt;
-        //     is_backward = true;
-        // }
 
         F_x1 = cov::Identity();
         for (std::vector<std::pair<std::pair<int, int>, int>>::iterator it = x_.vect_state.begin();
@@ -378,22 +369,9 @@ class esekf {
         spMt xp = f_x_1 + f_x2 * dt;
         P_ = xp * P_ * xp.transpose() + (f_w1 * dt) * Q * (f_w1 * dt).transpose();
 #else
-        // if (is_backward)
-        // {
-        //     F_x1 += f_x_final * dt;
-        //     cov F_x1_inv = F_x1.inverse();
-        //     P_ = (F_x1_inv) * (P_ - (dt * f_w_final) * Q * (dt * f_w_final).transpose()) * (F_x1_inv.transpose());
-        // }
-        // else
-        {
-            F_x1 += f_x_final * dt;
-            P_ = (F_x1) * P_ * (F_x1).transpose() + (dt * f_w_final) * Q * (dt * f_w_final).transpose();
-        }
+        F_x1 += f_x_final * dt;
+        P_ = (F_x1)*P_ * (F_x1).transpose() + (dt * f_w_final) * Q * (dt * f_w_final).transpose();
 #endif
-        // auto end = std::chrono::high_resolution_clock::now();
-        // std::chrono::duration<double, std::milli> duration = end - start;
-        // double milliseconds = duration.count();
-        // std::cout << "cost: " << milliseconds << "ms" << std::endl;
     }
 
     // iterated error state EKF update for measurement as a manifold.
