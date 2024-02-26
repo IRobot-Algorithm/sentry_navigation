@@ -389,6 +389,7 @@ int main(int argc, char** argv)
   geometry_msgs::TwistStamped cmd_vel;
   // cmd_vel.header.frame_id = "map";//"vehicle"
   cmd_vel.header.frame_id = "world";
+  trans.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans.setOrigin(tf::Vector3(0, 0, 0));
 
   new_odom = false;

@@ -32,9 +32,9 @@
     <param name="dirWeight" type="double" value="0.1" /><!--0.02-->
     <param name="dirThre" type="double" value="60.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
     <param name="dirToVehicle" type="bool" value="false" /><!--一定是false-->
-    <param name="pathScale" type="double" value="0.3" />
-    <param name="minPathScale" type="double" value="0.3" />
-    <param name="pathScaleStep" type="double" value="0.1" /><!--0.1-->
+    <param name="pathScale" type="double" value="0.8" />
+    <param name="minPathScale" type="double" value="0.4" />
+    <param name="pathScaleStep" type="double" value="0.2" /><!--0.1-->
     <param name="pathScaleBySpeed" type="bool" value="true" />
     <param name="minPathRange" type="double" value="0.5" />
     <param name="pathRangeStep" type="double" value="0.1" />

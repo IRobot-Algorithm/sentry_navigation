@@ -59,6 +59,7 @@ class LaserMapping {
     void PublishFrameWorld();
     void PublishFrameBody(const ros::Publisher &pub_laser_cloud_body);
     void PublishFrameEffectWorld(const ros::Publisher &pub_laser_cloud_effect_world);
+    void PublishVelocity(const ros::Publisher &pub_vel);
     void Savetrajectory(const std::string &traj_file);
 
     void Finish();
@@ -120,6 +121,7 @@ class LaserMapping {
     ros::Publisher pub_laser_cloud_effect_world_;
     ros::Publisher pub_odom_aft_mapped_;
     ros::Publisher pub_path_;
+    ros::Publisher pub_vel_;
 
     std::mutex mtx_buffer_;
     std::deque<double> time_buffer_;

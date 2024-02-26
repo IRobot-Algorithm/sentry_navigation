@@ -256,6 +256,7 @@ void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
     pub_laser_cloud_effect_world_ = nh.advertise<sensor_msgs::PointCloud2>("/cloud_registered_effect_world", 100000);
     pub_odom_aft_mapped_ = nh.advertise<nav_msgs::Odometry>("/Odometry", 100000);
     pub_path_ = nh.advertise<nav_msgs::Path>("/path", 100000);
+    pub_vel_ = nh.advertise<geometry_msgs::TwistStamped>("/odom_vel", 100000);
 }
 
 LaserMapping::LaserMapping() {
@@ -352,6 +353,7 @@ void LaserMapping::Run() {
         {
             SetPosestamp(odom_, state_imu_, last_imu_->angular_velocity);
             odom_.header.stamp = ros::Time().fromSec(last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
+            // PublishVelocity(pub_vel_);
             if (pub_odom_aft_mapped_)
                 PublishOdometry(pub_odom_aft_mapped_, odom_);
         }
@@ -857,6 +859,15 @@ void LaserMapping::PublishFrameEffectWorld(const ros::Publisher &pub_laser_cloud
     laserCloudmsg.header.frame_id = "odom";
     pub_laser_cloud_effect_world.publish(laserCloudmsg);
     publish_count_ -= options::PUBFRAME_PERIOD;
+}
+
+void LaserMapping::PublishVelocity(const ros::Publisher &pub_vel)
+{
+    geometry_msgs::TwistStamped msg;
+    msg.header.stamp = odom_.header.stamp;
+    msg.header.frame_id = "map_link";
+    msg.twist = odom_.twist.twist;
+    pub_vel.publish(msg);
 }
 
 void LaserMapping::Savetrajectory(const std::string &traj_file) {

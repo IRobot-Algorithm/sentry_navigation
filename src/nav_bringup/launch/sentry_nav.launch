@@ -7,14 +7,14 @@
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
-	    <arg name="rviz" value="true" />
+	    <arg name="rviz" value="false" />
     </include>
 
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
 
     <!-- <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" /> -->
 
-    <!-- <include file="$(find local_planner)/launch/local_planner.launch" /> -->
+    <include file="$(find local_planner)/launch/local_planner.launch" />
 
     <!-- <include file="./src/planner/waypoint_example/launch/waypoint_example_garage.launch" /> -->
     <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
@@ -25,6 +25,6 @@
 
     <!-- /////////////////////// rviz /////////////////////// -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
-    <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" /> -->
+    <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" />
 
 </launch>
