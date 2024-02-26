@@ -34,5 +34,8 @@ catkin_package(
   INCLUDE_DIRS
 )
 
-add_executable(nav_transporter src/state_processing.cpp src/can.cpp)
-target_link_libraries(nav_transporter ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_executable(state_processing src/state_processing.cpp src/can.cpp)
+target_link_libraries(state_processing ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+add_executable(can_comm_node src/can_comm_node.cpp src/can.cpp)
+target_link_libraries(can_comm_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
