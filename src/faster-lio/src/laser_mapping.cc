@@ -263,90 +263,171 @@ LaserMapping::LaserMapping() {
     p_imu_.reset(new ImuProcess());
 }
 
+bool LaserMapping::SyncPackages() {
+    if (lidar_buffer_.empty() || imu_buffer_.empty()) {
+        return false;
+    }
+
+    /*** push a lidar scan ***/
+    if (!lidar_pushed_) {
+        measures_.lidar_ = lidar_buffer_.front();
+        measures_.lidar_bag_time_ = time_buffer_.front();
+
+        if (measures_.lidar_->points.size() <= 1) {
+            LOG(WARNING) << "Too few input point cloud!";
+            lidar_end_time_ = measures_.lidar_bag_time_ + lidar_mean_scantime_;
+        } else if (measures_.lidar_->points.back().curvature / double(1000) < 0.5 * lidar_mean_scantime_) {
+            lidar_end_time_ = measures_.lidar_bag_time_ + lidar_mean_scantime_;
+        } else {
+            scan_num_++;
+            lidar_end_time_ = measures_.lidar_bag_time_ + measures_.lidar_->points.back().curvature / double(1000);
+            lidar_mean_scantime_ +=
+                (measures_.lidar_->points.back().curvature / double(1000) - lidar_mean_scantime_) / scan_num_;
+        }
+
+        measures_.lidar_end_time_ = lidar_end_time_;
+        lidar_pushed_ = true;
+    }
+
+    if (last_timestamp_imu_ < lidar_end_time_) {
+        return false;
+    }
+
+    /*** push imu_ data, and pop from imu_ buffer ***/
+    double imu_time = imu_buffer_.front()->header.stamp.toSec();
+    measures_.imu_.clear();
+    while ((!imu_buffer_.empty()) && (imu_time < lidar_end_time_)) {
+        imu_time = imu_buffer_.front()->header.stamp.toSec();
+        if (imu_time > lidar_end_time_) break;
+        measures_.imu_.push_back(imu_buffer_.front());
+        imu_buffer_.pop_front();
+    }
+
+    lidar_buffer_.pop_front();
+    time_buffer_.pop_front();
+    lidar_pushed_ = false;
+    return true;
+}
+
+bool LaserMapping::IMUUpdate()
+{
+    if (imu_buf_.empty())
+        return false;
+
+    common::V3D angvel_avr, acc_avr, acc_imu, vel_imu, pos_imu;
+    input_ikfom in;
+    double dt = 0;
+
+    while (!imu_buf_.empty())
+    {
+        auto &&p_imu = imu_buf_.front();
+
+        angvel_avr << 0.5 * (last_imu_->angular_velocity.x + p_imu->angular_velocity.x),
+                      0.5 * (last_imu_->angular_velocity.y + p_imu->angular_velocity.y),
+                      0.5 * (last_imu_->angular_velocity.z + p_imu->angular_velocity.z);
+        acc_avr << 0.5 * (last_imu_->linear_acceleration.x + p_imu->linear_acceleration.x),
+                   0.5 * (last_imu_->linear_acceleration.y + p_imu->linear_acceleration.y),
+                   0.5 * (last_imu_->linear_acceleration.z + p_imu->linear_acceleration.z);
+
+        acc_avr = acc_avr * common::G_m_s2 / p_imu_->mean_acc_.norm();  // - state_inout.ba;
+
+        in.acc = acc_avr;
+        in.gyro = angvel_avr;
+
+        dt = p_imu->header.stamp.toSec() - last_imu_->header.stamp.toSec();
+
+        MTK::vectview<const double, 24> f = get_f(state_imu_, in);
+        state_imu_.oplus(f, dt);
+
+        last_imu_ = p_imu;
+        imu_buf_.pop_front();
+    }
+
+    return true;
+}
+
 void LaserMapping::Run() {
-
-    p_imu_->new_odom_ = false;
-    p_imu_->new_cloud_ = false;
-
-    p_imu_->Process(kf_, scan_undistort_);
-    
-    if (p_imu_->new_cloud_)
-    {
-        /// IMU process, kf prediction, undistortion
-        if (scan_undistort_->empty() || (scan_undistort_ == nullptr)) {
-            LOG(WARNING) << "No point, skip this scan!";
-            return;
+    if (!SyncPackages()) {
+        if (flg_first_odom_ && IMUUpdate())
+        {
+            SetPosestamp(odom_, state_imu_, last_imu_->angular_velocity);
+            odom_.header.stamp = ros::Time().fromSec(last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
+            if (pub_odom_aft_mapped_)
+                PublishOdometry(pub_odom_aft_mapped_, odom_);
         }
-
-        /// the first scan
-        if (flg_first_scan_) {
-            ivox_->AddPoints(scan_undistort_->points);
-            first_lidar_time_ = measures_.lidar_bag_time_;
-            flg_first_scan_ = false;
-            return;
-        }
-        flg_EKF_inited_ = (measures_.lidar_bag_time_ - first_lidar_time_) >= options::INIT_TIME;
-
-        /// downsample
-        Timer::Evaluate(
-            [&, this]() {
-                voxel_scan_.setInputCloud(scan_undistort_);
-                voxel_scan_.filter(*scan_down_body_);
-            },
-            "Downsample PointCloud");
-
-        int cur_pts = scan_down_body_->size();
-        if (cur_pts < 5) {
-            LOG(WARNING) << "Too few points, skip this scan!" << scan_undistort_->size() << ", " << scan_down_body_->size();
-            return;
-        }
-        scan_down_world_->resize(cur_pts);
-        nearest_points_.resize(cur_pts);
-        residuals_.resize(cur_pts, 0);
-        point_selected_surf_.resize(cur_pts, true);
-        plane_coef_.resize(cur_pts, common::V4F::Zero());
-
-        // ICP and iterated Kalman filter update
-        Timer::Evaluate(
-            [&, this]() {
-                // iterated state estimation
-                double solve_H_time = 0;
-                // update the observation model, will call nn and point-to-plane residual computation
-                kf_.update_iterated_dyn_share_modified(options::LASER_POINT_COV, solve_H_time);
-                // save the state
-                // state_point_ = kf_.get_x();
-                euler_cur_ = SO3ToEuler(state_point_.rot);
-                pos_lidar_ = state_point_.pos + state_point_.rot * state_point_.offset_T_L_I;
-            },
-            "IEKF Solve and Update");
-        // update local map
-        Timer::Evaluate([&, this]() { MapIncremental(); }, "    Incremental Mapping");
-
-        LOG(INFO) << "[ mapping ]: In num: " << scan_undistort_->points.size() << " downsamp " << cur_pts
-                << " Map grid num: " << ivox_->NumValidGrids() << " effect num : " << effect_feat_num_;
-
+        return;
     }
 
-    if (p_imu_->new_odom_)
-    {
-        state_point_ = kf_.get_x();
-        SetPosestamp(odom_.pose);
-        odom_.header.stamp = ros::Time().fromSec(p_imu_->last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
-        if (pub_odom_aft_mapped_)
-            PublishOdometry(pub_odom_aft_mapped_, odom_);
+    /// IMU process, kf prediction, undistortion
+    p_imu_->Process(measures_, kf_, scan_undistort_);
+    if (scan_undistort_->empty() || (scan_undistort_ == nullptr)) {
+        LOG(WARNING) << "No point, skip this scan!";
+        return;
     }
 
-    if (p_imu_->new_cloud_)
-    {
-        if (scan_pub_en_ || pcd_save_en_) {
-            PublishFrameWorld();
-        }
-        if (scan_pub_en_ && scan_body_pub_en_) {
-            PublishFrameBody(pub_laser_cloud_body_);
-        }
-        if (scan_pub_en_ && scan_effect_pub_en_) {
-            PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
-        }
+    /// the first scan
+    if (flg_first_scan_) {
+        ivox_->AddPoints(scan_undistort_->points);
+        first_lidar_time_ = measures_.lidar_bag_time_;
+        flg_first_scan_ = false;
+        return;
+    }
+    flg_EKF_inited_ = (measures_.lidar_bag_time_ - first_lidar_time_) >= options::INIT_TIME;
+
+    /// downsample
+    Timer::Evaluate(
+        [&, this]() {
+            voxel_scan_.setInputCloud(scan_undistort_);
+            voxel_scan_.filter(*scan_down_body_);
+        },
+        "Downsample PointCloud");
+
+    int cur_pts = scan_down_body_->size();
+    if (cur_pts < 5) {
+        LOG(WARNING) << "Too few points, skip this scan!" << scan_undistort_->size() << ", " << scan_down_body_->size();
+        return;
+    }
+    scan_down_world_->resize(cur_pts);
+    nearest_points_.resize(cur_pts);
+    residuals_.resize(cur_pts, 0);
+    point_selected_surf_.resize(cur_pts, true);
+    plane_coef_.resize(cur_pts, common::V4F::Zero());
+
+    // ICP and iterated Kalman filter update
+    Timer::Evaluate(
+        [&, this]() {
+            // iterated state estimation
+            double solve_H_time = 0;
+            // update the observation model, will call nn and point-to-plane residual computation
+            kf_.update_iterated_dyn_share_modified(options::LASER_POINT_COV, solve_H_time);
+            // save the state
+            state_point_ = kf_.get_x();
+            euler_cur_ = SO3ToEuler(state_point_.rot);
+            pos_lidar_ = state_point_.pos + state_point_.rot * state_point_.offset_T_L_I;
+        },
+        "IEKF Solve and Update");
+
+    // update local map
+    Timer::Evaluate([&, this]() { MapIncremental(); }, "    Incremental Mapping");
+
+    state_imu_ = state_point_;
+    imu_buf_ = imu_buffer_;
+    sensor_msgs::Imu::Ptr msg(new sensor_msgs::Imu(*(measures_.imu_.back())));
+    msg->header.stamp = ros::Time().fromSec(measures_.lidar_end_time_);
+    last_imu_ = msg;
+    flg_first_odom_ = true;
+
+    LOG(INFO) << "[ mapping ]: In num: " << scan_undistort_->points.size() << " downsamp " << cur_pts
+              << " Map grid num: " << ivox_->NumValidGrids() << " effect num : " << effect_feat_num_;
+
+    if (scan_pub_en_ || pcd_save_en_) {
+        PublishFrameWorld();
+    }
+    if (scan_pub_en_ && scan_body_pub_en_) {
+        PublishFrameBody(pub_laser_cloud_body_);
+    }
+    if (scan_pub_en_ && scan_effect_pub_en_) {
+        PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
     }
 
     // Debug variables
@@ -354,41 +435,41 @@ void LaserMapping::Run() {
 }
 
 void LaserMapping::StandardPCLCallBack(const sensor_msgs::PointCloud2::ConstPtr &msg) {
-    // mtx_buffer_.lock();
-    // Timer::Evaluate(
-    //     [&, this]() {
-    //         scan_count_++;
-    //         if (msg->header.stamp.toSec() < last_timestamp_lidar_) {
-    //             LOG(ERROR) << "lidar loop back, clear buffer";
-    //             lidar_buffer_.clear();
-    //         }
+    mtx_buffer_.lock();
+    Timer::Evaluate(
+        [&, this]() {
+            scan_count_++;
+            if (msg->header.stamp.toSec() < last_timestamp_lidar_) {
+                LOG(ERROR) << "lidar loop back, clear buffer";
+                lidar_buffer_.clear();
+            }
 
-    //         PointCloudType::Ptr ptr(new PointCloudType());
-    //         preprocess_->Process(msg, ptr);
-    //         lidar_buffer_.push_back(ptr);
-    //         time_buffer_.push_back(msg->header.stamp.toSec());
-    //         last_timestamp_lidar_ = msg->header.stamp.toSec();
-    //     },
-    //     "Preprocess (Standard)");
-    // mtx_buffer_.unlock();
+            PointCloudType::Ptr ptr(new PointCloudType());
+            preprocess_->Process(msg, ptr);
+            lidar_buffer_.push_back(ptr);
+            time_buffer_.push_back(msg->header.stamp.toSec());
+            last_timestamp_lidar_ = msg->header.stamp.toSec();
+        },
+        "Preprocess (Standard)");
+    mtx_buffer_.unlock();
 }
 
 void LaserMapping::LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr &msg) {
-    // mtx_buffer_.lock();
+    mtx_buffer_.lock();
     Timer::Evaluate(
         [&, this]() {
             scan_count_++;
             if (msg->header.stamp.toSec() < last_timestamp_lidar_) {
                 LOG(WARNING) << "lidar loop back, clear buffer";
-                p_imu_->lidar_buffer_.clear();
+                lidar_buffer_.clear();
             }
 
             last_timestamp_lidar_ = msg->header.stamp.toSec();
 
             if (!time_sync_en_ && abs(last_timestamp_imu_ - last_timestamp_lidar_) > 10.0 && !imu_buffer_.empty() &&
-                !p_imu_->lidar_buffer_.empty()) {
+                !lidar_buffer_.empty()) {
                 LOG(INFO) << "IMU and LiDAR not Synced, IMU time: " << last_timestamp_imu_
-                        << ", lidar header time: " << last_timestamp_lidar_;
+                          << ", lidar header time: " << last_timestamp_lidar_;
             }
 
             if (time_sync_en_ && !timediff_set_flg_ && abs(last_timestamp_lidar_ - last_timestamp_imu_) > 1 &&
@@ -400,34 +481,12 @@ void LaserMapping::LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr 
 
             PointCloudType::Ptr ptr(new PointCloudType());
             preprocess_->Process(msg, ptr);
-            
-            LidarBag lidar_bag;
-            lidar_bag.point_cloud = ptr;
-            lidar_bag.lidar_beg_time = last_timestamp_lidar_;
-
-            if (ptr->points.size() <= 1) {
-                LOG(WARNING) << "Too few input point cloud!";
-                lidar_end_time_ = last_timestamp_lidar_ + lidar_mean_scantime_;
-            } else if (ptr->points.back().curvature / double(1000) < 0.5 * lidar_mean_scantime_) {
-                lidar_end_time_ = last_timestamp_lidar_ + lidar_mean_scantime_;
-            } else {
-                scan_num_++;
-                lidar_end_time_ = last_timestamp_lidar_ + ptr->points.back().curvature / double(1000);
-                lidar_mean_scantime_ +=
-                    (ptr->points.back().curvature / double(1000) - lidar_mean_scantime_) / scan_num_;
-            }
-
-            lidar_bag.lidar_end_time = lidar_end_time_;
-
-            p_imu_->lidar_buffer_.emplace_back(lidar_bag);
-
-// #ifdef debug
-    std::cout << "**********delay**********" << last_timestamp_imu_ - lidar_end_time_ << std::endl;
-// #endif
-
+            lidar_buffer_.emplace_back(ptr);
+            time_buffer_.emplace_back(last_timestamp_lidar_);
         },
         "Preprocess (Livox)");
-    // mtx_buffer_.unlock();
+
+    mtx_buffer_.unlock();
 }
 
 void LaserMapping::IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in) {
@@ -437,19 +496,19 @@ void LaserMapping::IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in) {
     if (abs(timediff_lidar_wrt_imu_) > 0.1 && time_sync_en_) {
         msg->header.stamp = ros::Time().fromSec(timediff_lidar_wrt_imu_ + msg_in->header.stamp.toSec());
     }
-    double timestamp = msg->header.stamp.toSec();
-    p_imu_->last_timestamp_ = timestamp;
 
-    imu_buffer_.clear();
+    double timestamp = msg->header.stamp.toSec();
+
     mtx_buffer_.lock();
     if (timestamp < last_timestamp_imu_) {
         LOG(WARNING) << "imu loop back, clear buffer";
-        p_imu_->front_imu_.clear();
-        p_imu_->back_imu_.clear();
+        imu_buffer_.clear();
+        imu_buf_.clear();
     }
 
     last_timestamp_imu_ = timestamp;
-    p_imu_->back_imu_.emplace_back(msg);
+    imu_buffer_.emplace_back(msg);
+    imu_buf_.emplace_back(msg);
     mtx_buffer_.unlock();
 }
 
@@ -639,7 +698,7 @@ void LaserMapping::ObsModel(state_ikfom &s, esekfom::dyn_share_datastruct<double
 /////////////////////////////////////  debug save / show /////////////////////////////////////////////////////
 
 void LaserMapping::PublishPath(const ros::Publisher pub_path) {
-    SetPosestamp(msg_body_pose_);
+    SetPosestamp(msg_body_pose_, state_imu_);
     msg_body_pose_.header.stamp = ros::Time().fromSec(lidar_end_time_);
     msg_body_pose_.header.frame_id = "odom";
 
@@ -655,10 +714,12 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     odom_lidar.header.frame_id = "odom";
     odom_lidar.child_frame_id = "lidar_link";
 
+    // TODO:对速度角速度作坐标变换
     nav_msgs::Odometry odom_base;
     odom_base.header.frame_id = "odom";
     odom_base.child_frame_id = "base_link";
     odom_base.header.stamp = odom_lidar.header.stamp;
+    odom_base.twist = odom_lidar.twist;
 
     // 获得odom为odom->lidar_link 转变为odom->base_link后发布
     // Get the TF transform
@@ -817,15 +878,30 @@ void LaserMapping::Savetrajectory(const std::string &traj_file) {
 }
 
 ///////////////////////////  private method /////////////////////////////////////////////////////////////////////
-template <typename T>
-void LaserMapping::SetPosestamp(T &out) {
-    out.pose.position.x = state_point_.pos(0);
-    out.pose.position.y = state_point_.pos(1);
-    out.pose.position.z = state_point_.pos(2);
-    out.pose.orientation.x = state_point_.rot.coeffs()[0];
-    out.pose.orientation.y = state_point_.rot.coeffs()[1];
-    out.pose.orientation.z = state_point_.rot.coeffs()[2];
-    out.pose.orientation.w = state_point_.rot.coeffs()[3];
+void LaserMapping::SetPosestamp(nav_msgs::Odometry &out, state_ikfom state, geometry_msgs::Vector3 angvel) {
+    out.pose.pose.position.x = state.pos(0);
+    out.pose.pose.position.y = state.pos(1);
+    out.pose.pose.position.z = state.pos(2);
+    out.pose.pose.orientation.x = state.rot.coeffs()[0];
+    out.pose.pose.orientation.y = state.rot.coeffs()[1];
+    out.pose.pose.orientation.z = state.rot.coeffs()[2];
+    out.pose.pose.orientation.w = state.rot.coeffs()[3];
+    out.twist.twist.linear.x = state.vel(0);
+    out.twist.twist.linear.y = state.vel(1);
+    out.twist.twist.linear.z = state.vel(2);
+    out.twist.twist.angular.x = angvel.x - state.bg(0);
+    out.twist.twist.angular.x = angvel.y - state.bg(1);
+    out.twist.twist.angular.x = angvel.z - state.bg(2);
+}
+
+void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out ,state_ikfom state) {
+    out.pose.position.x = state.pos(0);
+    out.pose.position.y = state.pos(1);
+    out.pose.position.z = state.pos(2);
+    out.pose.orientation.x = state.rot.coeffs()[0];
+    out.pose.orientation.y = state.rot.coeffs()[1];
+    out.pose.orientation.z = state.rot.coeffs()[2];
+    out.pose.orientation.w = state.rot.coeffs()[3];
 }
 
 void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {

@@ -47,6 +47,9 @@ class LaserMapping {
     void LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr &msg);
     void IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in);
 
+    // sync lidar with imu
+    bool SyncPackages();
+
     /// interface of mtk, customized obseravtion model
     void ObsModel(state_ikfom &s, esekfom::dyn_share_datastruct<double> &ekfom_data);
 
@@ -60,11 +63,11 @@ class LaserMapping {
 
     void Finish();
 
-    void ImuUpdateOdom(const sensor_msgs::Imu::ConstPtr& imu_msg);
+    bool IMUUpdate();
 
    private:
-    template <typename T>
-    void SetPosestamp(T &out);
+    void SetPosestamp(nav_msgs::Odometry &out, state_ikfom state, geometry_msgs::Vector3 angvel);
+    void SetPosestamp(geometry_msgs::PoseStamped &out, state_ikfom state);
 
     void PointBodyToWorld(PointType const *pi, PointType *const po);
     void PointBodyToWorld(const common::V3F &pi, PointType *const po);
@@ -119,8 +122,11 @@ class LaserMapping {
     ros::Publisher pub_path_;
 
     std::mutex mtx_buffer_;
+    std::deque<double> time_buffer_;
+    std::deque<PointCloudType::Ptr> lidar_buffer_;
     std::deque<sensor_msgs::Imu::ConstPtr> imu_buffer_;
-    nav_msgs::Odometry odom_aft_mapped_;
+    std::deque<sensor_msgs::Imu::ConstPtr> imu_buf_;
+    sensor_msgs::Imu::ConstPtr last_imu_;
     nav_msgs::Odometry odom_;
 
     /// options
@@ -138,7 +144,6 @@ class LaserMapping {
     bool flg_first_scan_ = true;
     bool flg_EKF_inited_ = false;
     bool flg_first_odom_ = false;
-    bool flg_odom_updated_ = false;
     int init_index_ = 0;
     int pcd_index_ = 0;
     double lidar_mean_scantime_ = 0.0;
@@ -149,8 +154,8 @@ class LaserMapping {
     ///////////////////////// EKF inputs and output ///////////////////////////////////////////////////////
     common::MeasureGroup measures_;                    // sync IMU and lidar scan
     esekfom::esekf<state_ikfom, 12, input_ikfom> kf_;  // esekf
-    esekfom::esekf<state_ikfom, 12, input_ikfom> kf_imu_;  // esekf
     state_ikfom state_point_;                          // ekf current state
+    state_ikfom state_imu_;                            // ekf imu state
     vect3 pos_lidar_;                                  // lidar position after eskf update
     common::V3D euler_cur_ = common::V3D::Zero();      // rotation in euler angles
     bool extrinsic_est_en_ = true;

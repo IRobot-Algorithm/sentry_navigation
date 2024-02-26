@@ -37,6 +37,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <chrono>
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
@@ -51,7 +52,7 @@
 #include "../mtk/types/vect.hpp"
 #include "util.hpp"
 
-//#define USE_sparse
+// #define USE_sparse
 
 namespace esekfom {
 
