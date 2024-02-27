@@ -287,7 +287,7 @@ int main(int argc, char** argv)
                                 ros::Time(0), transform);
       }
       catch (tf::TransformException &ex) {
-        ROS_WARN("%s",ex.what());
+        // ROS_WARN("%s",ex.what());
       }
       tf::Matrix3x3 rotation(transform.getRotation());
       rotation.getRPY(worldRoll, worldPitch, worldYaw);

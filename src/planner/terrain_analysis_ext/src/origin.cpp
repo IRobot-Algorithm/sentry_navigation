@@ -532,7 +532,7 @@ int main(int argc, char** argv)
       sensor_msgs::PointCloud2 terrainCloud2;
       pcl::toROSMsg(*terrainCloudElev, terrainCloud2);
       terrainCloud2.header.stamp = ros::Time().fromSec(laserCloudTime);
-      terrainCloud2.header.frame_id = "map";//"map"
+      terrainCloud2.header.frame_id = "map";
       pubTerrainCloud.publish(terrainCloud2);
     }
 
