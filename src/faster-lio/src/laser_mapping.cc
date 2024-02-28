@@ -797,7 +797,7 @@ void LaserMapping::PublishFrameWorld() {
         int size = laserCloudFullRes->points.size();
         laserCloudWorld.reset(new PointCloudType(size, 1));
         for (int i = 0; i < size; i++) {
-            PointBodyToWorld(&laserCloudFullRes->points[i], &laserCloudWorld->points[i]);
+            PointBodyToMap(&laserCloudFullRes->points[i], &laserCloudWorld->points[i]);
         }
     } else {
         laserCloudWorld = scan_down_world_;
@@ -854,7 +854,7 @@ void LaserMapping::PublishFrameEffectWorld(const ros::Publisher &pub_laser_cloud
     PointCloudType::Ptr laser_cloud(new PointCloudType(size, 1));
 
     for (int i = 0; i < size; i++) {
-        PointBodyToWorld(corr_pts_[i].head<3>(), &laser_cloud->points[i]);
+        PointBodyToMap(corr_pts_[i].head<3>(), &laser_cloud->points[i]);
     }
     sensor_msgs::PointCloud2 laserCloudmsg;
     pcl::toROSMsg(*laser_cloud, laserCloudmsg);
@@ -918,12 +918,33 @@ void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out ,state_ikfom sta
     out.pose.orientation.w = state.rot.coeffs()[3];
 }
 
-void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {
+void LaserMapping::PointBodyToMap(const PointType *pi, PointType *const po) {
     common::V3D p_body(pi->x, pi->y, pi->z);
     common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
                          state_point_.pos) - IMU_T_wrt_BOT_);
-    // common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-    //                      state_point_.pos);
+
+    po->x = p_global(0);
+    po->y = p_global(1);
+    po->z = p_global(2);
+    po->intensity = pi->intensity;
+}
+
+void LaserMapping::PointBodyToMap(const common::V3F &pi, PointType *const po) {
+    common::V3D p_body(pi.x(), pi.y(), pi.z());
+    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) - IMU_T_wrt_BOT_);
+
+
+    po->x = p_global(0);
+    po->y = p_global(1);
+    po->z = p_global(2);
+    po->intensity = std::abs(po->z);
+}
+
+void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {
+    common::V3D p_body(pi->x, pi->y, pi->z);
+    common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos);
 
     po->x = p_global(0);
     po->y = p_global(1);
@@ -933,10 +954,8 @@ void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {
 
 void LaserMapping::PointBodyToWorld(const common::V3F &pi, PointType *const po) {
     common::V3D p_body(pi.x(), pi.y(), pi.z());
-    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos) - IMU_T_wrt_BOT_);
-    // common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-    //                      state_point_.pos);
+    common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos);
 
 
     po->x = p_global(0);

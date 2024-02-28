@@ -71,6 +71,8 @@ class LaserMapping {
     void SetPosestamp(nav_msgs::Odometry &out, state_ikfom state, geometry_msgs::Vector3 angvel);
     void SetPosestamp(geometry_msgs::PoseStamped &out, state_ikfom state);
 
+    void PointBodyToMap(PointType const *pi, PointType *const po);
+    void PointBodyToMap(const common::V3F &pi, PointType *const po);
     void PointBodyToWorld(PointType const *pi, PointType *const po);
     void PointBodyToWorld(const common::V3F &pi, PointType *const po);
     void PointBodyLidarToIMU(PointType const *const pi, PointType *const po);
