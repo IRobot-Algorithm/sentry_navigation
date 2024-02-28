@@ -1011,8 +1011,6 @@ int main(int argc, char** argv)
       plannerCloud2.header.frame_id = "/vehicle";
       pubLaserCloud.publish(plannerCloud2);*/
 
-      std::cout << "local planenr cost: " << (ros::Time::now().toSec() - t.toSec()) * 1000 << "ms" << std::endl;
-
     }
 
     status = ros::ok();

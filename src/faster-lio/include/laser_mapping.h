@@ -6,6 +6,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <tf/transform_datatypes.h>
 #include <condition_variable>
 #include <thread>
 
@@ -178,6 +179,14 @@ class LaserMapping {
     PointCloudType::Ptr pcl_wait_save_{new PointCloudType()};  // debug save
     nav_msgs::Path path_;
     geometry_msgs::PoseStamped msg_body_pose_;
+    
+    // lidar_link->base_link
+    tf::Quaternion tr_quat_;
+    common::V3D IMU_T_wrt_BOT_;
+    common::M3D IMU_R_wrt_BOT_;
+    common::M3D BOT_R_wrt_IMU_;
+    tf::Vector3 tf_T_;
+
 };
 
 }  // namespace faster_lio

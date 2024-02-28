@@ -11,7 +11,7 @@
 namespace faster_lio {
 
 bool LaserMapping::InitROS(ros::NodeHandle &nh) {
-    LoadParams(nh);
+    while (!LoadParams(nh));
     SubAndPubToROS(nh);
 
     // localmap init (after LoadParams)
@@ -59,6 +59,8 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     double filter_size_surf_min;
     common::V3D lidar_T_wrt_IMU;
     common::M3D lidar_R_wrt_IMU;
+    std::vector<double> extrinT_IMU_BOT{3, 0.0};  // lidar-imu translation
+    std::vector<double> extrinR_IMU_BOT{9, 0.0};  // lidar-imu rotation
 
     nh.param<bool>("path_save_en", path_save_en_, true);
     nh.param<bool>("publish/path_publish_en", path_pub_en_, true);
@@ -91,6 +93,8 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     nh.param<int>("pcd_save/interval", pcd_save_interval_, -1);
     nh.param<std::vector<double>>("mapping/extrinsic_T", extrinT_, std::vector<double>());
     nh.param<std::vector<double>>("mapping/extrinsic_R", extrinR_, std::vector<double>());
+    nh.param<std::vector<double>>("irobot/extrinsic_T", extrinT_IMU_BOT, std::vector<double>());
+    nh.param<std::vector<double>>("irobot/extrinsic_R", extrinR_IMU_BOT, std::vector<double>());
 
     nh.param<float>("ivox_grid_resolution", ivox_options_.resolution_, 0.2);
     nh.param<int>("ivox_nearby_type", ivox_nearby_type, 18);
@@ -131,11 +135,16 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     lidar_T_wrt_IMU = common::VecFromArray<double>(extrinT_);
     lidar_R_wrt_IMU = common::MatFromArray<double>(extrinR_);
 
+    IMU_T_wrt_BOT_ = common::VecFromArray<double>(extrinT_IMU_BOT);
+    IMU_R_wrt_BOT_ = common::MatFromArray<double>(extrinR_IMU_BOT);
+    BOT_R_wrt_IMU_ = IMU_R_wrt_BOT_.inverse();
+
     p_imu_->SetExtrinsic(lidar_T_wrt_IMU, lidar_R_wrt_IMU);
     p_imu_->SetGyrCov(common::V3D(gyr_cov, gyr_cov, gyr_cov));
     p_imu_->SetAccCov(common::V3D(acc_cov, acc_cov, acc_cov));
     p_imu_->SetGyrBiasCov(common::V3D(b_gyr_cov, b_gyr_cov, b_gyr_cov));
     p_imu_->SetAccBiasCov(common::V3D(b_acc_cov, b_acc_cov, b_acc_cov));
+
     return true;
 }
 
@@ -353,7 +362,6 @@ void LaserMapping::Run() {
         {
             SetPosestamp(odom_, state_imu_, last_imu_->angular_velocity);
             odom_.header.stamp = ros::Time().fromSec(last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
-            // PublishVelocity(pub_vel_);
             if (pub_odom_aft_mapped_)
                 PublishOdometry(pub_odom_aft_mapped_, odom_);
         }
@@ -723,45 +731,39 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     odom_base.header.stamp = odom_lidar.header.stamp;
     odom_base.twist = odom_lidar.twist;
 
-    // 获得odom为odom->lidar_link 转变为odom->base_link后发布
-    // Get the TF transform
-    static tf::TransformListener ls;
-    tf::StampedTransform tr;
-    try
-    {
-        ls.lookupTransform("lidar_link", "base_link", ros::Time(0), tr);
-    }
-    catch (tf::LookupException &e)
-    {
-        ROS_WARN("%s", e.what ());
-        return;
-    }
-    catch (tf::ExtrapolationException &e)
-    {
-        ROS_WARN("%s", e.what ());
-        return;
-    }
+    // R
+    Eigen::Quaterniond eigen_quat(odom_lidar.pose.pose.orientation.w, 
+                                  odom_lidar.pose.pose.orientation.x, 
+                                  odom_lidar.pose.pose.orientation.y, 
+                                  odom_lidar.pose.pose.orientation.z);
+    common::M3D init_R_lidar = eigen_quat.toRotationMatrix();
+    common::M3D MAP_R_BOT = BOT_R_wrt_IMU_ * init_R_lidar * IMU_R_wrt_BOT_;
 
-    tf::Quaternion quat;
-    tf::quaternionMsgToTF(odom_lidar.pose.pose.orientation, quat);
+    // 转换为tf与odom
+    Eigen::Quaterniond q(MAP_R_BOT);
+    tf::Quaternion tf_q(q.x(), q.y(), q.z(), q.w());
+    tf::quaternionTFToMsg(tf_q, odom_base.pose.pose.orientation);
 
-    tf::Quaternion tr_quat = tr.getRotation();
-    tf::Quaternion geoQuat = tr_quat * quat;
-    geoQuat.normalize();
+    // T
+    common::V3D init_T_lidar(odom_lidar.pose.pose.position.x, 
+                             odom_lidar.pose.pose.position.y, 
+                             odom_lidar.pose.pose.position.z);
+    common::V3D MAP_T_lidar(BOT_R_wrt_IMU_ * init_T_lidar - IMU_T_wrt_BOT_);
+    common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * IMU_T_wrt_BOT_);
 
-    // tf中为在odom系下平移 此处应该在lidar_link系下平移！！！
-    tf::Vector3 p(tr.getOrigin().x(), tr.getOrigin().y(), tr.getOrigin().z());
-    tf::Vector3 res = tf::quatRotate(quat, p);
+    odom_base.pose.pose.position.x = MAP_T_BOT(0);
+    odom_base.pose.pose.position.y = MAP_T_BOT(1);
+    odom_base.pose.pose.position.z = MAP_T_BOT(2);
 
-    // Eigen::Matrix3f rotation_R = quat.toRotationMatrix();;
-    // Eigen::Vector3f pt(tr.getOrigin().x(), tr.getOrigin().y(), tr.getOrigin().z());
-    // Eigen::Vector3f res = rotation_R * pt;
-    // std::cout << "res:" << std::endl << res[0] << " " << res[1] << " " << res[2] << std::endl;
-    odom_base.pose.pose.position.x = odom_lidar.pose.pose.position.x + res[0];
-    odom_base.pose.pose.position.y = odom_lidar.pose.pose.position.y + res[1];
-    odom_base.pose.pose.position.z = odom_lidar.pose.pose.position.z + res[2];
+    // twist linear
+    common::V3D init_V(odom_lidar.twist.twist.linear.x, 
+                       odom_lidar.twist.twist.linear.y, 
+                       odom_lidar.twist.twist.linear.z);    
+    common::V3D MAP_V(BOT_R_wrt_IMU_ * init_V);
 
-    tf::quaternionTFToMsg(geoQuat, odom_base.pose.pose.orientation);
+    odom_base.twist.twist.linear.x = MAP_V(0);
+    odom_base.twist.twist.linear.y = MAP_V(1);
+    odom_base.twist.twist.linear.z = MAP_V(2);
 
     pub_odom_aft_mapped.publish(odom_base);
     auto P = kf_.get_P();
@@ -777,9 +779,10 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
 
     static tf::TransformBroadcaster br;
     tf::Transform transform;
-    transform.setOrigin(tf::Vector3(odom_base.pose.pose.position.x, odom_base.pose.pose.position.y,
+    transform.setOrigin(tf::Vector3(odom_base.pose.pose.position.x, 
+                                    odom_base.pose.pose.position.y,
                                     odom_base.pose.pose.position.z));
-    transform.setRotation(geoQuat);
+    transform.setRotation(tf_q);
     br.sendTransform(tf::StampedTransform(transform, odom_base.header.stamp, "odom", "base_link"));
 }
 
@@ -917,8 +920,10 @@ void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out ,state_ikfom sta
 
 void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {
     common::V3D p_body(pi->x, pi->y, pi->z);
-    common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos);
+    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) - IMU_T_wrt_BOT_);
+    // common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos);
 
     po->x = p_global(0);
     po->y = p_global(1);
@@ -928,8 +933,11 @@ void LaserMapping::PointBodyToWorld(const PointType *pi, PointType *const po) {
 
 void LaserMapping::PointBodyToWorld(const common::V3F &pi, PointType *const po) {
     common::V3D p_body(pi.x(), pi.y(), pi.z());
-    common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos);
+    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) - IMU_T_wrt_BOT_);
+    // common::V3D p_global(state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos);
+
 
     po->x = p_global(0);
     po->y = p_global(1);
