@@ -78,13 +78,6 @@ float velocityX = 0;
 float velocityY = 0;
 float velocityYaw = 0;
 
-float vehicleXRec = 0;
-float vehicleYRec = 0;
-float vehicleZRec = 0;
-float vehicleRollRec = 0;
-float vehiclePitchRec = 0;
-float vehicleYawRec = 0;
-
 float vehicleYawRate = 0;
 float vehicleSpeed = 0;
 
@@ -99,6 +92,16 @@ double switchTime = 0;
 
 double goalX = 0.0;
 double goalY = 0.0;
+
+double v_kp = 10.0;
+double v_ki = 0.0;
+double v_kd = 0.1;
+
+float I_x = 0.0;
+float I_y = 0.0;
+
+float last_err_x = 0;
+float last_err_y = 0;
 
 nav_msgs::Path path;
 
@@ -140,14 +143,6 @@ void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
     path.poses[i].pose.position.y = pathIn->poses[i].pose.position.y;
     path.poses[i].pose.position.z = pathIn->poses[i].pose.position.z;
   }
-
-  vehicleXRec = vehicleX;
-  vehicleYRec = vehicleY;
-  vehicleZRec = vehicleZ;
-
-  vehicleRollRec = vehicleRoll;
-  vehiclePitchRec = vehiclePitch;
-  vehicleYawRec = vehicleYaw;
 
   pathPointID = 0;
   pathInit = true;
@@ -236,6 +231,9 @@ int main(int argc, char** argv)
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
   nhPrivate.getParam("goalX", goalX);
   nhPrivate.getParam("goalY", goalY);
+  nhPrivate.getParam("v_kp", v_kp);
+  nhPrivate.getParam("v_ki", v_ki);
+  nhPrivate.getParam("v_kd", v_kd);
 
   ros::Subscriber subOdom = nh.subscribe<nav_msgs::Odometry> ("/Odometry", 1, odomHandler);
 
@@ -286,35 +284,60 @@ int main(int argc, char** argv)
       tf::Matrix3x3 rotation(transform.getRotation());
       rotation.getRPY(worldRoll, worldPitch, worldYaw);
 
-      float vehicleXRel = cos(vehicleYawRec) * (vehicleX - vehicleXRec) 
-                          + sin(vehicleYawRec) * (vehicleY - vehicleYRec);
-      float vehicleYRel = -sin(vehicleYawRec) * (vehicleX - vehicleXRec) 
-                        + cos(vehicleYawRec) * (vehicleY - vehicleYRec);
-
       int pathSize = path.poses.size();
       float endDisX = goalX - vehicleX;
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      float disX, disY, dis;
-      while (pathPointID < pathSize - 1) {
-        disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
-        disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
-        dis = sqrt(disX * disX + disY * disY);
-        if (dis < lookAheadDis) {
+      float dis_x, dis_y, dis;
+      while (pathPointID < pathSize - 1)
+      {
+        dis_x = path.poses[pathPointID].pose.position.x - vehicleX;
+        dis_y = path.poses[pathPointID].pose.position.y - vehicleY;
+        dis = sqrt(dis_x * dis_x + dis_y * dis_y);
+        if (dis < lookAheadDis)
+        {
           pathPointID++;
-        } else {
+        }
+        else
+        {
           break;
         }
       }
+      dis_x = path.poses[pathPointID].pose.position.x - vehicleX;
+      dis_y = path.poses[pathPointID].pose.position.y - vehicleY;
+      dis = sqrt(dis_x * dis_x + dis_y * dis_y);
 
-      disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
-      disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
-      dis = sqrt(disX * disX + disY * disY);
+      float next_dis_x, next_dis_y, next_dis;
+      int nextPathID = pathPointID + 10;
+      if (nextPathID >= pathSize - 1)
+      {
+        next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+        next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+        next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
+      }
 
-      float pathDir = atan2(disY, disX);
+      next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+      next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+      next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
 
-      float yawDiff = vehicleYaw - pathDir;
+      float target_vx = 0.65 * v_kp * dis_x + 0.35 * v_kp * next_dis_x;
+      float target_vy = 0.65 * v_kp * dis_y + 0.35 * v_kp * next_dis_y;
+      I_x += dis_x;
+      I_y += dis_y;
+      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (target_vx - velocityX);
+      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (target_vy - velocityY);
+
+      float speed = sqrt(speed_x * speed_x + speed_y * speed_y);
+      if (speed > maxSpeed)
+      {
+        speed_x *= maxSpeed / speed;
+        speed_y *= maxSpeed / speed;
+      }
+
+      // angle
+      float pathDir = atan2(speed_y, speed_x);
+      float yawDiff = worldYaw - pathDir;
       if (yawDiff > PI) 
         yawDiff -= 2 * PI;
       else if (yawDiff < -PI) 
@@ -334,62 +357,16 @@ int main(int argc, char** argv)
         }
       }
 
-      float joySpeed2 = maxSpeed * joySpeed;
       if (!navFwd) {
         yawDiff += PI;
         if (yawDiff > PI) yawDiff -= 2 * PI;
       }
 
-      else vehicleYawRate = -yawRateGain * yawDiff;
-      if (vehicleYawRate > maxYawRate * PI / 180.0) vehicleYawRate = maxYawRate * PI / 180.0;
-      else if (vehicleYawRate < -maxYawRate * PI / 180.0) vehicleYawRate = -maxYawRate * PI / 180.0;
-
-      /*if (joySpeed2 == 0 && !autonomyMode) {
-        vehicleYawRate = maxYawRate * joyYaw * PI / 180.0;
-      } else if (pathSize <= 1 || (dis < stopDisThre && noRotAtGoal)) {
-        vehicleYawRate = 0;
-      }*/
-
-      if (pathSize <= 1) {
-        joySpeed2 = 0;
-      } else if ((endDis / slowDwnDisThre) < joySpeed) {
-        joySpeed2 *= (endDis / slowDwnDisThre);
-      }
-
-      float joySpeed3 = joySpeed2;
-      if (odomTime < slowInitTime + slowTime1 && slowInitTime > 0) joySpeed3 *= slowRate1;
-      else if (odomTime < slowInitTime + slowTime1 + slowTime2 && slowInitTime > 0) joySpeed3 *= slowRate2;
-
-      if (dis > stopDisThre) {
-        if (vehicleSpeed < joySpeed3) vehicleSpeed += maxAccel / 100.0;
-        else if (vehicleSpeed > joySpeed3) vehicleSpeed -= maxAccel / 100.0;
-      } else {
-        if (vehicleSpeed > 0) vehicleSpeed -= maxAccel / 100.0;
-        else if (vehicleSpeed < 0) vehicleSpeed += maxAccel / 100.0;
-      }
-
-      if (odomTime < stopInitTime + stopTime && stopInitTime > 0) {
-        vehicleSpeed = 0;
-        vehicleYawRate = 0;
-      }
-
-      if (safetyStop >= 1) vehicleSpeed = 0;
-      if (safetyStop >= 2) vehicleYawRate = 0;
-
-      float mapSpeedX = cos(pathDir) * vehicleSpeed;
-      float mapSpeedY = sin(pathDir) * vehicleSpeed;
-      
       pubSkipCount--;
       if (pubSkipCount < 0) {
-        cmd_vel.header.stamp = ros::Time().fromSec(odomTime);
-        if (fabs(vehicleSpeed) <= maxAccel / 100.0) {
-          cmd_vel.twist.linear.x = 0;
-          cmd_vel.twist.linear.y = 0;
-        } else {
-          cmd_vel.twist.linear.x = cos(worldYaw) * mapSpeedX + sin(worldYaw) * mapSpeedY;
-          cmd_vel.twist.linear.y = -sin(worldYaw) * mapSpeedX + cos(worldYaw) * mapSpeedY;
-        }
-        cmd_vel.twist.angular.z = vehicleYawRate;
+        cmd_vel.twist.linear.x = cos(worldYaw) * speed_x + sin(worldYaw) * speed_y;
+        cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
+        cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
 
         pubSkipCount = pubSkipNum;

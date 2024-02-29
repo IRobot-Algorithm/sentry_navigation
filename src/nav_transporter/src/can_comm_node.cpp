@@ -26,7 +26,7 @@ void CanCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   this->sub_vel = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &CanCommNode::velHandler, this);
  
   // ROS timer initialization
-  this->send_vel_timer_ = nh.createTimer(ros::Duration(0.003), &CanCommNode::sendVelCallback, this);
+  this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &CanCommNode::sendVelCallback, this);
   this->receive_thread_ = std::thread(&CanCommNode::receiveCallback, this);
 }
 

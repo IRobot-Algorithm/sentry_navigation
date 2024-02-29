@@ -8,6 +8,9 @@
   <arg name="joyToSpeedDelay" default="1.0"/><!--2.0-->
   <arg name="goalX" default="0"/>
   <arg name="goalY" default="0"/>
+  <arg name="v_kp" default="10.0"/>
+  <arg name="v_ki" default="0"/>
+  <arg name="v_kd" default="0.1"/>
 
   <node pkg="local_planner" type="localPlanner" name="localPlanner" output="screen" required="true">
     <param name="pathFolder" type="string" value="$(find local_planner)/paths" />
@@ -47,6 +50,9 @@
     <param name="goalClearRange" type="double" value="0.5" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
+    <param name="v_kp" type="double" value="$(arg v_kp)" />
+    <param name="v_ki" type="double" value="$(arg v_ki)" />
+    <param name="v_kd" type="double" value="$(arg v_kd)" />
   </node>
 
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">

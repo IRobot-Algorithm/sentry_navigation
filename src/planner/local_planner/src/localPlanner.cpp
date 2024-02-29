@@ -903,9 +903,9 @@ int main(int argc, char** argv)
             float dis = sqrt(x * x + y * y);
 
             if (dis <= pathRange / pathScale && dis <= relativeGoalDis / pathScale) {
-              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
-              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
-              path.poses[i].pose.position.z = pathScale * z;
+              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y) + vehicleX;
+              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y) + vehicleY;
+              path.poses[i].pose.position.z = pathScale * z + vehicleZ;
             } else {
               path.poses.resize(i);
               break;
@@ -913,7 +913,7 @@ int main(int argc, char** argv)
           }
 
           path.header.stamp = ros::Time().fromSec(odomTime);
-          path.header.frame_id = "map_link";//"vehicle"
+          path.header.frame_id = "map";//"vehicle"
           pubPath.publish(path);
 
           #if PLOTPATHSET == 1
