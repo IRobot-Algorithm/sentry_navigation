@@ -749,7 +749,7 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                              odom_lidar.pose.pose.position.y, 
                              odom_lidar.pose.pose.position.z);
     common::V3D MAP_T_lidar(BOT_R_wrt_IMU_ * init_T_lidar - IMU_T_wrt_BOT_);
-    common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * IMU_T_wrt_BOT_);
+    common::V3D MAP_T_BOT(MAP_T_lidar + MAP_R_BOT * IMU_T_wrt_BOT_);
 
     odom_base.pose.pose.position.x = MAP_T_BOT(0);
     odom_base.pose.pose.position.y = MAP_T_BOT(1);

@@ -1,13 +1,13 @@
 <launch>
 
     <include file="$(find nav_bringup)/launch/robot_state_publisher.launch" />
-    <!-- <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch" /> -->
+    <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
+    <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch" /> -->
     <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" />
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
-	    <arg name="rviz" value="true" />
+	    <arg name="rviz" value="false" />
     </include>
 
     <include file="$(find far_planner)/launch/far_planner.launch" />
@@ -22,7 +22,7 @@
     <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
 
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
-    <!-- <include file="$(find nav_transporter)/launch/transporter.launch" /> -->
+    <include file="$(find nav_transporter)/launch/transporter.launch" />
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
     <!-- /////////////////////// rviz /////////////////////// -->

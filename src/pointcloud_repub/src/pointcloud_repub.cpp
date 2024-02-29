@@ -35,37 +35,38 @@ void PointCloudProcess::SubAndPubToROS(ros::NodeHandle &nh)
   pub_D435_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/D435_pcl", 5);
 }
 
-bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out, 
-                                     const tf::TransformListener &tf_listener)
+bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
 {
-  // Get the TF transform
-  tf::StampedTransform transform;
-  try
-  {
-    tf_listener.lookupTransform("base_link", in.header.frame_id, ros::Time(0), transform);
-  }
-  catch (tf::LookupException &e)
-  {
-    ROS_WARN("%s", e.what ());
-    return false;
-  }
-  catch (tf::ExtrapolationException &e)
-  {
-    ROS_WARN("%s", e.what ());
-   return false;
-  }
-  // Convert the TF transform to Eigen format  
-  Eigen::Matrix4f eigen_transform;
-  pcl_ros::transformAsMatrix(transform, eigen_transform);
+  std::vector<double> extrinT_IMU_BOT{3, 0.0};  // lidar-imu translation
+  std::vector<double> extrinR_IMU_BOT{9, 0.0};  // lidar-imu rotation
 
+  nh.param<std::vector<double>>("lidar/extrinsic_T", extrinT_IMU_BOT, std::vector<double>());
+  nh.param<std::vector<double>>("lidar/extrinsic_R", extrinR_IMU_BOT, std::vector<double>());
+
+  extrinT_IMU_BOT_ << extrinT_IMU_BOT[0], extrinT_IMU_BOT[1], extrinT_IMU_BOT[2];
+  extrinR_IMU_BOT_ << extrinR_IMU_BOT[0], extrinR_IMU_BOT[1], extrinR_IMU_BOT[2],
+                        extrinR_IMU_BOT[3], extrinR_IMU_BOT[4], extrinR_IMU_BOT[5],
+                        extrinR_IMU_BOT[6], extrinR_IMU_BOT[7], extrinR_IMU_BOT[8];
+  extrinR_BOT_IMU_ = extrinR_IMU_BOT_.inverse();
+
+  return true;
+
+}
+
+bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out)
+{
   for (unsigned int i = 0; i < in.point_num; ++i)
   {
-    Eigen::Vector4f pt(in.points[i].x, in.points[i].y, in.points[i].z, 1.0f);
-    Eigen::Vector4f res = eigen_transform * pt;
+    Eigen::Vector3d pt(in.points[i].x, in.points[i].y, in.points[i].z);
+    Eigen::Vector3d res = extrinR_BOT_IMU_ * pt - extrinT_IMU_BOT_;
 
     // 裁切
-    double d = res[0] * res[0] + res[1] * res[1];
-    if(!(d < 0.29 * 0.29 && res[2] < 1.0))
+    // double d = res[0] * res[0] + res[1] * res[1];
+    // if (!(d < 0.29 * 0.29 && res[2] < 1.0))
+    // {
+    //   out.points.push_back(std::move(in.points[i]));
+    // }
+    if (!(fabs(res[0]) < 0.31 && fabs(res[1]) < 0.31 && res[2] < 1.0))
     {
       out.points.push_back(std::move(in.points[i]));
     }
@@ -110,7 +111,7 @@ bool PointCloudProcess::transformPointCloud(const std::string &source_frame, con
     return true;
   }
 
-  if(tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.1)))
+  if(tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.01)))
   {
     tf::StampedTransform transform;
     tf_listener.lookupTransform(target_frame, source_frame, time, transform);
@@ -128,8 +129,18 @@ void PointCloudProcess::LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstP
 {
   livox_ros_driver2::CustomMsg livox_msg_cutted;
   // 转换和裁切
-  if (cutCustomMsg(*livox_msg_in, livox_msg_cutted, tf_));
+  if (cutCustomMsg(*livox_msg_in, livox_msg_cutted));
     pub_livox_msg_.publish(livox_msg_cutted);
+
+  /*
+  pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_out(new pcl::PointCloud<pcl::PointXYZI>());
+  CustomMsg2PointCloud(livox_msg_cutted, *livox_cloud_out);
+  sensor_msgs::PointCloud2 livox_cloud;
+  pcl::toROSMsg(*livox_cloud_out, livox_cloud);
+  livox_cloud.header.stamp = livox_msg_in->header.stamp;
+  livox_cloud.header.frame_id = "lidar_link";
+  pub_livox_cloud_.publish(livox_cloud);
+  */
 }
 
 void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr& livox_cloud_in)
@@ -187,17 +198,17 @@ void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr&
     }
   }
 
-  if (transformPointCloud(D435_cloud_in->header.frame_id, "map", *D435_cutted_cloud, *D435_cloud_out_, D435_cloud_in->header.stamp, tf_))
-  {
-    //////////////////////////////////////
-    // 发布PointCloud2
-    sensor_msgs::PointCloud2 D435_cloud_updated;
-    pcl::toROSMsg(*D435_cutted_cloud, D435_cloud_updated);
-    D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
-    D435_cloud_updated.header.frame_id = D435_cloud_in->header.frame_id;
-    pub_D435_cloud_.publish(D435_cloud_updated);
-    //////////////////////////////////////
-  }
+  transformPointCloud(D435_cloud_in->header.frame_id, "map", *D435_cutted_cloud, *D435_cloud_out_, D435_cloud_in->header.stamp, tf_);
+
+  // 发布PointCloud2
+  /*
+  sensor_msgs::PointCloud2 D435_cloud_updated;
+  pcl::toROSMsg(*D435_cutted_cloud, D435_cloud_updated);
+  D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
+  D435_cloud_updated.header.frame_id = D435_cloud_in->header.frame_id;
+  pub_D435_cloud_.publish(D435_cloud_updated);
+  */
+
 }
 
 } // namespace pointcloud_repub

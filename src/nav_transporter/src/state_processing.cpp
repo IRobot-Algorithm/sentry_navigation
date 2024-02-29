@@ -51,7 +51,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   this->pub_goal_ = nh.advertise<geometry_msgs::PoseStamped>("/rviz_goal", 5);
   this->pub_stop_ = nh.advertise<std_msgs::Bool>("/stop", 5);
 
-  this->loop_timer_ = nh.createTimer(ros::Duration(0.02), &StateProcess::loop, this);
+  // this->loop_timer_ = nh.createTimer(ros::Duration(0.02), &StateProcess::loop, this);
 }
 
 void StateProcess::odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)

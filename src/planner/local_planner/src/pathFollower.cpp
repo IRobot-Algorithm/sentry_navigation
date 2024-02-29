@@ -98,9 +98,8 @@ bool pathInit = false;
 bool navFwd = true;
 double switchTime = 0;
 
-//zbh
-float goalX = 10.0;
-float goalY = 10.0;
+float goalX = 0.0;
+float goalY = 0.0;
 float vyaw = 0.0;
 
 bool new_odom;
@@ -149,6 +148,10 @@ void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
     path.poses[i].pose.position.y = pathIn->poses[i].pose.position.y;
     path.poses[i].pose.position.z = pathIn->poses[i].pose.position.z;
   }
+
+  vehicleXRec = vehicleX;
+  vehicleYRec = vehicleY;
+  vehicleZRec = vehicleZ;
 
   vehicleRollRec = vehicleRoll;
   vehiclePitchRec = vehiclePitch;
@@ -302,6 +305,10 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
+      std::cout << goalX << " " << goalY << std::endl;
+      std::cout << endDis << std::endl;
+      std::cout << "pathSize" << pathSize << std::endl;
+
       float disX, disY, dis;
       while (pathPointID < pathSize - 1) {
         disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
@@ -317,6 +324,9 @@ int main(int argc, char** argv)
       disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
       disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
       dis = sqrt(disX * disX + disY * disY);
+
+      std::cout << "wp dis:" << dis << std::endl;
+
       float pathDir = atan2(disY, disX);
 
       float dirDiff = vehicleYaw - vehicleYawRec - pathDir;

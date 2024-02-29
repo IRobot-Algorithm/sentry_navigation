@@ -694,14 +694,7 @@ int main(int argc, char** argv)
         point.intensity = plannerCloud->points[i].intensity;
 
         float dis = sqrt(point.x * point.x + point.y * point.y);
-        //zbh设置回家模式：增加忽略的点云半径
-        float Ignore_disTre = 0.20;//0.50
-        if(goalX == 0.0 && goalY == 0.0)
-        {
-          Ignore_disTre = 0.20;//0.50
-        }
-        //************ zbh  && dis > 0.50
-        if (dis < adjacentRange && dis > Ignore_disTre && ((point.z > minRelZ && point.z < maxRelZ) || useTerrainAnalysis)) {
+        if (dis < adjacentRange && ((point.z > minRelZ && point.z < maxRelZ) || useTerrainAnalysis)) {
           plannerCloudCrop->push_back(point);
         }
       }
