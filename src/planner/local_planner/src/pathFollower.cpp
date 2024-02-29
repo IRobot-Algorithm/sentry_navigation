@@ -89,7 +89,6 @@ float vehicleYawRate = 0;
 float vehicleSpeed = 0;
 
 double odomTime = 0;
-bool odomInit = false;
 double joyTime = 0;
 double slowInitTime = 0;
 double stopInitTime = false;
@@ -119,6 +118,8 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleX = odomIn->pose.pose.position.x;
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
+  velocityX = odomIn->twist.twist.linear.x;
+  velocityY = odomIn->twist.twist.linear.y;
 
   if ((fabs(roll) > inclThre * PI / 180.0 || fabs(pitch) > inclThre * PI / 180.0) && useInclToStop) {
     stopInitTime = odomIn->header.stamp.toSec();
@@ -128,10 +129,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
     slowInitTime = odomIn->header.stamp.toSec();
   }
 
-  if (!odomInit) {
-    desiredYaw = yaw;
-    odomInit = true;
-  }
 }
 
 void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
@@ -259,7 +256,6 @@ int main(int argc, char** argv)
 
   ros::Publisher pubSpeed = nh.advertise<geometry_msgs::TwistStamped> ("/cmd_vel", 5);
   geometry_msgs::TwistStamped cmd_vel;
-  // cmd_vel.header.frame_id = "map";//"vehicle"
   cmd_vel.header.frame_id = "world";
 
   double worldRoll, worldPitch, worldYaw;
@@ -300,10 +296,6 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      std::cout << goalX << " " << goalY << std::endl;
-      std::cout << endDis << std::endl;
-      std::cout << "pathSize" << pathSize << std::endl;
-
       float disX, disY, dis;
       while (pathPointID < pathSize - 1) {
         disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
@@ -320,24 +312,17 @@ int main(int argc, char** argv)
       disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
       dis = sqrt(disX * disX + disY * disY);
 
-      std::cout << "wp dis:" << dis << std::endl;
-
       float pathDir = atan2(disY, disX);
 
-      float dirDiff = vehicleYaw - vehicleYawRec - pathDir;
-      if (dirDiff > PI) dirDiff -= 2 * PI;
-      else if (dirDiff < -PI) dirDiff += 2 * PI;
-      if (dirDiff > PI) dirDiff -= 2 * PI;
-      else if (dirDiff < -PI) dirDiff += 2 * PI;
-
-      desiredYaw += 0.01 * joyYaw;
-      if (desiredYaw > PI) desiredYaw -= 2 * PI;
-      else if (desiredYaw < -PI) desiredYaw += 2 * PI;
-
-      float yawDiff = vehicleYaw - desiredYaw;
-      if (yawDiff > PI) yawDiff -= 2 * PI;
-      else if (yawDiff < -PI) yawDiff += 2 * PI;
-
+      float yawDiff = vehicleYaw - pathDir;
+      if (yawDiff > PI) 
+        yawDiff -= 2 * PI;
+      else if (yawDiff < -PI) 
+        yawDiff += 2 * PI;
+      if (yawDiff > PI) 
+        yawDiff -= 2 * PI;
+      else if (yawDiff < -PI) 
+        yawDiff += 2 * PI;
       if (twoWayDrive) {
         double time = ros::Time::now().toSec();
         if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
@@ -355,9 +340,7 @@ int main(int argc, char** argv)
         if (yawDiff > PI) yawDiff -= 2 * PI;
       }
 
-      if (fabs(vehicleSpeed) < 2.0 * maxAccel / 100.0) vehicleYawRate = -stopYawRateGain * yawDiff;
       else vehicleYawRate = -yawRateGain * yawDiff;
-
       if (vehicleYawRate > maxYawRate * PI / 180.0) vehicleYawRate = maxYawRate * PI / 180.0;
       else if (vehicleYawRate < -maxYawRate * PI / 180.0) vehicleYawRate = -maxYawRate * PI / 180.0;
 
@@ -393,8 +376,8 @@ int main(int argc, char** argv)
       if (safetyStop >= 1) vehicleSpeed = 0;
       if (safetyStop >= 2) vehicleYawRate = 0;
 
-      float mapSpeedX = cos(dirDiff) * vehicleSpeed;
-      float mapSpeedY = -sin(dirDiff) * vehicleSpeed;
+      float mapSpeedX = cos(pathDir) * vehicleSpeed;
+      float mapSpeedY = sin(pathDir) * vehicleSpeed;
       
       pubSkipCount--;
       if (pubSkipCount < 0) {
