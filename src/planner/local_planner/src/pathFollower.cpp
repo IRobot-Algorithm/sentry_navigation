@@ -98,11 +98,8 @@ bool pathInit = false;
 bool navFwd = true;
 double switchTime = 0;
 
-float goalX = 0.0;
-float goalY = 0.0;
-float vyaw = 0.0;
-
-bool new_odom;
+double goalX = 0.0;
+double goalY = 0.0;
 
 nav_msgs::Path path;
 
@@ -135,8 +132,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
     desiredYaw = yaw;
     odomInit = true;
   }
-
-  new_odom = true;
 }
 
 void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
@@ -242,6 +237,8 @@ int main(int argc, char** argv)
   nhPrivate.getParam("autonomyMode", autonomyMode);
   nhPrivate.getParam("autonomySpeed", autonomySpeed);
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
+  nhPrivate.getParam("goalX", goalX);
+  nhPrivate.getParam("goalY", goalY);
 
   ros::Subscriber subOdom = nh.subscribe<nav_msgs::Odometry> ("/Odometry", 1, odomHandler);
 
@@ -264,8 +261,6 @@ int main(int argc, char** argv)
   geometry_msgs::TwistStamped cmd_vel;
   // cmd_vel.header.frame_id = "map";//"vehicle"
   cmd_vel.header.frame_id = "world";
-
-  new_odom = false;
 
   double worldRoll, worldPitch, worldYaw;
 

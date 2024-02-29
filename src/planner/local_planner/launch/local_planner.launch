@@ -76,6 +76,8 @@
     <param name="autonomyMode" value="$(arg autonomyMode)" />
     <param name="autonomySpeed" value="$(arg autonomySpeed)" />
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
+    <param name="goalX" type="double" value="$(arg goalX)" />
+    <param name="goalY" type="double" value="$(arg goalY)" />
   </node>
 
 </launch>
