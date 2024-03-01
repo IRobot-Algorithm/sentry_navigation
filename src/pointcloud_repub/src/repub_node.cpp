@@ -10,15 +10,9 @@ int main(int argc, char** argv)
 
   pointcloud_repub::PointCloudProcess PointCloudProcessObj;
   PointCloudProcessObj.SubAndPubToROS(nh);
+  PointCloudProcessObj.loadParams(nh);
 
-  ros::MultiThreadedSpinner s(2);
-  ros::spin(s);
- 	// ros::Rate  loop_rate(50);
-  // while(ros::ok())
- 	// {	
-
-	// 	ros::spinOnce();
-	// }
+  ros::spin();
 
   return 0;
 }

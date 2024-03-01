@@ -122,6 +122,7 @@ std::vector<int> correspondences[gridVoxelNum];
 
 bool newLaserCloud = false;
 bool newTerrainCloud = false;
+bool newOdom = false;
 
 double odomTime = 0;
 double joyTime = 0;
@@ -153,10 +154,12 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   odomTrans_maplink.stamp_ = odom->header.stamp;
   odomTrans_maplink.frame_id_ = "map";
   odomTrans_maplink.child_frame_id_ = "map_link";
-  odomTrans_maplink.setRotation(tf::Quaternion(0,0,0,1));
+  odomTrans_maplink.setRotation(tf::Quaternion(0, 0, 0, 1));
   odomTrans_maplink.setOrigin(tf::Vector3(vehicleX, vehicleY, vehicleZ));//0.25
 
   tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
+
+  newOdom = true;
 }
 
 void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud2)
@@ -577,24 +580,12 @@ int main(int argc, char** argv)
   ros::Publisher pubPath = nh.advertise<nav_msgs::Path> ("/nav_path", 5);
   nav_msgs::Path path;
 
-  //发布车系里程计
-  ros::Publisher pubOdom_vehicle = nh.advertise<nav_msgs::Odometry> ("/Odometry_vehicle", 5);
-  nav_msgs::Odometry odomData;
-
   tf::TransformBroadcaster tfBroadcaster_maplink;
   tfBroadcasterPointer_maplink = &tfBroadcaster_maplink;
-
-
-  ros::Publisher pubvehicle_point = nh.advertise<geometry_msgs::PointStamped> ("/vehicle_point", 5);
-  geometry_msgs::PointStamped vehicleMsgs;
 
   //发布在家的状态
   ros::Publisher pubHome = nh.advertise<std_msgs::Bool> ("/Home_state", 5);
   std_msgs::Bool home_state;
-
-  ros::Publisher pubYaw = nh.advertise<std_msgs::Float32> ("/vehicleYaw", 5);
-  std_msgs::Float32 vehicleYawMsgs;
-
 
   #if PLOTPATHSET == 1
   ros::Publisher pubFreePaths = nh.advertise<sensor_msgs::PointCloud2> ("/free_paths", 2);
@@ -638,7 +629,7 @@ int main(int argc, char** argv)
 
   printf ("\nInitialization complete.\n\n");
 
-  ros::Rate rate(200);
+  ros::Rate rate(100);
   bool status = ros::ok();
   while (status) {
     ros::spinOnce();
@@ -657,10 +648,10 @@ int main(int argc, char** argv)
     home_state.data = home_flag;
     pubHome.publish(home_state);
     
-    vehicleYawMsgs.data = vehicleYaw;
-    pubYaw.publish(vehicleYawMsgs);
+    if (newOdom || newLaserCloud || newTerrainCloud) {
 
-    if (newLaserCloud || newTerrainCloud) {
+      ros::Time t = ros::Time::now();
+
       if (newLaserCloud) {
         newLaserCloud = false;
 
@@ -703,14 +694,7 @@ int main(int argc, char** argv)
         point.intensity = plannerCloud->points[i].intensity;
 
         float dis = sqrt(point.x * point.x + point.y * point.y);
-        //zbh设置回家模式：增加忽略的点云半径
-        float Ignore_disTre = 0.20;//0.50
-        if(goalX == 0.0 && goalY == 0.0)
-        {
-          Ignore_disTre = 0.20;//0.50
-        }
-        //************ zbh  && dis > 0.50
-        if (dis < adjacentRange && dis > Ignore_disTre && ((point.z > minRelZ && point.z < maxRelZ) || useTerrainAnalysis)) {
+        if (dis < adjacentRange && ((point.z > minRelZ && point.z < maxRelZ) || useTerrainAnalysis)) {
           plannerCloudCrop->push_back(point);
         }
       }
@@ -765,7 +749,7 @@ int main(int argc, char** argv)
       if (pathScale < minPathScale) pathScale = minPathScale;
 
       while (pathScale >= minPathScale && pathRange >= minPathRange) {
-        for (int i = 0; i <36 * pathNum; i++) {
+        for (int i = 0; i < 36 * pathNum; i++) {
           clearPathList[i] = 0;
           pathPenaltyList[i] = 0;
         }
@@ -778,6 +762,7 @@ int main(int argc, char** argv)
         float diameter = sqrt(vehicleLength / 2.0 * vehicleLength / 2.0 + vehicleWidth / 2.0 * vehicleWidth / 2.0);
         float angOffset = atan2(vehicleWidth, vehicleLength) * 180.0 / PI;
         int plannerCloudCropSize = plannerCloudCrop->points.size();
+        // 根据点云给路径相应惩罚
         for (int i = 0; i < plannerCloudCropSize; i++) {
           float x = plannerCloudCrop->points[i].x / pathScale;
           float y = plannerCloudCrop->points[i].y / pathScale;
@@ -785,6 +770,7 @@ int main(int argc, char** argv)
           float dis = sqrt(x * x + y * y);
 
           if (dis < pathRange / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
+            // 36个方向的路径组
             for (int rotDir = 0; rotDir < 36; rotDir++) {
               float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
               float angDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
@@ -819,7 +805,7 @@ int main(int argc, char** argv)
               }
             }
           }
-          //zbh
+          // 非圆形底盘 不用管
           if (dis < diameter / pathScale && (fabs(x) > vehicleLength / pathScale / 2.0 || fabs(y) > vehicleWidth / pathScale / 2.0) && 
               (h > obstacleHeightThre || !useTerrainAnalysis) && checkRotObstacle) {
             float angObs = atan2(y, x) * 180.0 / PI;
@@ -836,6 +822,7 @@ int main(int argc, char** argv)
         if (minObsAngCW > 0) minObsAngCW = 0;
         if (minObsAngCCW < 0) minObsAngCCW = 0;
 
+        // 筛选路径
         for (int i = 0; i < 36 * pathNum; i++) {
           int rotDir = int(i / pathNum);
           float angDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
@@ -865,12 +852,12 @@ int main(int argc, char** argv)
             penaltyScore=1.0;
             // float dirDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
             float dirDiff = fabs(joyDir - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
-            if(dirDiff>180)
+            if (dirDiff > 180)
             {
               dirDiff = 360 - dirDiff;
             }
             float maplink_diff = fabs(10.0 * rotDir - 180.0);
-            if(maplink_diff>90)
+            if (maplink_diff > 90)
             {
               maplink_diff = 180 - maplink_diff;
             }
@@ -898,6 +885,8 @@ int main(int argc, char** argv)
             selectedGroupID = i;
           }
         }
+
+        // 找到最佳路径
         if (selectedGroupID >= 0) {
           int rotDir = int(selectedGroupID / groupNum);
           float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
@@ -914,9 +903,9 @@ int main(int argc, char** argv)
             float dis = sqrt(x * x + y * y);
 
             if (dis <= pathRange / pathScale && dis <= relativeGoalDis / pathScale) {
-              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
-              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
-              path.poses[i].pose.position.z = pathScale * z;
+              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y) + vehicleX;
+              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y) + vehicleY;
+              path.poses[i].pose.position.z = pathScale * z + vehicleZ;
             } else {
               path.poses.resize(i);
               break;
@@ -924,7 +913,7 @@ int main(int argc, char** argv)
           }
 
           path.header.stamp = ros::Time().fromSec(odomTime);
-          path.header.frame_id = "map_link";//"vehicle"
+          path.header.frame_id = "map";//"vehicle"
           pubPath.publish(path);
 
           #if PLOTPATHSET == 1
@@ -1014,6 +1003,7 @@ int main(int argc, char** argv)
       plannerCloud2.header.stamp = ros::Time().fromSec(odomTime);
       plannerCloud2.header.frame_id = "/vehicle";
       pubLaserCloud.publish(plannerCloud2);*/
+
     }
 
     status = ros::ok();

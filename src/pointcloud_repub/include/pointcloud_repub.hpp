@@ -6,6 +6,7 @@
 #include <sensor_msgs/PointCloud.h>
 #include "livox_ros_driver2/CustomMsg.h"
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <Eigen/Dense>
 
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
@@ -42,6 +43,8 @@ public:
 
   void SubAndPubToROS(ros::NodeHandle &nh);
 
+  bool loadParams(ros::NodeHandle &nh);
+
   void LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstPtr& livox_msg_in);
 
   void LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr& livox_cloud_in);
@@ -52,8 +55,7 @@ private:
 
   void CustomMsg2PointCloud(const livox_ros_driver2::CustomMsg& in, pcl::PointCloud<pcl::PointXYZI>& out);
 
-  bool cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out, 
-                    const tf::TransformListener &tf_listener);
+  bool cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out);
 
   bool transformPointCloud(const std::string &source_frame, const std::string &target_frame, 
                            const pcl::PointCloud<pcl::PointXYZI> &in, pcl::PointCloud<pcl::PointXYZI> &out, 
@@ -73,6 +75,10 @@ private:
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr D435_cloud_out_;
   
+  Eigen::Vector3d extrinT_IMU_BOT_;
+  Eigen::Matrix3d extrinR_IMU_BOT_;
+  Eigen::Matrix3d extrinR_BOT_IMU_;
+
 };
 
 

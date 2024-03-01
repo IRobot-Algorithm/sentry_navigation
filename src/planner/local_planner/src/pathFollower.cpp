@@ -74,19 +74,14 @@ float vehicleZ = 0;
 float vehicleRoll = 0;
 float vehiclePitch = 0;
 float vehicleYaw = 0;
-
-float vehicleXRec = 0;
-float vehicleYRec = 0;
-float vehicleZRec = 0;
-float vehicleRollRec = 0;
-float vehiclePitchRec = 0;
-float vehicleYawRec = 0;
+float velocityX = 0;
+float velocityY = 0;
+float velocityYaw = 0;
 
 float vehicleYawRate = 0;
 float vehicleSpeed = 0;
 
 double odomTime = 0;
-bool odomInit = false;
 double joyTime = 0;
 double slowInitTime = 0;
 double stopInitTime = false;
@@ -95,24 +90,18 @@ bool pathInit = false;
 bool navFwd = true;
 double switchTime = 0;
 
-//zbh
-float goalX = 10.0;
-float goalY = 10.0;
-float vyaw = 0.0;
+double goalX = 0.0;
+double goalY = 0.0;
 
-std::mutex mtx_buffer;
-std::deque<geometry_msgs::QuaternionStamped::ConstPtr> quat_buffer;
-double last_timestamp_quat;
+double v_kp = 10.0;
+double v_ki = 0.0;
+double v_kd = 0.1;
 
-float worldRoll; // C_board_link
-float worldPitch; // C_board_link
-float worldYaw; // C_board_link
-double quat_time;
+float I_x = 0.0;
+float I_y = 0.0;
 
-tf::Quaternion odomQuat;
-tf::Quaternion C_board_quat;
-tf::Transform trans;
-bool new_odom;
+float last_err_x = 0;
+float last_err_y = 0;
 
 nav_msgs::Path path;
 
@@ -123,7 +112,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   double roll, pitch, yaw;
   geometry_msgs::Quaternion geoQuat = odomIn->pose.pose.orientation;
   
-  odomQuat = tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w);
+  tf::Quaternion odomQuat = tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w);
   tf::Matrix3x3(odomQuat).getRPY(roll, pitch, yaw);
 
   vehicleRoll = roll;
@@ -132,6 +121,8 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleX = odomIn->pose.pose.position.x;
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
+  velocityX = odomIn->twist.twist.linear.x;
+  velocityY = odomIn->twist.twist.linear.y;
 
   if ((fabs(roll) > inclThre * PI / 180.0 || fabs(pitch) > inclThre * PI / 180.0) && useInclToStop) {
     stopInitTime = odomIn->header.stamp.toSec();
@@ -141,44 +132,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
     slowInitTime = odomIn->header.stamp.toSec();
   }
 
-  if (!odomInit) {
-    desiredYaw = yaw;
-    odomInit = true;
-  }
-
-  new_odom = true;
-  // tf::TransformListener ls;
-  // tf::StampedTransform tr;
-  // try
-  // {
-  //     ls.lookupTransform("world", "base_link", ros::Time(0), tr);
-  // }
-  // catch (tf::LookupException &e)
-  // {
-  //     ROS_WARN("%s", e.what ());
-  //     // cmd_vel.twist.linear.x = 0.0;
-  //     // cmd_vel.twist.linear.y = 0.0;
-  //     // // cmd_vel.twist.angular.z = vehicleYawRate;
-  //     // cmd_vel.twist.angular.z = 0;
-  //     // pubSpeed.publish(cmd_vel);
-  //     return;      
-  // }
-  // catch (tf::ExtrapolationException &e)
-  // {
-  //     ROS_WARN("%s", e.what ());
-  //     // cmd_vel.twist.linear.x = 0.0;
-  //     // cmd_vel.twist.linear.y = 0.0;
-  //     // // cmd_vel.twist.angular.z = vehicleYawRate;
-  //     // cmd_vel.twist.angular.z = 0;
-  //     // pubSpeed.publish(cmd_vel);
-  //     return;
-  // }
-  // ROS_INFO("in");
-
-  // tf::Matrix3x3(tr.getRotation()).getRPY(roll, pitch, yaw);//进行转换
-  // worldRoll = roll;
-  // worldPitch = pitch;
-  // worldYaw = yaw;
 }
 
 void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
@@ -190,13 +143,6 @@ void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
     path.poses[i].pose.position.y = pathIn->poses[i].pose.position.y;
     path.poses[i].pose.position.z = pathIn->poses[i].pose.position.z;
   }
-
-  vehicleXRec = vehicleX;
-  vehicleYRec = vehicleY;
-  vehicleZRec = vehicleZ;
-  vehicleRollRec = vehicleRoll;
-  vehiclePitchRec = vehiclePitch;
-  vehicleYawRec = vehicleYaw;
 
   pathPointID = 0;
   pathInit = true;
@@ -244,93 +190,11 @@ void stopHandler(const std_msgs::Bool::ConstPtr& stop)
   safetyStop = stop->data;
 }
 
-void quatHandler(const geometry_msgs::QuaternionStamped::ConstPtr& quat)
-{
-  geometry_msgs::QuaternionStamped::Ptr msg(new geometry_msgs::QuaternionStamped(*quat));
-  double timestamp = msg->header.stamp.toSec();
-
-  mtx_buffer.lock();
-  if (timestamp < last_timestamp_quat)
-  {
-    ROS_WARN("quat loop back, clear buffer");
-    quat_buffer.clear();
-  }
-
-  last_timestamp_quat = timestamp;
-  quat_buffer.emplace_back(msg);
-  mtx_buffer.unlock();
-
-  while (quat_buffer.size() > 1000)
-    quat_buffer.pop_front();
-}
-
 //zbh接收航点信息
 void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
 {
   goalX = goal->point.x;
   goalY = goal->point.y;
-}
-
-bool syncPackages()
-{
-  if (!new_odom || quat_buffer.empty()) {
-    return false;
-  }
-
-  double odom_time = odomTime;
-  double vehicle_roll = vehicleRoll;
-  double vehicle_pitch = vehiclePitch;
-  double vehicle_yaw = vehicleYaw;
-  tf::Quaternion odom_quat = odomQuat;
-
-  geometry_msgs::QuaternionStamped::ConstPtr last_quat = quat_buffer.front(); 
-  geometry_msgs::QuaternionStamped::ConstPtr next_quat; 
-  double quat_time = quat_buffer.front()->header.stamp.toSec();
-  while ((!quat_buffer.empty()) && (quat_time < odom_time))
-  {
-      quat_time = quat_buffer.front()->header.stamp.toSec();
-      if (quat_time > odom_time) 
-      {
-        next_quat = quat_buffer.front();
-        break;
-      }
-      last_quat = quat_buffer.front();
-      quat_buffer.pop_front();
-  }
-
-  if (quat_buffer.empty() || last_quat == nullptr || next_quat == nullptr)
-    return true;
-
- 
-  double t1 = last_quat->header.stamp.toSec();
-  double t2 = next_quat->header.stamp.toSec();
-
-  if (t2 - t1 > 0.01 || t2 - t1 < 0)
-    return true; // may be problem
-
-  float radio = (odom_time - t1) / (t2 - t1);
-
-  tf::Quaternion q1, q2;
-  tf::quaternionMsgToTF(last_quat->quaternion, q1);
-  tf::quaternionMsgToTF(next_quat->quaternion, q2);
-
-  C_board_quat =  q1.slerp(q2, radio) * odom_quat;
-  // C_board_quat =  q1 * odom_quat;
-  C_board_quat.normalize();
-  trans.setRotation(C_board_quat);
-
-  double roll, pitch, yaw;
-  tf::Matrix3x3(C_board_quat).getRPY(roll, pitch, yaw);
-
-  quat_time = odom_time;
-  worldRoll = roll;
-  worldPitch = pitch;
-  worldYaw = yaw;
-
-  ROS_INFO("%f", worldYaw);
-
-  new_odom = false;
-  return true;
 }
 
 int main(int argc, char** argv)
@@ -365,6 +229,11 @@ int main(int argc, char** argv)
   nhPrivate.getParam("autonomyMode", autonomyMode);
   nhPrivate.getParam("autonomySpeed", autonomySpeed);
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
+  nhPrivate.getParam("goalX", goalX);
+  nhPrivate.getParam("goalY", goalY);
+  nhPrivate.getParam("v_kp", v_kp);
+  nhPrivate.getParam("v_ki", v_ki);
+  nhPrivate.getParam("v_kd", v_kd);
 
   ros::Subscriber subOdom = nh.subscribe<nav_msgs::Odometry> ("/Odometry", 1, odomHandler);
 
@@ -376,8 +245,6 @@ int main(int argc, char** argv)
 
   ros::Subscriber subStop = nh.subscribe<std_msgs::Bool> ("/stop", 5, stopHandler);
 
-  ros::Subscriber subQuat = nh.subscribe<geometry_msgs::QuaternionStamped> ("/world_quat", 5, quatHandler);
-
   //订阅航点（位姿）
   ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
 
@@ -387,14 +254,9 @@ int main(int argc, char** argv)
 
   ros::Publisher pubSpeed = nh.advertise<geometry_msgs::TwistStamped> ("/cmd_vel", 5);
   geometry_msgs::TwistStamped cmd_vel;
-  // cmd_vel.header.frame_id = "map";//"vehicle"
   cmd_vel.header.frame_id = "world";
-  trans.setOrigin(tf::Vector3(0, 0, 0));
 
-  new_odom = false;
-
-  double tf_roll, tf_pitch, tf_yaw;
-  geometry_msgs::Quaternion geoQuat_tf;
+  double worldRoll, worldPitch, worldYaw;
 
   if (autonomyMode) {
     joySpeed = autonomySpeed / maxSpeed;
@@ -404,54 +266,86 @@ int main(int argc, char** argv)
   }
 
   static tf::TransformBroadcaster br;
-
+  static tf::TransformListener ls;
   ros::Rate rate(200);//100
   bool status = ros::ok();
   while (status) {
     ros::spinOnce();
 
     if (pathInit) {
-      float vehicleXRel = cos(vehicleYawRec) * (vehicleX - vehicleXRec) 
-                          + sin(vehicleYawRec) * (vehicleY - vehicleYRec);
-      float vehicleYRel = -sin(vehicleYawRec) * (vehicleX - vehicleXRec) 
-                        + cos(vehicleYawRec) * (vehicleY - vehicleYRec);
+      tf::StampedTransform transform;
+      try{
+        ls.lookupTransform("/map_link", "/world",  
+                                ros::Time(0), transform);
+      }
+      catch (tf::TransformException &ex) {
+        // ROS_WARN("%s",ex.what());
+      }
+      tf::Matrix3x3 rotation(transform.getRotation());
+      rotation.getRPY(worldRoll, worldPitch, worldYaw);
 
       int pathSize = path.poses.size();
       float endDisX = goalX - vehicleX;
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      float disX, disY, dis;
-      while (pathPointID < pathSize - 1) {
-        disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
-        disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
-        dis = sqrt(disX * disX + disY * disY);
-        if (dis < lookAheadDis) {
+      float dis_x, dis_y, dis;
+      while (pathPointID < pathSize - 1)
+      {
+        dis_x = path.poses[pathPointID].pose.position.x - vehicleX;
+        dis_y = path.poses[pathPointID].pose.position.y - vehicleY;
+        dis = sqrt(dis_x * dis_x + dis_y * dis_y);
+        if (dis < lookAheadDis)
+        {
           pathPointID++;
-        } else {
+        }
+        else
+        {
           break;
         }
       }
+      dis_x = path.poses[pathPointID].pose.position.x - vehicleX;
+      dis_y = path.poses[pathPointID].pose.position.y - vehicleY;
+      dis = sqrt(dis_x * dis_x + dis_y * dis_y);
 
-      disX = path.poses[pathPointID].pose.position.x - vehicleXRel;
-      disY = path.poses[pathPointID].pose.position.y - vehicleYRel;
-      dis = sqrt(disX * disX + disY * disY);
-      float pathDir = atan2(disY, disX);
+      float next_dis_x, next_dis_y, next_dis;
+      int nextPathID = pathPointID + 10;
+      if (nextPathID >= pathSize - 1)
+      {
+        next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+        next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+        next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
+      }
 
-      float dirDiff = vehicleYaw - vehicleYawRec - pathDir;
-      if (dirDiff > PI) dirDiff -= 2 * PI;
-      else if (dirDiff < -PI) dirDiff += 2 * PI;
-      if (dirDiff > PI) dirDiff -= 2 * PI;
-      else if (dirDiff < -PI) dirDiff += 2 * PI;
+      next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+      next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+      next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
 
-      desiredYaw += 0.01 * joyYaw;
-      if (desiredYaw > PI) desiredYaw -= 2 * PI;
-      else if (desiredYaw < -PI) desiredYaw += 2 * PI;
+      float target_vx = 0.65 * v_kp * dis_x + 0.35 * v_kp * next_dis_x;
+      float target_vy = 0.65 * v_kp * dis_y + 0.35 * v_kp * next_dis_y;
+      I_x += dis_x;
+      I_y += dis_y;
+      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (target_vx - velocityX);
+      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (target_vy - velocityY);
 
-      float yawDiff = vehicleYaw - desiredYaw;
-      if (yawDiff > PI) yawDiff -= 2 * PI;
-      else if (yawDiff < -PI) yawDiff += 2 * PI;
+      float speed = sqrt(speed_x * speed_x + speed_y * speed_y);
+      if (speed > maxSpeed)
+      {
+        speed_x *= maxSpeed / speed;
+        speed_y *= maxSpeed / speed;
+      }
 
+      // angle
+      float pathDir = atan2(speed_y, speed_x);
+      float yawDiff = worldYaw - pathDir;
+      if (yawDiff > PI) 
+        yawDiff -= 2 * PI;
+      else if (yawDiff < -PI) 
+        yawDiff += 2 * PI;
+      if (yawDiff > PI) 
+        yawDiff -= 2 * PI;
+      else if (yawDiff < -PI) 
+        yawDiff += 2 * PI;
       if (twoWayDrive) {
         double time = ros::Time::now().toSec();
         if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
@@ -463,64 +357,16 @@ int main(int argc, char** argv)
         }
       }
 
-      float joySpeed2 = maxSpeed * joySpeed;
       if (!navFwd) {
         yawDiff += PI;
         if (yawDiff > PI) yawDiff -= 2 * PI;
       }
 
-      if (fabs(vehicleSpeed) < 2.0 * maxAccel / 100.0) vehicleYawRate = -stopYawRateGain * yawDiff;
-      else vehicleYawRate = -yawRateGain * yawDiff;
-
-      if (vehicleYawRate > maxYawRate * PI / 180.0) vehicleYawRate = maxYawRate * PI / 180.0;
-      else if (vehicleYawRate < -maxYawRate * PI / 180.0) vehicleYawRate = -maxYawRate * PI / 180.0;
-
-      /*if (joySpeed2 == 0 && !autonomyMode) {
-        vehicleYawRate = maxYawRate * joyYaw * PI / 180.0;
-      } else if (pathSize <= 1 || (dis < stopDisThre && noRotAtGoal)) {
-        vehicleYawRate = 0;
-      }*/
-
-      if (pathSize <= 1) {
-        joySpeed2 = 0;
-      } else if ((endDis / slowDwnDisThre) < joySpeed) {
-        joySpeed2 *= (endDis / slowDwnDisThre);
-      }
-
-      float joySpeed3 = joySpeed2;
-      if (odomTime < slowInitTime + slowTime1 && slowInitTime > 0) joySpeed3 *= slowRate1;
-      else if (odomTime < slowInitTime + slowTime1 + slowTime2 && slowInitTime > 0) joySpeed3 *= slowRate2;
-
-      if (dis > stopDisThre) {
-        if (vehicleSpeed < joySpeed3) vehicleSpeed += maxAccel / 100.0;
-        else if (vehicleSpeed > joySpeed3) vehicleSpeed -= maxAccel / 100.0;
-      } else {
-        if (vehicleSpeed > 0) vehicleSpeed -= maxAccel / 100.0;
-        else if (vehicleSpeed < 0) vehicleSpeed += maxAccel / 100.0;
-      }
-
-      if (odomTime < stopInitTime + stopTime && stopInitTime > 0) {
-        vehicleSpeed = 0;
-        vehicleYawRate = 0;
-      }
-
-      if (safetyStop >= 1) vehicleSpeed = 0;
-      if (safetyStop >= 2) vehicleYawRate = 0;
-
-      float mapSpeedX = cos(dirDiff) * vehicleSpeed;
-      float mapSpeedY = -sin(dirDiff) * vehicleSpeed;
-      
       pubSkipCount--;
       if (pubSkipCount < 0) {
-        cmd_vel.header.stamp = ros::Time().fromSec(odomTime);
-        if (fabs(vehicleSpeed) <= maxAccel / 100.0) {
-          cmd_vel.twist.linear.x = 0;
-          cmd_vel.twist.linear.y = 0;
-        } else {
-          cmd_vel.twist.linear.x = cos(worldYaw) * mapSpeedX + sin(worldYaw) * mapSpeedY;
-          cmd_vel.twist.linear.y = -sin(worldYaw) * mapSpeedX + cos(worldYaw) * mapSpeedY;
-        }
-        cmd_vel.twist.angular.z = vehicleYawRate;
+        cmd_vel.twist.linear.x = cos(worldYaw) * speed_x + sin(worldYaw) * speed_y;
+        cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
+        cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
 
         pubSkipCount = pubSkipNum;
@@ -533,9 +379,6 @@ int main(int argc, char** argv)
       cmd_vel.twist.angular.z = 0;
       pubSpeed.publish(cmd_vel);
     }
-
-    syncPackages();
-    br.sendTransform(tf::StampedTransform(trans, ros::Time::now(), "map_link", "world"));
 
     status = ros::ok();
     rate.sleep();

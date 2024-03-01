@@ -6,6 +6,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <tf/transform_datatypes.h>
 #include <condition_variable>
 #include <thread>
 
@@ -59,6 +60,7 @@ class LaserMapping {
     void PublishFrameWorld();
     void PublishFrameBody(const ros::Publisher &pub_laser_cloud_body);
     void PublishFrameEffectWorld(const ros::Publisher &pub_laser_cloud_effect_world);
+    void PublishVelocity(const ros::Publisher &pub_vel);
     void Savetrajectory(const std::string &traj_file);
 
     void Finish();
@@ -69,6 +71,8 @@ class LaserMapping {
     void SetPosestamp(nav_msgs::Odometry &out, state_ikfom state, geometry_msgs::Vector3 angvel);
     void SetPosestamp(geometry_msgs::PoseStamped &out, state_ikfom state);
 
+    void PointBodyToMap(PointType const *pi, PointType *const po);
+    void PointBodyToMap(const common::V3F &pi, PointType *const po);
     void PointBodyToWorld(PointType const *pi, PointType *const po);
     void PointBodyToWorld(const common::V3F &pi, PointType *const po);
     void PointBodyLidarToIMU(PointType const *const pi, PointType *const po);
@@ -120,6 +124,7 @@ class LaserMapping {
     ros::Publisher pub_laser_cloud_effect_world_;
     ros::Publisher pub_odom_aft_mapped_;
     ros::Publisher pub_path_;
+    ros::Publisher pub_vel_;
 
     std::mutex mtx_buffer_;
     std::deque<double> time_buffer_;
@@ -176,6 +181,14 @@ class LaserMapping {
     PointCloudType::Ptr pcl_wait_save_{new PointCloudType()};  // debug save
     nav_msgs::Path path_;
     geometry_msgs::PoseStamped msg_body_pose_;
+    
+    // lidar_link->base_link
+    tf::Quaternion tr_quat_;
+    common::V3D IMU_T_wrt_BOT_;
+    common::M3D IMU_R_wrt_BOT_;
+    common::M3D BOT_R_wrt_IMU_;
+    tf::Vector3 tf_T_;
+
 };
 
 }  // namespace faster_lio
