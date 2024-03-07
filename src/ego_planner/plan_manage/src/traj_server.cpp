@@ -428,7 +428,7 @@ int main(int argc, char **argv)
 
   ros::Subscriber bspline_sub = node.subscribe("/planning/bspline", 10, bsplineCallback);
   ros::Subscriber pose_sub = node.subscribe(pose_topic, 10, poseCallback);
-  ros::Subscriber odom_sub = node.subscribe("/state_estimation", 10, odometryCallback);
+  ros::Subscriber odom_sub = node.subscribe("/Odometry", 10, odometryCallback);
   ros::Subscriber stop_sub = node.subscribe("/emergency_stop",10,stopCallback);
   ros::Subscriber adjust_yaw_sub = node.subscribe("/is_adjust_yaw",10,adjust_yaw_Callback);
   ros::Subscriber command_sub = node.subscribe("/direction",10,dirCallback);

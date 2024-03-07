@@ -3,7 +3,7 @@
 
   <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 map odom 1" />
   <!-- <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0.18 0 0 0 0 0 base_link lidar_link 1" /> -->
-  <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0.14 0 0 0 0.7854 0 base_link lidar_link 1" />
+  <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0.17 0 0 0 0.7854 0 base_link lidar_link 1" />
   <!-- <node pkg="tf" type="static_transform_publisher" name="base_lidar_broadcaster" args="0 0 0.32 0 0 3.1416 base_link lidar_link 1" /> -->
   <node pkg="tf" type="static_transform_publisher" name="base_camera_broadcaster" args="0 -0.18 0 -1.5708 0.6981 0 base_link camera_link 1" />
 

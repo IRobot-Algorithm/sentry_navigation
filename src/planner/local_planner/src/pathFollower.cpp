@@ -343,11 +343,11 @@ int main(int argc, char** argv)
       float target_vy = 0.65 * v_kp * dis_y + 0.35 * v_kp * next_dis_y;
       I_x += dis_x;
       I_y += dis_y;
-      // float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (target_vx - velocityX);
-      // float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (target_vy - velocityY);
+      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (target_vx - velocityX);
+      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (target_vy - velocityY);
 
-      float speed_x = v_kp * dis_x;
-      float speed_y = v_kp * dis_y;
+      // float speed_x = v_kp * dis_x;
+      // float speed_y = v_kp * dis_y;
 
       float speed = sqrt(speed_x * speed_x + speed_y * speed_y);
       if (speed > maxSpeed)
@@ -384,20 +384,20 @@ int main(int argc, char** argv)
         if (yawDiff > PI) yawDiff -= 2 * PI;
       }
 
-      if (speed < 0.1)
+      if (speed < 0.05)
       {
         speed_x = 0;
         speed_y = 0;
         yawDiff = vehicleYaw - worldYaw;
       }
-      // if (fabs(pathDir - vehicleYaw) > PI / 6)
-      // {
-      //   cmd_vel.twist.linear.x = 0;
-      //   cmd_vel.twist.linear.y = 0;
-      //   cmd_vel.twist.angular.z = yawDiff;
-      //   pubSpeed.publish(cmd_vel);
-      //   continue;
-      // }
+      if (fabs(pathDir - vehicleYaw) > PI / 5)
+      {
+        cmd_vel.twist.linear.x = 0;
+        cmd_vel.twist.linear.y = 0;
+        cmd_vel.twist.angular.z = yawDiff;
+        pubSpeed.publish(cmd_vel);
+        continue;
+      }
 
       pubSkipCount--;
       if (pubSkipCount < 0) {
