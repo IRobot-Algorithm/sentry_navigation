@@ -1,23 +1,23 @@
 <launch>
 
-  <arg name="twoWayDrive" default="true"/><!--false-->
-  <arg name="maxSpeed" default="2.0"/><!--2.0-->
+  <arg name="twoWayDrive" default="false"/><!--false-->
+  <arg name="maxSpeed" default="0.5"/><!--2.0-->
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
-  <arg name="autonomySpeed" default="4.0"/><!--5.0-->
+  <arg name="autonomySpeed" default="1.0"/><!--5.0-->
   <arg name="joyToSpeedDelay" default="1.0"/><!--2.0-->
   <arg name="goalX" default="0"/>
   <arg name="goalY" default="0"/>
-  <arg name="v_kp" default="10.0"/>
+  <arg name="v_kp" default="0.05"/>
   <arg name="v_ki" default="0"/>
-  <arg name="v_kd" default="0.1"/>
+  <arg name="v_kd" default="10.0"/>
 
   <node pkg="local_planner" type="localPlanner" name="localPlanner" output="screen" required="true">
     <param name="pathFolder" type="string" value="$(find local_planner)/paths" />
     <param name="vehicleLength" type="double" value="0.2" />
     <param name="vehicleWidth" type="double" value="0.2" />
     <param name="twoWayDrive" value="$(arg twoWayDrive)" />
-    <param name="laserVoxelSize" type="double" value="0.03" /><!--0.05-->
+    <param name="laserVoxelSize" type="double" value="0.05" /><!--0.05-->
     <param name="terrainVoxelSize" type="double" value="0.1" />
     <param name="useTerrainAnalysis" type="bool" value="true" />
     <param name="checkObstacle" type="bool" value="true" />
@@ -29,14 +29,14 @@
     <param name="costScore" type="double" value="0.02" />
     <param name="useCost" type="bool" value="false" />
     <param name="pointPerPathThre" type="int" value="5" /><!--2-->
-    <param name="minRelZ" type="double" value="-0.25" />
-    <param name="maxRelZ" type="double" value="0.25" />
+    <param name="minRelZ" type="double" value="-0.35" />
+    <param name="maxRelZ" type="double" value="0.35" />
     <param name="maxSpeed" value="$(arg maxSpeed)" />
     <param name="dirWeight" type="double" value="0.1" /><!--0.02-->
     <param name="dirThre" type="double" value="60.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
     <param name="dirToVehicle" type="bool" value="false" /><!--一定是false-->
-    <param name="pathScale" type="double" value="0.8" />
-    <param name="minPathScale" type="double" value="0.4" />
+    <param name="pathScale" type="double" value="0.3" />
+    <param name="minPathScale" type="double" value="0.3" />
     <param name="pathScaleStep" type="double" value="0.2" /><!--0.1-->
     <param name="pathScaleBySpeed" type="bool" value="true" />
     <param name="minPathRange" type="double" value="0.5" />
@@ -47,7 +47,7 @@
     <param name="autonomySpeed" value="$(arg autonomySpeed)" />
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="joyToCheckObstacleDelay" type="double" value="5.0" />
-    <param name="goalClearRange" type="double" value="0.5" />
+    <param name="goalClearRange" type="double" value="0.35" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
     <param name="v_kp" type="double" value="$(arg v_kp)" />
@@ -58,7 +58,7 @@
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
     <param name="pubSkipNum" type="int" value="1" /><!--1-->
     <param name="twoWayDrive" value="$(arg twoWayDrive)" />
-    <param name="lookAheadDis" type="double" value="0.3" /><!--xz:0.5 xy:0.5-->
+    <param name="lookAheadDis" type="double" value="0.2" /><!--xz:0.5 xy:0.5-->
     <param name="yawRateGain" type="double" value="5.5" /><!--7.5-->
     <param name="stopYawRateGain" type="double" value="2.0" /><!--7.5-->
     <param name="maxYawRate" type="double" value="360.0" /><!--360  120.0-->

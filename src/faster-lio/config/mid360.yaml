@@ -30,6 +30,10 @@ irobot:
     # extrinsic_R: [ 1, 0, 0,
     #                0, 1, 0,
     #                0, 0, 1]
+    # extrinsic_T: [0, 0, -0.32]
+    # extrinsic_R: [ 1, 0, 0,
+    #                0, -1, 0,
+    #                0, 0, -1]
 
 publish:
     path_en:  false

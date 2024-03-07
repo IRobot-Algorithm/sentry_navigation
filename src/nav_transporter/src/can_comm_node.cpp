@@ -24,6 +24,7 @@ void CanCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &CanCommNode::odomHandler, this);
   this->sub_vel = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &CanCommNode::velHandler, this);
+  // this->sub_vel = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &CanCommNode::velHandler, this);
  
   // ROS timer initialization
   this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &CanCommNode::sendVelCallback, this);
@@ -38,8 +39,13 @@ void CanCommNode::odomHandler(const nav_msgs::Odometry::ConstPtr& odom)
 }
 
 void CanCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
+// void CanCommNode::velHandler(const geometry_msgs::Twist::ConstPtr& vel)
 {
   int16_t velocity[3] = {0};
+
+  // velocity[0] = (int16_t)(vel->linear.x * 1024);
+  // velocity[1] = (int16_t)(vel->angular.z * 1024);
+  // velocity[2] = (int16_t)(vel->linear.y * 1024);
 
   velocity[0] = (int16_t)(vel->twist.linear.x * 1024);
   velocity[1] = (int16_t)(vel->twist.angular.z * 1024);

@@ -1,0 +1,57 @@
+
+DWAPlannerROS:
+  max_vel_x: 0.7 # x方向最大速度的绝对值
+  min_vel_x: -0.7 # x方向最小值绝对值,如果为负值表示可以后退.
+  max_rot_vel: 1.0 # 最大旋转速度的绝对值.
+  min_rot_vel: 0.05 # 最小旋转速度的绝对值.
+  max_vel_y: 0.5 # y方向最大速度的绝对值.
+  min_vel_y: -0.5 # y方向最小速度的绝对值.
+
+  max_vel_trans: 1.0 # 平移速度最大值绝对值
+  min_vel_trans: 0.05  # 平移速度最小值绝对值
+  trans_stopped_vel: 0.05 # 平移停止速度（meter/sec）
+
+  max_vel_theta: 1.0  # theta轴最大速度的绝对值
+  min_vel_theta: 0.1  # theta轴最小速度的绝对值
+  theta_stopped_vel: 0.1 # theta轴停止速度
+    
+  acc_lim_x: 4.0 #（meter/sec^2）
+  acc_lim_theta: 4.0   # (radian/sec^2）
+  acc_lim_y: 4.0     # y轴加速度限制（meter/sec^2）
+
+  # Goal Tolerance Parameters
+  yaw_goal_tolerance: 0.05 # yaw轴离目标地点允许的误差（弧度）
+  xy_goal_tolerance: 0.1  # x,y离目标地点允许的距离误差（米）
+  latch_xy_goal_tolerance: false
+
+  # Forward Simulation Parameters
+  sim_time: 2.0       # 前向仿真轨迹时间
+  vx_samples: 15       # 在x轴速度空间中搜索的样本数
+  vy_samples: 5       # 在y轴速度空间中搜索的样本数
+  vtheta_samples: 20  # 在theta轴速度空间中搜索的样本数
+  controller_frequency: 5.0
+
+  # Trajectory Scoring Parameters
+  path_distance_bias: 35.0      # 32.0   - weighting for how much it should stick to the global path plan
+  # 衡量控制器遵循给定路径的一致程度的加权值
+  goal_distance_bias: 20.0      # 24.0   - wighting for how much it should attempt to reach its goal
+  # 判断是否接近目标地点和控制速度的加权值
+  occdist_scale: 10.0           # 0.01   - weighting for how much the controller should avoid obstacles
+  # 有关避障的加权值 
+  forward_point_distance: 0.2 # 0.325  - how far along to place an additional scoring point
+  # 机器人中心与附加得分点之间的距离（meter）
+  stop_time_buffer: 0.2         # 0.2    - amount of time a robot must stop in before colliding for a valid traj.
+  # 机器人在碰撞之前为了停止所需的最小时间（sec）
+  scaling_speed: 0.25           # 0.25   - absolute velocity at which to start scaling the robot's footprint
+  #开始缩放机器人足迹时的速度的绝对值，单位为m/s。
+  #在进行对轨迹各个点计算footprintCost之前，会先计算缩放因子。如果当前平移速度小于scaling_speed，则缩放因子为1.0，否则，缩放因子为(vmag - scaling_speed) / (max_trans_vel - scaling_speed) * max_scaling_factor + 1.0。然后，该缩放因子会被用于计算轨迹中各个点的footprintCost。
+  max_scaling_factor: 0.2       # 0.2    - how much to scale the robot's footprint when at speed.
+  #最大缩放因子
+
+  # Oscillation Prevention Parameters
+  oscillation_reset_dist: 0.05  # 0.05   - how far to travel before resetting oscillation flags
+    #机器人必须运动多少米远后才能复位震荡标记(机器人运动多远距离才会重置振荡标记)
+
+  # Debugging
+  publish_traj_pc : true
+  publish_cost_grid_pc: true

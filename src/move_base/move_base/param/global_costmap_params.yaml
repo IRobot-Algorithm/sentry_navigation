@@ -1,0 +1,18 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_link
+
+  inflation_radius: 0.5
+  robot_radius: 0.4
+  update_frequency: 1.0
+  publish_frequency: 1.0
+  transform_tolerance: 0.5
+
+  static_map: true
+
+  resolution: 0.1
+
+GlobalPlanner:
+  use_quadratic: true                           # Use the quadratic approximation of the potential. Otherwise, use a simpler calculation, default true
+  use_dijkstra: false    #true                        # Use dijkstra's algorithm. Otherwise, A*, default true
+  use_grid_path: false  #false                          # Create a path that follows the grid boundaries. Otherwise, use a gradient descent method, default false
