@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   NavGoal.srv
-  NavStop.srv
+  NavTarget.srv
 )
 
 generate_messages( 

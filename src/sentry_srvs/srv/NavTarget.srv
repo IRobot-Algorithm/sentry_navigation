@@ -1,0 +1,4 @@
+geometry_msgs/PoseStamped pose
+bool is_lost
+---
+bool success

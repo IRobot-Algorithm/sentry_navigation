@@ -1,3 +1,4 @@
 geometry_msgs/PoseStamped pose
 ---
-bool success
+geometry_msgs/PoseStamped odom
+bool is_arrive

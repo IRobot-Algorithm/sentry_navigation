@@ -185,8 +185,8 @@ void CanCommNode::receiveCallback()
       {
         float yaw[2]; // 先right后left
         memcpy(yaw, buf, 8);
-        right_trans_.setRotation(tf::createQuaternionMsgFromYaw(yaw[0]));
-        left_trans_.setRotation(tf::createQuaternionMsgFromYaw(yaw[1]));
+        right_trans_.setRotation(tf::createQuaternionFromYaw(yaw[0]));
+        left_trans_.setRotation(tf::createQuaternionFromYaw(yaw[1]));
 
         br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
         br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));

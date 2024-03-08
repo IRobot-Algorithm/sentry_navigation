@@ -14,8 +14,7 @@ namespace nav_transporter {
 
 StateProcess::StateProcess()
 {
-	is_stop_ = false;
-	iter_ = 0;
+  exec_state_ = NAVIGATE;
 			
 	goal_.header.frame_id = "map";
 	goal_.pose.position.x = 0.0;
@@ -25,113 +24,155 @@ StateProcess::StateProcess()
 	goal_.pose.orientation.y = 0.0;
 	goal_.pose.orientation.z = 0.0;
 	goal_.pose.orientation.w = 1.0;
+
+  way_point_.header.frame_id = "map";
+  way_point_.point.x = 0;
+  way_point_.point.y = 0;
+  way_point_.point.z = 0;
 		
-	geometry_msgs::Point point;
-	// point.x = 2.5;
-	// point.y = 0.0;
-	// spin_points_.push_back(point);
-	point.x = 0.0;
-	point.y = 0.0;
-	spin_points_.push_back(point);
-	// point.x = 3.3;
-	// point.y = -2.5;
-	// spin_points_.push_back(point);
 }
 
 void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
 {
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &StateProcess::odometryHandler, this);
-  this->sub_global_path_ = nh.subscribe<nav_msgs::Path>("/global_planner/planner/plan", 5, &StateProcess::pathHandler, this);
+  this->sub_global_path_ = nh.subscribe<nav_msgs::Path>("/global_planner/planner/plan", 5, &StateProcess::globalPathHandler, this);
   this->nav_goal_server = nh.advertiseService("/nav_goal", &StateProcess::navGoalHandler, this);
-  this->nav_stop_server = nh.advertiseService("/nav_stop", &StateProcess::navStopHandler, this);
+  this->nav_target_server = nh.advertiseService("/nav_target", &StateProcess::navTargetHandler, this);
  
   // ROS publisher initialization
   this->pub_waypoint_ = nh.advertise<geometry_msgs::PointStamped>("/way_point", 5);
   this->pub_goal_ = nh.advertise<geometry_msgs::PoseStamped>("/rviz_goal", 5);
-  this->pub_stop_ = nh.advertise<std_msgs::Bool>("/stop", 5);
 
-  // this->loop_timer_ = nh.createTimer(ros::Duration(0.02), &StateProcess::loop, this);
+  this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
 
 void StateProcess::odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
 {
   odom_ = *odom;
+  have_odom_ = true;
 }
 
-void StateProcess::pathHandler(const nav_msgs::Path::ConstPtr& path)
+void StateProcess::globalPathHandler(const nav_msgs::Path::ConstPtr& path)
 {
-  unsigned int PathLength;
-	PathLength = path->poses.size();
-	if (PathLength != 0)
-	{
-    std::vector<geometry_msgs::PoseStamped>::const_iterator it = path->poses.begin();
-
-    if (PathLength > 51)//81
-    {
-      it = path->poses.begin() + 49;//79
-    }
-    else
-    {
-      it = path->poses.end() - 1;
-    }
-
-    way_point_.point.x = it->pose.position.x;
-    way_point_.point.y = it->pose.position.y;
-    way_point_.point.z = it->pose.position.z;
-    way_point_.header.stamp = ros::Time().now();
-    way_point_.header.frame_id = "map";
-	}
+  global_path_ = *path;
+  path_init_ = true;
 }
 
 bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res)
 {
-  goal_ = req.pose;
   goal_.header.stamp = ros::Time::now();
-  is_stop_ = false;
+  goal_ = req.pose;
 
-  res.success = true;
+  changeNavExecState(NAVIGATE, "desicion");
+
+  if (sqrt((odom_.pose.pose.position.x - goal_.pose.position.x) * 
+           (odom_.pose.pose.position.x - goal_.pose.position.x) + 
+           (odom_.pose.pose.position.y - goal_.pose.position.y) * 
+           (odom_.pose.pose.position.y - goal_.pose.position.y)) < 0.3)
+    res.is_arrive = true;
+  else
+    res.is_arrive = false;
+
+  res.odom.pose = odom_.pose.pose;
   return true;
 }
 
-bool StateProcess::navStopHandler(sentry_srvs::NavStop::Request &req, sentry_srvs::NavStop::Response &res)
+bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res)
 {
-  is_stop_ = req.stop;
+  way_point_.point.x = req.pose.pose.position.x;
+  way_point_.point.y = req.pose.pose.position.y;
+
+  if(req.is_lost)
+    way_point_.point.y = -10;
+  else
+    way_point_.point.y = 0;
+
+  changeNavExecState(TRACK, "desicion");
 
   res.success = true;
   return true;
-}
-
-void inline StateProcess::publishStop(const bool& flag)
-{
-  std_msgs::Bool msg;
-  msg.data = flag;
-  pub_stop_.publish(msg);
 }
 
 void StateProcess::loop(const ros::TimerEvent& event)
 {
-    publishStop(is_stop_);
-    pub_goal_.publish(goal_);
-    if (goal_.pose.position.x == 0 && goal_.pose.position.y == 0)
-        // odom_.pose.pose.position.x < 1 && odom_.pose.pose.position.x > -1 &&
-        // odom_.pose.pose.position.y < 1.5 && odom_.pose.pose.position.x > -1.5)
+
+  static int nav_num = 0;
+  nav_num++;
+  if (nav_num == 100)
+  {
+    printNavExecState();
+    if (!have_odom_)
+      ROS_WARN("no odom.");
+    nav_num = 0;
+  }
+
+  switch (exec_state_)
+  {
+    case INIT:
     {
-      unsigned int n = iter_ % spin_points_.size();
-      way_point_.header.frame_id = "map";
-      way_point_.header.stamp = ros::Time::now();
-      way_point_.point = spin_points_[n];
-      if (ros::Time::now().toSec() - last_way_time_.toSec() > 4)
+      if (!have_odom_)
       {
-        last_way_time_ = ros::Time::now();
-        iter_++;
-        if(iter_ > 1000000)
-        {
-          iter_ = 0;
-        }
+        return;
       }
+      break;
     }
-    pub_waypoint_.publish(way_point_);
+    case TRACK:
+    {
+      pub_waypoint_.publish(way_point_);
+      break;
+    }
+    case NAVIGATE:
+    {
+      pub_goal_.publish(goal_);
+      if (path_init_)
+        pub_waypoint_.publish(way_point_);
+      break;
+    }
+  }
+
+}
+
+void StateProcess::changeNavExecState(NAV_EXEC_STATE new_state, std::string pos_call)
+{
+  static std::string state_str[3] = {"INIT", "TRACK", "NAVIGATE"};
+  int pre_s = int(exec_state_);
+  if (new_state == NAVIGATE && exec_state_ != NAVIGATE)
+    path_init_ = false;
+  exec_state_ = new_state;
+  ROS_INFO("[ %s ]: from %s to %s", pos_call.c_str(), state_str[pre_s].c_str(), state_str[int(new_state)].c_str());
+}
+
+void StateProcess::printNavExecState()
+{
+  static std::string state_str[3] = {"INIT", "TRACK", "NAVIGATE"};
+  
+  ROS_INFO("[NAV]: state: %s", state_str[int(exec_state_)].c_str());
+}
+
+void StateProcess::cutWaypointFromPath()
+{
+  unsigned int PathLength;
+	PathLength = global_path_.poses.size();
+	if (PathLength != 0)
+	{
+    std::vector<geometry_msgs::PoseStamped>::const_iterator it = global_path_.poses.begin();
+
+    if (PathLength > 51)//81
+    {
+      it = global_path_.poses.begin() + 49;//79
+    }
+    else
+    {
+      it = global_path_.poses.end() - 1;
+    }
+
+    way_point_.point.x = it->pose.position.x;
+    way_point_.point.y = it->pose.position.y;
+    way_point_.point.z = 0;
+    way_point_.header.stamp = ros::Time().now();
+    way_point_.header.frame_id = "map";
+	}
 }
 
 
