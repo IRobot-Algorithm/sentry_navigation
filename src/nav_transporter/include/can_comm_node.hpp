@@ -19,6 +19,8 @@ class CanCommNode {
 
   	void SubAndPubToROS(ros::NodeHandle &nh);
 
+  	void LoadParams(ros::NodeHandle &nh);
+
 	private:
 		void odomHandler(const nav_msgs::Odometry::ConstPtr& odom);
 
@@ -45,6 +47,9 @@ class CanCommNode {
     double last_timestamp_quat;
 
     tf::Transform trans_;
+    tf::Transform right_trans_;
+    tf::Transform left_trans_;
+		tf::TransformBroadcaster br_;
 
 		u_char vel_buf_[7];
 		transporter::Can can_;

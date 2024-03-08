@@ -1,6 +1,7 @@
 <launch>
 
 	<param name="config_path" type="string" value="$(find nav_transporter)/config/params.yaml"/>
+	<rosparam command="load" file="$(find nav_transporter)/config/extrinsic.yaml" />
 
     <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" />
     <node pkg="nav_transporter" type="can_comm_node" respawn="true" name="can_comm_node" output="screen" />

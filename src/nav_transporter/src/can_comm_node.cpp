@@ -15,8 +15,6 @@ namespace nav_transporter {
 CanCommNode::CanCommNode()
 {
   memset(vel_buf_, 0, sizeof(vel_buf_));
-  trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
-  trans_.setOrigin(tf::Vector3(0, 0, 0));
 }
 
 void CanCommNode::SubAndPubToROS(ros::NodeHandle &nh)
@@ -28,6 +26,26 @@ void CanCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   // ROS timer initialization
   this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &CanCommNode::sendVelCallback, this);
   this->receive_thread_ = std::thread(&CanCommNode::receiveCallback, this);
+}
+
+void CanCommNode::LoadParams(ros::NodeHandle &nh)
+{
+  std::vector<double> right_gimbal_T{3, 0.0};  // lidar-imu translation
+  std::vector<double> left_gimbal_T{3, 0.0};  // lidar-imu rotation
+
+  nh.param<std::vector<double>>("right_gimbal/extrinsic_T", right_gimbal_T, std::vector<double>());
+  nh.param<std::vector<double>>("left_gimbal/extrinsic_T", left_gimbal_T, std::vector<double>());
+
+  trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
+  trans_.setOrigin(tf::Vector3(0, 0, 0));
+  right_trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
+  right_trans_.setOrigin(tf::Vector3(right_gimbal_T[0],
+                                     right_gimbal_T[1],
+                                     right_gimbal_T[2]));
+  left_trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
+  left_trans_.setOrigin(tf::Vector3(left_gimbal_T[0],
+                                    left_gimbal_T[1],
+                                    left_gimbal_T[2]));
 }
 
 void CanCommNode::odomHandler(const nav_msgs::Odometry::ConstPtr& odom)
@@ -50,7 +68,7 @@ void CanCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
 
 void CanCommNode::sendVelCallback(const ros::TimerEvent& event)
 {
-  this->can_.send(CHASSIS_MODE_ID, vel_buf_, 7);
+  this->can_.send(VEL_SEND_ID, vel_buf_, 7);
   // std::cout << "sent" << std::endl;
 }
 
@@ -100,8 +118,7 @@ void CanCommNode::syncPackages()
   trans_.setRotation(C_board_quat);
 
   new_odom_ = false;
-  static tf::TransformBroadcaster br;
-  br.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map_link", "world"));
+  br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map_link", "world"));
 
   return;
 }
@@ -158,9 +175,20 @@ void CanCommNode::receiveCallback()
         quat_buffer_.emplace_back(msg);
         break;
       }
+      case GIMBAL_YAW_RECEIVE_ID:
+      {
+        float yaw[2]; // 先right后left
+        memcpy(yaw, buf, 8);
+        right_trans_.setRotation(tf::createQuaternionMsgFromYaw(yaw[0]));
+        left_trans_.setRotation(tf::createQuaternionMsgFromYaw(yaw[1]));
+
+        br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
+        br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));
+        break;
+      }
     }
     syncPackages();
-    std::this_thread::sleep_for(std::chrono::microseconds(100));
+    std::this_thread::sleep_for(std::chrono::microseconds(20));
   }
 }
 
