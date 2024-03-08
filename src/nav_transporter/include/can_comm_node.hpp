@@ -25,6 +25,7 @@ class CanCommNode {
 		void odomHandler(const nav_msgs::Odometry::ConstPtr& odom);
 
 		void velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel);
+		// void velHandler(const geometry_msgs::Twist::ConstPtr& vel);
 
 		void sendVelCallback(const ros::TimerEvent& event);
 		

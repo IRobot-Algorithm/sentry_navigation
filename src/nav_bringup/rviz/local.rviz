@@ -134,7 +134,7 @@ Visualization Manager:
       Color: 0; 170; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 6
@@ -151,18 +151,18 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 1
       Class: rviz/PointStamped
       Color: 204; 41; 204
-      Enabled: false
+      Enabled: true
       History Length: 1
       Name: Waypoint
       Queue Size: 10
       Radius: 0.30000001192092896
       Topic: /way_point
       Unreliable: false
-      Value: false
+      Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 0; 255; 0
@@ -247,6 +247,8 @@ Visualization Manager:
           Value: false
         odom:
           Value: false
+        world:
+          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -256,7 +258,8 @@ Visualization Manager:
       Tree:
         map:
           map_link:
-            {}
+            world:
+              {}
           odom:
             base_link:
               camera_link:
@@ -295,7 +298,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.2147514820098877
+      Distance: 5.66549015045166
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -311,9 +314,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6647974252700806
+      Pitch: 1.124796986579895
       Target Frame: vehicle
-      Yaw: 4.438590049743652
+      Yaw: 1.8785589933395386
     Saved: ~
 Window Geometry:
   Displays:

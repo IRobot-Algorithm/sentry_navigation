@@ -61,18 +61,17 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
     Eigen::Vector3d res = extrinR_BOT_IMU_ * pt - extrinT_IMU_BOT_;
 
     // 裁切
-    // double d = res[0] * res[0] + res[1] * res[1];
-    // if (!(d < 0.29 * 0.29 && res[2] < 1.0))
-    // {
-    //   out.points.push_back(std::move(in.points[i]));
-    // }
-    if (!(fabs(res[0]) < 0.31 && fabs(res[1]) < 0.31 && res[2] < 1.0))
+    double d = res[0] * res[0] + res[1] * res[1];
+    // if (!(d < 0.37 * 0.37))
+    if (!(fabs(res[0] < 0.35 && (fabs(res[1]) < 0.35))))
     {
       out.points.push_back(std::move(in.points[i]));
     }
+    // if (!(fabs(res[0]) < 0.31 && fabs(res[1]) < 0.31 && res[2] < 1.0))
+    // {
+    //   out.points.push_back(std::move(in.points[i]));
+    // }
   }
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
   out.header.frame_id = in.header.frame_id;
   out.header.stamp = in.header.stamp;
@@ -111,18 +110,18 @@ bool PointCloudProcess::transformPointCloud(const std::string &source_frame, con
     return true;
   }
 
-  if(tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.01)))
-  {
+  // if (tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.1)))
+  // {
     tf::StampedTransform transform;
-    tf_listener.lookupTransform(target_frame, source_frame, time, transform);
+    tf_listener.lookupTransform(target_frame, source_frame, ros::Time(0), transform);
     // Convert the TF transform to Eigen format  
     Eigen::Matrix4f eigen_transform;
     pcl_ros::transformAsMatrix(transform, eigen_transform);
     pcl::transformPointCloud(in, out, eigen_transform);
     return true;
-  }
+  // }
     
-  return false;
+  // return false;
 }
 
 void PointCloudProcess::LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstPtr& livox_msg_in)
@@ -192,7 +191,7 @@ void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr&
   {
     point = D435_filterd_cloud->points[i];
     float dis = sqrt(point.x * point.x + point.y * point.y);
-    if (dis<1.0 && dis>0.15)
+    if (dis<1.0 && dis>0.1)
     {
       D435_cutted_cloud->push_back(std::move(point));
     }
@@ -201,13 +200,13 @@ void PointCloudProcess::D435CloudHandler(const sensor_msgs::PointCloud2ConstPtr&
   transformPointCloud(D435_cloud_in->header.frame_id, "map", *D435_cutted_cloud, *D435_cloud_out_, D435_cloud_in->header.stamp, tf_);
 
   // 发布PointCloud2
-  /*
-  sensor_msgs::PointCloud2 D435_cloud_updated;
-  pcl::toROSMsg(*D435_cutted_cloud, D435_cloud_updated);
-  D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
-  D435_cloud_updated.header.frame_id = D435_cloud_in->header.frame_id;
-  pub_D435_cloud_.publish(D435_cloud_updated);
-  */
+  
+  // sensor_msgs::PointCloud2 D435_cloud_updated;
+  // pcl::toROSMsg(*D435_cutted_cloud, D435_cloud_updated);
+  // D435_cloud_updated.header.stamp = D435_cloud_in->header.stamp;
+  // D435_cloud_updated.header.frame_id = D435_cloud_in->header.frame_id;
+  // pub_D435_cloud_.publish(D435_cloud_updated);
+  
 
 }
 

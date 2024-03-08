@@ -10,13 +10,15 @@
 	    <arg name="rviz" value="false" />
     </include>
 
-    <include file="$(find far_planner)/launch/far_planner.launch" />
+    <!-- <include file="$(find far_planner)/launch/far_planner.launch" /> -->
 
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
 
-    <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
+    <!-- <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" /> -->
 
+    <!-- <include file="$(find move_base)/launch/move_base.launch" /> -->
     <include file="$(find local_planner)/launch/local_planner.launch" />
+    <!-- <include file="$(find ego_planner)/launch/run_in_sim.launch" /> -->
 
     <!-- <include file="./src/planner/waypoint_example/launch/waypoint_example_garage.launch" /> -->
     <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
@@ -26,8 +28,9 @@
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
     <!-- /////////////////////// rviz /////////////////////// -->
+    <!-- <include file="$(find ego_planner)/launch/rviz.launch"/> -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
     <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" />
-    <!-- <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="true"/> -->
-
+    <!-- <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/> -->
+    <!-- <node pkg="rviz" type="rviz" name="rviz" required="false" args="-d $(find move_base)/rviz/dwa.rviz"/> -->
 </launch>

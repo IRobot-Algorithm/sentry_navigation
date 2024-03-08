@@ -364,6 +364,7 @@ void LaserMapping::Run() {
             odom_.header.stamp = ros::Time().fromSec(last_imu_->header.stamp.toSec());  // ros::Time().fromSec(lidar_end_time_);
             if (pub_odom_aft_mapped_)
                 PublishOdometry(pub_odom_aft_mapped_, odom_);
+            PublishVelocity(pub_vel_);
         }
         return;
     }
@@ -427,8 +428,14 @@ void LaserMapping::Run() {
     last_imu_ = msg;
     flg_first_odom_ = true;
 
-    LOG(INFO) << "[ mapping ]: In num: " << scan_undistort_->points.size() << " downsamp " << cur_pts
-              << " Map grid num: " << ivox_->NumValidGrids() << " effect num : " << effect_feat_num_;
+    // static int cnt = 0;
+    // if (cnt > 10)
+    // {
+    //     LOG(INFO) << "[ mapping ]: In num: " << scan_undistort_->points.size() << " downsamp " << cur_pts
+    //               << " Map grid num: " << ivox_->NumValidGrids() << " effect num : " << effect_feat_num_;
+    //     cnt = 0;
+    // }
+    // cnt ++;
 
     if (scan_pub_en_ || pcd_save_en_) {
         PublishFrameWorld();
@@ -440,6 +447,7 @@ void LaserMapping::Run() {
         PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
     }
 
+    IMUUpdate();
     // Debug variables
     frame_num_++;
 }
@@ -868,7 +876,7 @@ void LaserMapping::PublishVelocity(const ros::Publisher &pub_vel)
 {
     geometry_msgs::TwistStamped msg;
     msg.header.stamp = odom_.header.stamp;
-    msg.header.frame_id = "map_link";
+    msg.header.frame_id = "map";
     msg.twist = odom_.twist.twist;
     pub_vel.publish(msg);
 }

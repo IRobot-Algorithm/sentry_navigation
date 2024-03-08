@@ -687,9 +687,8 @@ int main(int argc, char** argv)
         float pointY1 = plannerCloud->points[i].y - vehicleY;
         float pointZ1 = plannerCloud->points[i].z - vehicleZ;
 
-        //map_link系
-        point.x = pointX1;
-        point.y = pointY1;
+        point.x = pointX1 * cosVehicleYaw + pointY1 * sinVehicleYaw;
+        point.y = -pointX1 * sinVehicleYaw + pointY1 * cosVehicleYaw;
         point.z = pointZ1;
         point.intensity = plannerCloud->points[i].intensity;
 
@@ -701,8 +700,10 @@ int main(int argc, char** argv)
 
       int boundaryCloudSize = boundaryCloud->points.size();
       for (int i = 0; i < boundaryCloudSize; i++) {
-        point.x = (boundaryCloud->points[i].x - vehicleX);
-        point.y = (boundaryCloud->points[i].y - vehicleY);
+        point.x = ((boundaryCloud->points[i].x - vehicleX) * cosVehicleYaw 
+                + (boundaryCloud->points[i].y - vehicleY) * sinVehicleYaw);
+        point.y = (-(boundaryCloud->points[i].x - vehicleX) * sinVehicleYaw 
+                + (boundaryCloud->points[i].y - vehicleY) * cosVehicleYaw);
         point.z = boundaryCloud->points[i].z;
         point.intensity = boundaryCloud->points[i].intensity;
 
@@ -714,8 +715,10 @@ int main(int argc, char** argv)
 
       int addedObstaclesSize = addedObstacles->points.size();
       for (int i = 0; i < addedObstaclesSize; i++) {
-        point.x = (addedObstacles->points[i].x - vehicleX);
-        point.y = (addedObstacles->points[i].y - vehicleY);
+        point.x = ((addedObstacles->points[i].x - vehicleX) * cosVehicleYaw 
+                + (addedObstacles->points[i].y - vehicleY) * sinVehicleYaw);
+        point.y = (-(addedObstacles->points[i].x - vehicleX) * sinVehicleYaw 
+                + (addedObstacles->points[i].y - vehicleY) * cosVehicleYaw);
         point.z = addedObstacles->points[i].z;
         point.intensity = addedObstacles->points[i].intensity;
 
@@ -731,8 +734,8 @@ int main(int argc, char** argv)
       float relativeGoalDis = adjacentRange;
 
       if (autonomyMode) {
-        float relativeGoalX = (goalX - vehicleX);
-        float relativeGoalY = (goalY - vehicleY);
+        float relativeGoalX = ((goalX - vehicleX) * cosVehicleYaw + (goalY - vehicleY) * sinVehicleYaw);
+        float relativeGoalY = (-(goalX - vehicleX) * sinVehicleYaw + (goalY - vehicleY) * cosVehicleYaw);
 
         relativeGoalDis = sqrt(relativeGoalX * relativeGoalX + relativeGoalY * relativeGoalY);
         joyDir = atan2(relativeGoalY, relativeGoalX) * 180 / PI;
@@ -838,37 +841,25 @@ int main(int argc, char** argv)
             float penaltyScore = 1.0 - pathPenaltyList[i] / costHeightThre;
             if (penaltyScore < costScore) penaltyScore = costScore;
 
-            // float dirDiff = fabs(joyDir - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
-            // if (dirDiff > 360.0) {
-            //   dirDiff -= 360.0;
-            // }
-            // if (dirDiff > 180.0) {
-            //   dirDiff = 360.0 - dirDiff;
-            // }
-            // float rotDirW;
-            // if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
-            // else rotDirW = fabs(fabs(rotDir - 27) + 1);
-            //zbh
-            penaltyScore=1.0;
-            // float dirDiff = fabs(joyDir - (10.0 * rotDir - 180.0));
             float dirDiff = fabs(joyDir - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
-            if (dirDiff > 180)
-            {
-              dirDiff = 360 - dirDiff;
+            if (dirDiff > 360.0) {
+              dirDiff -= 360.0;
             }
-            float maplink_diff = fabs(10.0 * rotDir - 180.0);
-            if (maplink_diff > 90)
-            {
-              maplink_diff = 180 - maplink_diff;
+            if (dirDiff > 180.0) {
+              dirDiff = 360.0 - dirDiff;
             }
-
-            // float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
-            float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
-
-            // float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
-            // if (score > 0) {
-            clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
-            // }
+            float rotDirW;
+            if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
+            else rotDirW = fabs(fabs(rotDir - 27) + 1);
+            // rotDirW=1.0;//zbh
+            // penaltyScore=1.0;//zbh
+            float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
+            // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
+            // float score = (1000 - sqrt(dirWeight * dirDiff)) + rotDirW / 100.0;
+            
+            if (score > 0) {
+              clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
+            }
           }
         }
 
@@ -890,8 +881,6 @@ int main(int argc, char** argv)
         if (selectedGroupID >= 0) {
           int rotDir = int(selectedGroupID / groupNum);
           float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
-          // std::cout<<"selectedGroupID: "<<selectedGroupID<<std::endl;
-          // std::cout<<"maxScore: "<<maxScore<<std::endl;
 
           selectedGroupID = selectedGroupID % groupNum;
           int selectedPathLength = startPaths[selectedGroupID]->points.size();
@@ -903,8 +892,10 @@ int main(int argc, char** argv)
             float dis = sqrt(x * x + y * y);
 
             if (dis <= pathRange / pathScale && dis <= relativeGoalDis / pathScale) {
-              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y) + vehicleX;
-              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y) + vehicleY;
+              float vehicle_x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
+              float vehicle_y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
+              path.poses[i].pose.position.x = (cosVehicleYaw * vehicle_x - sinVehicleYaw * vehicle_y) + vehicleX;
+              path.poses[i].pose.position.y = (sinVehicleYaw * vehicle_x + cosVehicleYaw * vehicle_y) + vehicleY;
               path.poses[i].pose.position.z = pathScale * z + vehicleZ;
             } else {
               path.poses.resize(i);
@@ -945,9 +936,11 @@ int main(int argc, char** argv)
 
                 float dis = sqrt(x * x + y * y);
                 if (dis <= pathRange / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal)) {
-                  point.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
-                  point.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
-                  point.z = pathScale * z;
+                  float vehicle_x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
+                  float vehicle_y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
+                  point.x = (cosVehicleYaw * vehicle_x - sinVehicleYaw * vehicle_y) + vehicleX;
+                  point.y = (sinVehicleYaw * vehicle_x + cosVehicleYaw * vehicle_y) + vehicleY;
+                  point.z = pathScale * z + vehicleZ;
                   point.intensity = 1.0;
 
                   freePaths->push_back(point);
@@ -959,7 +952,7 @@ int main(int argc, char** argv)
           sensor_msgs::PointCloud2 freePaths2;
           pcl::toROSMsg(*freePaths, freePaths2);
           freePaths2.header.stamp = ros::Time().fromSec(odomTime);
-          freePaths2.header.frame_id = "map_link";//"vehicle"
+          freePaths2.header.frame_id = "map";//"vehicle"
           pubFreePaths.publish(freePaths2);
           #endif
         }
@@ -980,12 +973,12 @@ int main(int argc, char** argv)
 
       if (!pathFound) {
         path.poses.resize(1);
-        path.poses[0].pose.position.x = 0;
-        path.poses[0].pose.position.y = 0;
-        path.poses[0].pose.position.z = 0;
+        path.poses[0].pose.position.x = vehicleX;
+        path.poses[0].pose.position.y = vehicleY;
+        path.poses[0].pose.position.z = vehicleZ;
 
         path.header.stamp = ros::Time().fromSec(odomTime);
-        path.header.frame_id = "map_link";//"vehicle"
+        path.header.frame_id = "map";//"vehicle"
         pubPath.publish(path);
 
         #if PLOTPATHSET == 1
@@ -993,7 +986,7 @@ int main(int argc, char** argv)
         sensor_msgs::PointCloud2 freePaths2;
         pcl::toROSMsg(*freePaths, freePaths2);
         freePaths2.header.stamp = ros::Time().fromSec(odomTime);
-        freePaths2.header.frame_id = "map_link";//"vehicle"
+        freePaths2.header.frame_id = "map";//"vehicle"
         pubFreePaths.publish(freePaths2);
         #endif
       }
