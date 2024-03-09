@@ -92,6 +92,7 @@ double switchTime = 0;
 
 double goalX = 0.0;
 double goalY = 0.0;
+double goalZ = 0.0;
 
 double v_kp = 10.0;
 double v_ki = 0.0;
@@ -195,6 +196,7 @@ void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
 {
   goalX = goal->point.x;
   goalY = goal->point.y;
+  goalZ = goal->point.z;
 }
 
 int main(int argc, char** argv)
@@ -231,6 +233,7 @@ int main(int argc, char** argv)
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
   nhPrivate.getParam("goalX", goalX);
   nhPrivate.getParam("goalY", goalY);
+  nhPrivate.getParam("goalZ", goalZ);
   nhPrivate.getParam("v_kp", v_kp);
   nhPrivate.getParam("v_ki", v_ki);
   nhPrivate.getParam("v_kd", v_kd);
@@ -290,7 +293,15 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      if (endDis < 0.2)
+      if (endDis < 4.0 && goalZ < -5) // tracking
+      {
+        cmd_vel.twist.linear.x = 0.0;
+        cmd_vel.twist.linear.y = 0.0;
+        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+        pubSpeed.publish(cmd_vel);
+        continue;
+      }
+      if (endDis < 0.2) // navigating
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;

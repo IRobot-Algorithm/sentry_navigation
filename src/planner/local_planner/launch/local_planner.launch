@@ -8,6 +8,7 @@
   <arg name="joyToSpeedDelay" default="1.0"/><!--2.0-->
   <arg name="goalX" default="0"/>
   <arg name="goalY" default="0"/>
+  <arg name="goalZ" default="0"/>
   <arg name="v_kp" default="0.05"/>
   <arg name="v_ki" default="0"/>
   <arg name="v_kd" default="10.0"/>
@@ -84,6 +85,7 @@
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
+    <param name="goalZ" type="double" value="$(arg goalZ)" />
   </node>
 
 </launch>

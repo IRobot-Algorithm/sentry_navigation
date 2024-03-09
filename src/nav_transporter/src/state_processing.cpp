@@ -14,7 +14,7 @@ namespace nav_transporter {
 
 StateProcess::StateProcess()
 {
-  exec_state_ = NAVIGATE;
+  exec_state_ = INIT;
 			
 	goal_.header.frame_id = "map";
 	goal_.pose.position.x = 0.0;
@@ -29,7 +29,6 @@ StateProcess::StateProcess()
   way_point_.point.x = 0;
   way_point_.point.y = 0;
   way_point_.point.z = 0;
-		
 }
 
 void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
@@ -39,7 +38,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   this->sub_global_path_ = nh.subscribe<nav_msgs::Path>("/global_planner/planner/plan", 5, &StateProcess::globalPathHandler, this);
   this->nav_goal_server = nh.advertiseService("/nav_goal", &StateProcess::navGoalHandler, this);
   this->nav_target_server = nh.advertiseService("/nav_target", &StateProcess::navTargetHandler, this);
- 
+
   // ROS publisher initialization
   this->pub_waypoint_ = nh.advertise<geometry_msgs::PointStamped>("/way_point", 5);
   this->pub_goal_ = nh.advertise<geometry_msgs::PoseStamped>("/rviz_goal", 5);
@@ -74,19 +73,74 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
   else
     res.is_arrive = false;
 
+    res.is_arrive = true;
   res.odom.pose = odom_.pose.pose;
   return true;
 }
 
 bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res)
 {
-  way_point_.point.x = req.pose.pose.position.x;
-  way_point_.point.y = req.pose.pose.position.y;
+  static tf::TransformListener ls;
+  tf::StampedTransform map2gimbal_transform, base2gimbal_transform, map2base_transform;
+  if (req.gimbal) // 0 for right, 1 for left
+  {
+    try {
+      ls.lookupTransform("/map", "/left_gimbal",  
+                          req.pose.header.stamp, map2gimbal_transform);
+    }
+    catch (tf::TransformException &ex) {
+      ROS_WARN("TargetTrans : %s",ex.what());
+      return true;
+    }
+    try {
+      ls.lookupTransform("/base_link", "/left_gimbal",  
+                          req.pose.header.stamp, base2gimbal_transform);
+    }
+    catch (tf::TransformException &ex) {
+      ROS_WARN("TargetTrans : %s",ex.what());
+      return true;
+    }
+  }
+  else
+  {
+    try {
+      ls.lookupTransform("/map", "/right_gimbal",  
+                          req.pose.header.stamp, map2gimbal_transform);
+    }
+    catch (tf::TransformException &ex) {
+      ROS_WARN("TargetTrans : %s",ex.what());
+    }
+    try {
+      ls.lookupTransform("/base_link", "/right_gimbal",  
+                          req.pose.header.stamp, base2gimbal_transform);
+    }
+    catch (tf::TransformException &ex) {
+      ROS_WARN("TargetTrans : %s",ex.what());
+      return true;
+    }
+  }
+  try {
+    ls.lookupTransform("/map", "/base_link",  
+                        req.pose.header.stamp, map2base_transform);
+  }
+  catch (tf::TransformException &ex) {
+    ROS_WARN("TargetTrans : %s",ex.what());
+    return true;
+  }
+  double yaw = tf::getYaw(map2base_transform.getRotation()) + tf::getYaw(base2gimbal_transform.getRotation());
+  double cos_yaw = cos(yaw);
+  double sin_yaw = sin(yaw);
+  way_point_.point.x = map2gimbal_transform.getOrigin().x() +
+                       req.pose.pose.position.x * cos_yaw -
+                       req.pose.pose.position.y * sin_yaw;
+  way_point_.point.y = map2gimbal_transform.getOrigin().y() +
+                       req.pose.pose.position.x * sin_yaw +
+                       req.pose.pose.position.y * cos_yaw;
 
   if(req.is_lost)
-    way_point_.point.y = -10;
+    way_point_.point.z = 0;
   else
-    way_point_.point.y = 0;
+    way_point_.point.z = -10;
 
   changeNavExecState(TRACK, "desicion");
 
@@ -127,6 +181,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
       pub_goal_.publish(goal_);
       if (path_init_)
         pub_waypoint_.publish(way_point_);
+      // TODO: else ...
       break;
     }
   }

@@ -9,6 +9,8 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
+#include <tf/transform_datatypes.h>
+#include <tf/transform_listener.h>
 
 #include "sentry_srvs/NavGoal.h"
 #include "sentry_srvs/NavTarget.h"
@@ -36,16 +38,32 @@ class StateProcess {
 
 		void globalPathHandler(const nav_msgs::Path::ConstPtr& path);
 
+		/*
+		* @brief 决策导航信息服务器
+		* @auther wyq
+		*/
 		bool navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res);
-		
+
+		/*
+		* @brief 决策跟随信息服务器
+		* @auther wyq
+		*/
 		bool navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res);
 
+		/*
+		* @brief 状态机主循环
+		* @auther wyq
+		*/
 		void loop(const ros::TimerEvent& event);
 
     void changeNavExecState(NAV_EXEC_STATE new_state, std::string pos_call);
 
     void printNavExecState();
 
+		/*
+		* @brief 从全局路径中采局部点
+		* @auther wyq
+		*/
 		void cutWaypointFromPath();
 
 		ros::Subscriber sub_odom_;

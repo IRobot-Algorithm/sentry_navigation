@@ -29,6 +29,10 @@ class CanCommNode {
 
 		void sendVelCallback(const ros::TimerEvent& event);
 		
+		/*
+		* @brief 电控imu四元数与odom差值
+		* @auther wyq
+		*/
     void syncPackages();
 
     void transfer2Quaternion(u_char *buf, double *quaterion);
