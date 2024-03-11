@@ -5,26 +5,26 @@
     <param name="decayTime" type="double" value="0.2" /><!--点云考虑时间 超出不考虑-->
     <param name="noDecayDis" type="double" value="0.01" />
     <param name="clearingDis" type="double" value="8.0" /><!-- 清空地图时清空的范围 -->
-    <param name="useSorting" type="bool" value="true" />
+    <param name="useSorting" type="bool" value="false" />
     <param name="quantileZ" type="double" value="0.15" /><!--点云排序后百分之多少 作为该体素格高度-->
     <param name="considerDrop" type="bool" value="true" /><!--考虑地势低的区域 也为障碍物-->
     <param name="limitGroundLift" type="bool" value="false" /><!--限制地面上升 超过则肯定是障碍物 不分析为地面-->
     <param name="maxGroundLift" type="double" value="0.15" />
     <param name="clearDyObs" type="bool" value="false" /><!--通过点云在的位置考虑是否是障碍物 不通过与相邻比较-->
     <param name="minDyObsDis" type="double" value="0.02" /><!--最小考虑为动态障碍的距离 小于直接为动态障碍物-->
-    <param name="minDyObsAngle" type="double" value="21" /><!--最小考虑为动态障碍的角度 -->
+    <param name="minDyObsAngle" type="double" value="22" /><!--最小考虑为动态障碍的角度 -->
     <param name="minDyObsRelZ" type="double" value="-0.32" /><!--重新设置为了base_link到地面高度-->
     <param name="minDyObsVFOV" type="double" value="-0.21" />
-    <param name="maxDyObsVFOV" type="double" value="0.21" />
+    <param name="maxDyObsVFOV" type="double" value="0.22" />
     <param name="absDyObsRelZThre" type="double" value="0.35" /><!--车体中心到上下距离 在这个范围内才clearbyobs--> 
     <param name="minDyObsPointNum" type="int" value="1" />
     <param name="noDataObstacle" type="bool" value="false" />
     <param name="noDataBlockSkipNum" type="int" value="0" />
     <param name="minBlockPointNum" type="int" value="2" />
     <param name="vehicleHeight" type="double" value="2.0" /><!--0.5-->
-    <param name="voxelPointUpdateThre" type="int" value="10" />
-    <param name="voxelTimeUpdateThre" type="double" value="1000.0" />
-    <param name="minRelZ" type="double" value="-0.4" /><!--(-2.5)-->
+    <param name="voxelPointUpdateThre" type="int" value="30" />
+    <param name="voxelTimeUpdateThre" type="double" value="0.2" />
+    <param name="minRelZ" type="double" value="-2.0" /><!--(-2.5)-->
     <param name="maxRelZ" type="double" value="0.35" /><!--1.0-->
     <param name="disRatioZ" type="double" value="0.2" />
     <param name="vehicleRadio" type="double" value="0.2" />

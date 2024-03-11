@@ -853,9 +853,9 @@ int main(int argc, char** argv)
             else rotDirW = fabs(fabs(rotDir - 27) + 1);
             // rotDirW=1.0;//zbh
             // penaltyScore=1.0;//zbh
-            float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
+            // float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
             // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
-            // float score = (1000 - sqrt(dirWeight * dirDiff)) + rotDirW / 100.0;
+            float score = (1000 - sqrt(dirWeight * dirDiff)) + rotDirW / 100.0;
             
             if (score > 0) {
               clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;

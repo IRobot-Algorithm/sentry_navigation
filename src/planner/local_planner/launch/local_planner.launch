@@ -1,7 +1,7 @@
 <launch>
 
   <arg name="twoWayDrive" default="false"/><!--false-->
-  <arg name="maxSpeed" default="0.7"/><!--2.0-->
+  <arg name="maxSpeed" default="1.0"/><!--2.0-->
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
   <arg name="autonomySpeed" default="1.0"/><!--5.0-->
@@ -9,9 +9,9 @@
   <arg name="goalX" default="0"/>
   <arg name="goalY" default="0"/>
   <arg name="goalZ" default="0"/>
-  <arg name="v_kp" default="0.05"/>
+  <arg name="v_kp" default="5"/>
   <arg name="v_ki" default="0"/>
-  <arg name="v_kd" default="10.0"/>
+  <arg name="v_kd" default="0.5"/>
 
   <node pkg="local_planner" type="localPlanner" name="localPlanner" output="screen" required="true">
     <param name="pathFolder" type="string" value="$(find local_planner)/paths" />
@@ -24,8 +24,8 @@
     <param name="checkObstacle" type="bool" value="true" />
     <param name="checkRotObstacle" type="bool" value="false" /><!--false-->
     <param name="adjacentRange" type="double" value="2.0" />
-    <param name="obstacleHeightThre" type="double" value="0.1" /><!--上坡:0.30  0.20-->
-    <param name="groundHeightThre" type="double" value="0.05" /><!--0.15-->
+    <param name="obstacleHeightThre" type="double" value="0.15" /><!--上坡:0.30  0.20-->
+    <param name="groundHeightThre" type="double" value="0" /><!--0.15-->
     <param name="costHeightThre" type="double" value="0.1" />
     <param name="costScore" type="double" value="0.02" />
     <param name="useCost" type="bool" value="false" />
@@ -48,12 +48,9 @@
     <param name="autonomySpeed" value="$(arg autonomySpeed)" />
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="joyToCheckObstacleDelay" type="double" value="5.0" />
-    <param name="goalClearRange" type="double" value="0.2" />
+    <param name="goalClearRange" type="double" value="0.0" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
-    <param name="v_kp" type="double" value="$(arg v_kp)" />
-    <param name="v_ki" type="double" value="$(arg v_ki)" />
-    <param name="v_kd" type="double" value="$(arg v_kd)" />
   </node>
 
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
@@ -86,6 +83,9 @@
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
     <param name="goalZ" type="double" value="$(arg goalZ)" />
+    <param name="v_kp" type="double" value="$(arg v_kp)" />
+    <param name="v_ki" type="double" value="$(arg v_ki)" />
+    <param name="v_kd" type="double" value="$(arg v_kd)" />
   </node>
 
 </launch>

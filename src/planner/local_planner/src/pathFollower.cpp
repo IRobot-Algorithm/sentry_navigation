@@ -293,14 +293,14 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      if (endDis < 4.0 && goalZ < -5) // tracking
-      {
-        cmd_vel.twist.linear.x = 0.0;
-        cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        pubSpeed.publish(cmd_vel);
-        continue;
-      }
+      // if (endDis < 4.0 && goalZ < -5) // tracking
+      // {
+      //   cmd_vel.twist.linear.x = 0.0;
+      //   cmd_vel.twist.linear.y = 0.0;
+      //   cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+      //   pubSpeed.publish(cmd_vel);
+      //   continue;
+      // }
       if (endDis < 0.2) // navigating
       {
         cmd_vel.twist.linear.x = 0.0;
@@ -337,30 +337,33 @@ int main(int argc, char** argv)
       dis_y = path.poses[pathPointID].pose.position.y - vehicleY;
       dis = sqrt(dis_x * dis_x + dis_y * dis_y);
 
-      float next_dis_x, next_dis_y, next_dis;
-      int nextPathID = pathPointID + 10;
-      if (nextPathID >= pathSize - 1)
-      {
-        next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
-        next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
-        next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
-      }
+      // float next_dis_x, next_dis_y, next_dis;
+      // int nextPathID = pathPointID + 20;
+      // if (nextPathID >= pathSize - 1)
+      // {
+      //   next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+      //   next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+      //   next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
+      // }
 
-      next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
-      next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
-      next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
+      // next_dis_x = path.poses[nextPathID].pose.position.x - vehicleX;
+      // next_dis_y = path.poses[nextPathID].pose.position.y - vehicleY;
+      // next_dis = sqrt(next_dis_x * next_dis_x + next_dis_y * next_dis_y);
 
-      float target_vx = 0.65 * v_kp * dis_x + 0.35 * v_kp * next_dis_x;
-      float target_vy = 0.65 * v_kp * dis_y + 0.35 * v_kp * next_dis_y;
+      // float target_vx = 0.95 * v_kp * dis_x + 0.05 * v_kp * next_dis_x;
+      // float target_vy = 0.95 * v_kp * dis_y + 0.05 * v_kp * next_dis_y;
       I_x += dis_x;
       I_y += dis_y;
-      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (target_vx - velocityX);
-      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (target_vy - velocityY);
+      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
+      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
 
-      // float speed_x = v_kp * dis_x;
-      // float speed_y = v_kp * dis_y;
+      // float speed_x = v_kp * target_vx;
+      // float speed_y = v_kp * target_vy;
 
       float speed = sqrt(speed_x * speed_x + speed_y * speed_y);
+      last_err_x = dis_x;
+      last_err_y = dis_y;
+      
       if (speed > maxSpeed)
       {
         speed_x *= maxSpeed / speed;

@@ -79,6 +79,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloud[terrainVoxelNum];
 
 int terrainVoxelUpdateNum[terrainVoxelNum] = {0};
 float terrainVoxelUpdateTime[terrainVoxelNum] = {0};
+float terrainVoxelYaw[terrainVoxelNum] = {0};
 float planarVoxelElev[planarVoxelNum] = {0};
 int planarVoxelEdge[planarVoxelNum] = {0};
 int planarVoxelDyObs[planarVoxelNum] = {0};
@@ -255,6 +256,15 @@ int main(int argc, char** argv)
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());
   }
 
+  for (int ind = 0; ind < terrainVoxelNum; ind++)
+  {
+    int indX = ind / terrainVoxelWidth;
+    int indY = ind % terrainVoxelWidth;
+
+    float voxelYaw = atan2(indY - terrainVoxelHalfWidth, indX - terrainVoxelHalfWidth); 
+    terrainVoxelYaw[ind] = voxelYaw;
+  }
+
   downSizeFilter.setLeafSize(scanVoxelSize, scanVoxelSize, scanVoxelSize);
 
   ros::Rate rate(100);
@@ -340,13 +350,6 @@ int main(int argc, char** argv)
         if (point.x - vehicleX + terrainVoxelSize / 2 < 0) indX--;
         if (point.y - vehicleY + terrainVoxelSize / 2 < 0) indY--;
 
-        // float voxelYaw = atan2(1.0 * (indY - terrainVoxelHalfWidth) / fabs(indY - terrainVoxelHalfWidth) + (indY - terrainVoxelHalfWidth)
-        //                      , indX - terrainVoxelHalfWidth);
-                            
-        // if (voxelYaw > PI)
-        //   voxelYaw -= 2 * PI;
-        
-        // if (indX >= 0 && indX < terrainVoxelWidth && indY >= 0 && indY < terrainVoxelWidth && fabs(voxelYaw - cloudYaw) < PI / 5.0)
         if (indX >= 0 && indX < terrainVoxelWidth && indY >= 0 && indY < terrainVoxelWidth)
         {
           terrainVoxelCloud[terrainVoxelWidth * indX + indY]->push_back(point);
@@ -355,22 +358,22 @@ int main(int argc, char** argv)
       }
 
       for (int ind = 0; ind < terrainVoxelNum; ind++) {
-        if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre || 
-            laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre || clearingCloud) {
-          
-          // int indX = ind / terrainVoxelWidth;
-          // int indY = ind % terrainVoxelWidth;
-          // float voxelYaw = atan2(indY - terrainVoxelHalfWidth - 0.5, indX - terrainVoxelHalfWidth - 0.5);
-          // if (fabs(voxelYaw - vehicleYaw) > PI / 6.0)
-          //   continue;
+        double yawDiff = cloudYaw - terrainVoxelYaw[ind];
+        if (yawDiff > 2.0 * PI)
+          yawDiff -= 2.0 * PI;
+        else if (yawDiff < -2.0 * PI)
+          yawDiff += 2.0 * PI;
+        if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre || clearingCloud ||
+           (laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre &&
+            fabs(yawDiff) < PI / 5.0))
+        {
 
           pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloudPtr = terrainVoxelCloud[ind];
 
-          // laserCloudDwz->clear();
-          // downSizeFilter.setInputCloud(terrainVoxelCloudPtr);
-          // downSizeFilter.filter(*laserCloudDwz);
+          laserCloudDwz->clear();
+          downSizeFilter.setInputCloud(terrainVoxelCloudPtr);
+          downSizeFilter.filter(*laserCloudDwz);
 
-          *laserCloudDwz = *terrainVoxelCloudPtr;
           int laserCloudDwzSize = laserCloudDwz->points.size();
           terrainVoxelCloudPtr->clear();
 
@@ -388,6 +391,28 @@ int main(int argc, char** argv)
 
           terrainVoxelUpdateNum[ind] = 0;
           terrainVoxelUpdateTime[ind] = laserCloudTime - systemInitTime;
+        }
+        else if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre)
+        {
+          pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloudPtr = terrainVoxelCloud[ind];
+
+          laserCloudDwz->clear();
+          downSizeFilter.setInputCloud(terrainVoxelCloudPtr);
+          downSizeFilter.filter(*laserCloudDwz);
+
+          int laserCloudDwzSize = laserCloudDwz->points.size();
+          terrainVoxelCloudPtr->clear();
+
+          for (int i = 0; i < laserCloudDwzSize; i++) {
+            point = laserCloudDwz->points[i];
+            float dis = sqrt((point.x - vehicleX) * (point.x - vehicleX) 
+                      + (point.y - vehicleY) * (point.y - vehicleY));
+            if (point.z - vehicleZ > minRelZ - disRatioZ * dis &&
+                point.z - vehicleZ < maxRelZ + disRatioZ * dis &&
+                !(dis < clearingDis && clearingCloud)) {
+              terrainVoxelCloudPtr->push_back(point);
+            }
+        }
         }
       }
 
