@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="twoWayDrive" default="false"/><!--false-->
+  <arg name="twoWayDrive" default="true"/><!--false-->
   <arg name="maxSpeed" default="1.0"/><!--2.0-->
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
@@ -33,8 +33,8 @@
     <param name="minRelZ" type="double" value="-0.35" />
     <param name="maxRelZ" type="double" value="0.35" />
     <param name="maxSpeed" value="$(arg maxSpeed)" />
-    <param name="dirWeight" type="double" value="0.3" /><!--0.02-->
-    <param name="dirThre" type="double" value="60.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
+    <param name="dirWeight" type="double" value="0.1" /><!--0.02-->
+    <param name="dirThre" type="double" value="90.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
     <param name="dirToVehicle" type="bool" value="false" /><!--一定是false-->
     <param name="pathScale" type="double" value="0.3" />
     <param name="minPathScale" type="double" value="0.3" />
@@ -48,14 +48,15 @@
     <param name="autonomySpeed" value="$(arg autonomySpeed)" />
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="joyToCheckObstacleDelay" type="double" value="5.0" />
-    <param name="goalClearRange" type="double" value="0.0" />
+    <param name="goalClearRange" type="double" value="0.3" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
+    <param name="vehicleRadio" type="double" value="0.3" />
   </node>
 
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
     <param name="pubSkipNum" type="int" value="1" /><!--1-->
-    <param name="twoWayDrive" value="$(arg twoWayDrive)" />
+    <param name="twoWayDrive" value="false" />
     <param name="lookAheadDis" type="double" value="0.2" /><!--xz:0.5 xy:0.5-->
     <param name="yawRateGain" type="double" value="5.5" /><!--7.5-->
     <param name="stopYawRateGain" type="double" value="2.0" /><!--7.5-->

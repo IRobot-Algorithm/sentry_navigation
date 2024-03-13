@@ -63,15 +63,15 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
     // 裁切
     double d = res[0] * res[0] + res[1] * res[1];
     // if (!(d < 0.37 * 0.37))
-    if (d < 0.35)
-    {
-      continue;
-    }
-    out.points.push_back(std::move(in.points[i]));
-    // if (!(fabs(res[0]) < 0.31 && fabs(res[1]) < 0.31 && res[2] < 1.0))
+    // if (d < 0.35 * 0.35)
     // {
-    //   out.points.push_back(std::move(in.points[i]));
+    //   continue;
     // }
+    // out.points.push_back(std::move(in.points[i]));
+    if (!(fabs(res[0]) < 0.33 && fabs(res[1]) < 0.33 && res[2] < 1.0))
+    {
+      out.points.push_back(std::move(in.points[i]));
+    }
   }
 
   out.header.frame_id = in.header.frame_id;

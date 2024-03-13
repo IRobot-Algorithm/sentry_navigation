@@ -458,7 +458,7 @@ int main(int argc, char** argv)
             float pointZ1 = point.z - vehicleZ;
 
             float dis1 = sqrt(pointX1 * pointX1 + pointY1 * pointY1) - vehicleRadio;
-            if (dis1 > minDyObsDis || pointZ1 > - 0.15) {
+            if (dis1 > minDyObsDis) {
               float angle1 = atan2(pointZ1 - minDyObsRelZ, dis1) * 180.0 / PI;
               if (angle1 > minDyObsAngle) {
                 float pointX2 = pointX1 * cosVehicleYaw + pointY1 * sinVehicleYaw;
@@ -564,10 +564,6 @@ int main(int argc, char** argv)
           if (point.y - vehicleY + planarVoxelSize / 2 < 0) indY--;
 
           if (indX >= 0 && indX < planarVoxelWidth && indY >= 0 && indY < planarVoxelWidth) {
-            if (pow((fabs(indX - planarVoxelHalfWidth) - 0.5) * planarVoxelSize, 2) +
-                pow((fabs(indY - planarVoxelHalfWidth) - 0.5) * planarVoxelSize, 2) <=
-                vehicleRadio * vehicleRadio)
-              continue;
             if (planarVoxelDyObs[planarVoxelWidth * indX + indY] < 0 && clearDyObs)
             {
                 int planarPointElevSize = planarPointElev[planarVoxelWidth * indX + indY].size();
@@ -575,7 +571,8 @@ int main(int argc, char** argv)
                 terrainCloudElev->points[terrainCloudElevSize].intensity = vehicleHeight;
                 terrainCloudElevSize++;
             }
-            else if (planarVoxelDyObs[planarVoxelWidth * indX + indY] < minDyObsPointNum || !clearDyObs) {
+            else
+            {
               float disZ = point.z - planarVoxelElev[planarVoxelWidth * indX + indY];
               if (considerDrop) 
                 disZ = fabs(disZ);

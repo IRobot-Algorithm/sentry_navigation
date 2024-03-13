@@ -10,11 +10,11 @@
 	    <arg name="rviz" value="false" />
     </include>
 
-    <!-- <include file="$(find far_planner)/launch/far_planner.launch" /> -->
+    <include file="$(find far_planner)/launch/far_planner.launch" />
 
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
 
-    <!-- <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" /> -->
+    <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
 
     <!-- <include file="$(find move_base)/launch/move_base.launch" /> -->
     <include file="$(find local_planner)/launch/local_planner.launch" />

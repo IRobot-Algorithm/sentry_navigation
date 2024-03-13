@@ -48,16 +48,16 @@ double ceilingFilteringThre = 2.0;
 double localTerrainMapRadius = 4.0;
 
 // terrain voxel parameters
-float terrainVoxelSize = 2.0;
+float terrainVoxelSize = 0.4;
 int terrainVoxelShiftX = 0;
 int terrainVoxelShiftY = 0;
-const int terrainVoxelWidth = 41;
+const int terrainVoxelWidth = 51;
 int terrainVoxelHalfWidth = (terrainVoxelWidth - 1) / 2;
 const int terrainVoxelNum = terrainVoxelWidth * terrainVoxelWidth;
 
 // planar voxel parameters
-float planarVoxelSize = 0.4;
-const int planarVoxelWidth = 101;
+float planarVoxelSize = 0.2;
+const int planarVoxelWidth = 81;
 int planarVoxelHalfWidth = (planarVoxelWidth - 1) / 2;
 const int planarVoxelNum = planarVoxelWidth * planarVoxelWidth;
 

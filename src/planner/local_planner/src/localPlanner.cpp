@@ -75,6 +75,7 @@ double joyToCheckObstacleDelay = 5.0;
 double goalClearRange = 0.5;
 double goalX = 0;
 double goalY = 0;
+double vehicleRadio = 0.3;
 
 float joySpeed = 0;
 float joySpeedRaw = 0;
@@ -555,6 +556,7 @@ int main(int argc, char** argv)
   nhPrivate.getParam("goalClearRange", goalClearRange);
   nhPrivate.getParam("goalX", goalX);
   nhPrivate.getParam("goalY", goalY);
+  nhPrivate.getParam("vehicleRadio", vehicleRadio);
 
   ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry>
                                 ("/Odometry", 5, odometryHandler);
@@ -852,10 +854,10 @@ int main(int argc, char** argv)
             if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
             else rotDirW = fabs(fabs(rotDir - 27) + 1);
             // rotDirW=1.0;//zbh
-            // penaltyScore=1.0;//zbh
-            // float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
+            penaltyScore=1.0;//zbh
+            float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
             // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
-            float score = (1000 - sqrt(dirWeight * dirDiff)) + rotDirW / 100.0;
+            // float score = (1000 - sqrt(dirWeight * dirDiff)) - rotDirW / 100.0;
             
             if (score > 0) {
               clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
