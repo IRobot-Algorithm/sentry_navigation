@@ -774,7 +774,7 @@ int main(int argc, char** argv)
           float h = plannerCloudCrop->points[i].intensity;
           float dis = sqrt(x * x + y * y);
 
-          if (dis < pathRange / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
+          if (dis < pathRange / pathScale - vehicleRadio && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
             // 36个方向的路径组
             for (int rotDir = 0; rotDir < 36; rotDir++) {
               float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
