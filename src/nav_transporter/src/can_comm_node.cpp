@@ -17,11 +17,17 @@ CanCommNode::CanCommNode()
   memset(vel_buf_, 0, sizeof(vel_buf_));
 }
 
+CanCommNode::~CanCommNode()
+{
+    if (receive_thread_.joinable())
+        receive_thread_.join();
+}
+
 void CanCommNode::SubAndPubToROS(ros::NodeHandle &nh)
 {
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &CanCommNode::odomHandler, this);
-  this->sub_vel = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &CanCommNode::velHandler, this);
+  this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &CanCommNode::velHandler, this);
   // this->sub_vel = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &CanCommNode::velHandler, this);
  
   // ROS timer initialization
@@ -167,8 +173,7 @@ void CanCommNode::receiveCallback()
         q_temp = Eigen::Quaterniond(quaternion);
         q_temp.normalize();
 
-        tf::Quaternion q(-q_temp.y(), -q_temp.z(), -q_temp.w(), q_temp.x());
-        // tf::Quaternion q(q_temp.y(), -q_temp.z(), -q_temp.w(), -q_temp.x());
+        // tf::Quaternion q(-q_temp.y(), -q_temp.z(), -q_temp.w(), q_temp.x());
 
         geometry_msgs::QuaternionStamped::Ptr msg(new geometry_msgs::QuaternionStamped());
 
@@ -206,6 +211,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   nav_transporter::CanCommNode CanCommNodeObj;
+  CanCommNodeObj.LoadParams(nh);
   CanCommNodeObj.SubAndPubToROS(nh);
 
   ros::spin();

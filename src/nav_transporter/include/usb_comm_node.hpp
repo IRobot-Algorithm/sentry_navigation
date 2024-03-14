@@ -8,14 +8,14 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
 
-#include "can.hpp"
+#include "usb.hpp"
 
 namespace nav_transporter {
 
-class CanCommNode {
+class UsbCommNode {
 	public:
-		CanCommNode();
-		~CanCommNode();
+		UsbCommNode();
+		~UsbCommNode();
 
   	void SubAndPubToROS(ros::NodeHandle &nh);
 
@@ -27,22 +27,19 @@ class CanCommNode {
 		void velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel);
 		// void velHandler(const geometry_msgs::Twist::ConstPtr& vel);
 
-		void sendVelCallback(const ros::TimerEvent& event);
+		// void sendVelCallback(const ros::TimerEvent& event);
 		
 		/*
 		* @brief 电控imu四元数与odom差值
-		* @auther wyq
 		*/
     void syncPackages();
-
-    void transfer2Quaternion(u_char *buf, double *quaterion);
 
     void receiveCallback();
 
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
 
-		ros::Timer send_vel_timer_;
+		// ros::Timer send_vel_timer_;
 
     geometry_msgs::Quaternion odom_quat_;
     double odom_time_;
@@ -56,8 +53,16 @@ class CanCommNode {
     tf::Transform left_trans_;
 		tf::TransformBroadcaster br_;
 
-		u_char vel_buf_[7];
-		transporter::Can can_;
+    int interface_usb_vid_;
+    int interface_usb_pid_;
+    int interface_usb_read_endpoint_;
+    int interface_usb_write_endpoint_;
+    int interface_usb_read_timeout_;
+    int interface_usb_write_timeout_;
+
+    transporter::NavVelocitySendPackage send_package_;
+
+    std::shared_ptr<transporter_sdk::TransporterInterface> transporter_; // usb通信接口
     std::thread receive_thread_;
 
 };
