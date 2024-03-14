@@ -3,6 +3,7 @@ add_library(${PROJECT_NAME}
         pointcloud_preprocess.cc
         options.cc
         utils.cc
+        relocalization.cc
         )
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencpp livox_ros_driver_gencpp)

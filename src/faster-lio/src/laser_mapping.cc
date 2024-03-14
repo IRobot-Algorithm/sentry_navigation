@@ -54,6 +54,7 @@ bool LaserMapping::InitWithoutROS(const std::string &config_yaml) {
 
 bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     // get params from param server
+    bool use_icp;
     int lidar_type, ivox_nearby_type;
     double gyr_cov, acc_cov, b_gyr_cov, b_acc_cov;
     double filter_size_surf_min;
@@ -62,6 +63,7 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     std::vector<double> extrinT_IMU_BOT{3, 0.0};  // lidar-imu translation
     std::vector<double> extrinR_IMU_BOT{9, 0.0};  // lidar-imu rotation
 
+    nh.param<bool>("icp/use_icp", use_icp, false);
     nh.param<bool>("path_save_en", path_save_en_, true);
     nh.param<bool>("publish/path_publish_en", path_pub_en_, true);
     nh.param<bool>("publish/scan_publish_en", scan_pub_en_, true);
@@ -126,6 +128,14 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
         LOG(WARNING) << "unknown ivox_nearby_type, use NEARBY18";
         ivox_options_.nearby_type_ = IVoxType::NearbyType::NEARBY18;
     }
+
+    if (!use_icp)
+        localization_init_ = true;
+    else
+        relocalization_.InitParams(nh);
+
+    init_R_wrt_.setIdentity();
+    init_T_wrt_.setZero();
 
     path_.header.stamp = ros::Time::now();
     path_.header.frame_id = "odom";
@@ -357,6 +367,49 @@ bool LaserMapping::IMUUpdate()
 }
 
 void LaserMapping::Run() {
+    if (!localization_init_)
+    {
+
+        LOG(INFO) << "Localization Initing!";
+        PointCloudType::Ptr cloud_xyzi(new PointCloudType());
+        
+        mtx_buffer_.lock();
+        cloud_xyzi = lidar_buffer_.back();
+        lidar_buffer_.clear();
+        time_buffer_.clear();
+        imu_buffer_.clear();
+        imu_buf_.clear();
+        mtx_buffer_.unlock();
+
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
+        for (const PointType& point_xyzi : *cloud_xyzi)
+        {
+            common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
+            common::V3D p_BOT(BOT_R_wrt_IMU_ * p_lidar - IMU_T_wrt_BOT_);
+
+            pcl::PointXYZ point_xyz;
+            point_xyz.x = p_BOT(0);
+            point_xyz.y = p_BOT(1);
+            point_xyz.z = p_BOT(2);
+            cloud_xyz->push_back(point_xyz);
+        }
+
+        Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
+        if (relocalization_.InitExtrinsic(result, cloud_xyz))
+        {
+            init_R_wrt_ = result.rotation();
+            init_T_wrt_ = result.translation();
+            localization_init_ = true;
+            LOG(INFO) << "Localization Finished!";
+        }
+        else
+        {
+            LOG(WARNING) << "Localization Failed!";
+        }
+
+        return;
+    }
+
     if (!SyncPackages()) {
         if (flg_first_odom_ && IMUUpdate())
         {
@@ -928,8 +981,10 @@ void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out ,state_ikfom sta
 
 void LaserMapping::PointBodyToMap(const PointType *pi, PointType *const po) {
     common::V3D p_body(pi->x, pi->y, pi->z);
-    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos) - IMU_T_wrt_BOT_);
+    // common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos) - IMU_T_wrt_BOT_);
+    common::V3D p_global(init_R_wrt_ * (BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) - IMU_T_wrt_BOT_) + init_T_wrt_);
 
     po->x = p_global(0);
     po->y = p_global(1);
@@ -939,9 +994,10 @@ void LaserMapping::PointBodyToMap(const PointType *pi, PointType *const po) {
 
 void LaserMapping::PointBodyToMap(const common::V3F &pi, PointType *const po) {
     common::V3D p_body(pi.x(), pi.y(), pi.z());
-    common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos) - IMU_T_wrt_BOT_);
-
+    // common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos) - IMU_T_wrt_BOT_);
+    common::V3D p_global(init_R_wrt_ * (BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) - IMU_T_wrt_BOT_) + init_T_wrt_);
 
     po->x = p_global(0);
     po->y = p_global(1);

@@ -3,7 +3,7 @@
 	<rosparam command="load" file="$(find nav_transporter)/config/extrinsic.yaml" />
 	<rosparam command="load" file="$(find nav_transporter)/config/hardware_settings.yaml" />
 
-    <!-- <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" /> -->
+    <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" />
     <!-- <node pkg="nav_transporter" type="can_comm_node" respawn="true" name="can_comm_node" output="screen" /> -->
     <node pkg="nav_transporter" type="usb_comm_node" respawn="true" name="usb_comm_node" output="screen" />
 

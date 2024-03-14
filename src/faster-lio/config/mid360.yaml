@@ -35,6 +35,22 @@ irobot:
     #                0, -1, 0,
     #                0, 0, -1]
 
+icp:
+    use_icp: false
+
+    pcd_path: "/home/niuoruo/workspace/sentry/ws/sentry_navigation/src/faster-lio/PCD/scans.pcd"
+
+    # ICP定位参数
+    SCORE_THRESHOLD_MAX: 0.13     # 达到最大迭代次数后，代价仍高于此值，认为无法收敛
+    ANGLE_SPEED_THRESHOLD: 10     # 角速度阈值，角速度大于此值则不发送定位
+    ANGLE_THRESHOLD: 0.01         # 最小变换角度
+    DIST_THRESHOLD: 0.01          # 最小变换距离
+    ANGLE_UPPER_THRESHOLD_: 10    # 最大角度变换
+    Point_Quantity_THRESHOLD: 1000 # 点云数阈值
+    Maximum_Iterations: 50        # 最大迭代次数
+    VoxelGridRemoval_LeafSize: 0.1        # 体素滤波的边长
+    ObstacleRemoval_Distance_Max: 1.0     # 如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点
+
 publish:
     path_en:  false
     scan_publish_en:  true       # false: close all the point cloud output
@@ -42,7 +58,7 @@ publish:
     scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:
-    pcd_save_en: false
+    pcd_save_en: true
     interval: -1                 # how many LiDAR frames saved in each pcd file; 
                                  # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.
 
