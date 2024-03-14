@@ -18,7 +18,7 @@ namespace nav_transporter
 {
 UsbCommNode::UsbCommNode()
 {
-
+  referee_info_.enemy_hp.resize(8);
 }
 
 UsbCommNode::~UsbCommNode()
@@ -32,8 +32,10 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &UsbCommNode::odomHandler, this);
   this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
-  // this->sub_vel = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
+  // this->sub_vel_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
         
+  this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 5);
+
   // ROS timer initialization
   // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
   this->receive_thread_ = std::thread(&UsbCommNode::receiveCallback, this);
@@ -197,6 +199,53 @@ void UsbCommNode::receiveCallback()
         br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
         br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));
 
+        break;
+      }
+      case DESICION_REFEREE_RECEIVE_ID:
+      {
+        transporter::DesicionRefereeReceivePackage package;
+        memcpy(&package, receive_package, 
+                sizeof(transporter::DesicionRefereeReceivePackage));
+
+        int progress = static_cast<int>(package.game_type_progress & 0xf0 >> 4);
+        if (progress == 4)
+        	referee_info_.game_start = true;
+        else
+        	referee_info_.game_start = false;
+
+        referee_info_.gameover_time = package.game_stage_remain_time;
+        referee_info_.robot_hp = package.remain_HP;
+        referee_info_.max_hp = package.max_HP;
+        referee_info_.bullets = package.projectile_allowance_17mm;
+        
+        if (package.robot_id < 10) // red
+        {
+          referee_info_.our_outpost_hp = package.red_outpose_HP;
+          referee_info_.our_base_hp = package.red_base_HP;
+          referee_info_.enemy_hp[7] = package.blue_outpose_HP;
+          referee_info_.enemy_hp[0] = package.blue_base_HP;
+        }
+        else // blue
+        {
+          referee_info_.our_outpost_hp = package.blue_outpose_HP;
+          referee_info_.our_base_hp = package.blue_base_HP;
+          referee_info_.enemy_hp[7] = package.red_outpose_HP;
+          referee_info_.enemy_hp[0] = package.red_base_HP;
+        }
+        referee_info_.base_shield = package.base_state;
+        referee_info_.gold_coins = package.remaining_gold_coin;
+
+        referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
+
+        referee_info_.enemy_hp[1] =  package.hero_remain_HP;
+        referee_info_.enemy_hp[2] =  package.engineer_remain_HP;
+        referee_info_.enemy_hp[3] =  package.infantry3_remain_HP;
+        referee_info_.enemy_hp[4] =  package.infantry4_remain_HP;
+        referee_info_.enemy_hp[5] =  package.infantry5_remain_HP;
+        referee_info_.enemy_hp[6] =  package.sentry_remain_HP;
+
+        // TODO: keyward force back
+        pub_referee_info_.publish(referee_info_);
         break;
       }
     }

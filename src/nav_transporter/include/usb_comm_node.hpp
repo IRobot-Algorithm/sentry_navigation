@@ -9,6 +9,7 @@
 #include <geometry_msgs/QuaternionStamped.h>
 
 #include "usb.hpp"
+#include "sentry_msgs/RefereeInformation.h"
 
 namespace nav_transporter {
 
@@ -38,9 +39,11 @@ class UsbCommNode {
 
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
+		ros::Publisher pub_referee_info_;
 
 		// ros::Timer send_vel_timer_;
 
+    sentry_msgs::RefereeInformation referee_info_;
     geometry_msgs::Quaternion odom_quat_;
     double odom_time_;
     bool new_odom_;
