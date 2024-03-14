@@ -174,88 +174,85 @@ void UsbCommNode::receiveCallback()
 
     uint8_t receive_package[64];
     int read_size = transporter_->read(receive_package, 64);
+    // ROS_INFO("read_size: %d", read_size);
 
-    if (read_size == 64)
+    switch (receive_package[1])
     {
-      switch (receive_package[1])
+      case NAV_IMU_RECEIVE_ID:
       {
-        case NAV_IMU_RECEIVE_ID:
-        {
-          transporter::NavIMUReceivePackage package;
-          memcpy(&package, receive_package, 
-                  sizeof(transporter::NavIMUReceivePackage));
+        transporter::NavIMUReceivePackage package;
+        memcpy(&package, receive_package, 
+                sizeof(transporter::NavIMUReceivePackage));
 
-          geometry_msgs::QuaternionStamped::Ptr msg(new geometry_msgs::QuaternionStamped());
+        geometry_msgs::QuaternionStamped::Ptr msg(new geometry_msgs::QuaternionStamped());
 
-          msg->header.stamp.fromSec(ros::Time::now().toSec());
-          msg->quaternion.x = -(double)package.q1 / 32768.0;
-          msg->quaternion.y = -(double)package.q2 / 32768.0;
-          msg->quaternion.z = -(double)package.q3 / 32768.0;
-          msg->quaternion.w = (double)package.q0 / 32768.0;
+        msg->header.stamp.fromSec(ros::Time::now().toSec());
+        msg->quaternion.x = -(double)package.q1;
+        msg->quaternion.y = -(double)package.q2;
+        msg->quaternion.z = -(double)package.q3;
+        msg->quaternion.w = (double)package.q0;
 
-          quat_buffer_.emplace_back(msg);
+        quat_buffer_.emplace_back(msg);
 
-          right_trans_.setRotation(tf::createQuaternionFromYaw(package.RightMotorAngle));
-          left_trans_.setRotation(tf::createQuaternionFromYaw(package.LeftMotorAngle));
+        right_trans_.setRotation(tf::createQuaternionFromYaw(package.RightMotorAngle));
+        left_trans_.setRotation(tf::createQuaternionFromYaw(package.LeftMotorAngle));
 
-          br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
-          br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));
+        br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
+        br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));
 
-          break;
-        }
-        case DESICION_REFEREE_RECEIVE_ID:
-        {
-          transporter::DesicionRefereeReceivePackage package;
-          memcpy(&package, receive_package, 
+        break;
+      }
+      case DESICION_REFEREE_RECEIVE_ID:
+      {
+        transporter::DesicionRefereeReceivePackage package;
+        memcpy(&package, receive_package, 
                   sizeof(transporter::DesicionRefereeReceivePackage));
 
-          int progress = static_cast<int>(package.game_type_progress & 0xf0 >> 4);
-          if (progress == 4)
-            referee_info_.game_start = true;
-          else
-            referee_info_.game_start = false;
+        int progress = static_cast<int>(package.game_type_progress & 0xf0 >> 4);
+        if (progress == 4)
+          referee_info_.game_start = true;
+        else
+          referee_info_.game_start = false;
 
-          referee_info_.gameover_time = package.game_stage_remain_time;
-          referee_info_.robot_hp = package.remain_HP;
-          referee_info_.max_hp = package.max_HP;
-          referee_info_.bullets = package.projectile_allowance_17mm;
+        referee_info_.gameover_time = package.game_stage_remain_time;
+        referee_info_.robot_hp = package.remain_HP;
+        referee_info_.max_hp = package.max_HP;
+        referee_info_.bullets = package.projectile_allowance_17mm;
           
-          if (package.robot_id < 10) // red
-          {
-            referee_info_.our_outpost_hp = package.red_outpose_HP;
-            referee_info_.our_base_hp = package.red_base_HP;
-            referee_info_.enemy_hp[7] = package.blue_outpose_HP;
-            referee_info_.enemy_hp[0] = package.blue_base_HP;
-          }
-          else // blue
-          {
-            referee_info_.our_outpost_hp = package.blue_outpose_HP;
-            referee_info_.our_base_hp = package.blue_base_HP;
-            referee_info_.enemy_hp[7] = package.red_outpose_HP;
-            referee_info_.enemy_hp[0] = package.red_base_HP;
-          }
-          referee_info_.base_shield = package.base_state;
-          referee_info_.gold_coins = package.remaining_gold_coin;
+         if (package.robot_id < 10) // red
+         {
+           referee_info_.our_outpost_hp = package.red_outpose_HP;
+           referee_info_.our_base_hp = package.red_base_HP;
+           referee_info_.enemy_hp[7] = package.blue_outpose_HP;
+           referee_info_.enemy_hp[0] = package.blue_base_HP;
+         }
+         else // blue
+         {
+           referee_info_.our_outpost_hp = package.blue_outpose_HP;
+           referee_info_.our_base_hp = package.blue_base_HP;
+           referee_info_.enemy_hp[7] = package.red_outpose_HP;
+           referee_info_.enemy_hp[0] = package.red_base_HP;
+         }
+         referee_info_.base_shield = package.base_state;
+         referee_info_.gold_coins = package.remaining_gold_coin;
 
-          referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
+        referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
 
-          referee_info_.enemy_hp[1] =  package.hero_remain_HP;
-          referee_info_.enemy_hp[2] =  package.engineer_remain_HP;
-          referee_info_.enemy_hp[3] =  package.infantry3_remain_HP;
-          referee_info_.enemy_hp[4] =  package.infantry4_remain_HP;
-          referee_info_.enemy_hp[5] =  package.infantry5_remain_HP;
-          referee_info_.enemy_hp[6] =  package.sentry_remain_HP;
+        referee_info_.enemy_hp[1] =  package.hero_remain_HP;
+        referee_info_.enemy_hp[2] =  package.engineer_remain_HP;
+        referee_info_.enemy_hp[3] =  package.infantry3_remain_HP;
+        referee_info_.enemy_hp[4] =  package.infantry4_remain_HP;
+        referee_info_.enemy_hp[5] =  package.infantry5_remain_HP;
+        referee_info_.enemy_hp[6] =  package.sentry_remain_HP;
 
-          // TODO: keyward force back
-          pub_referee_info_.publish(referee_info_);
-          break;
-        }
+        // TODO: keyward force back
+        pub_referee_info_.publish(referee_info_);
+        break;
       }
     }
     syncPackages();
     rate.sleep();
   }
-
 }
 
 } // namespace nav_transporter
