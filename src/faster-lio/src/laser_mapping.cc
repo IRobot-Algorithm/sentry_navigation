@@ -130,7 +130,7 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     }
 
     if (!use_icp)
-        localization_init_ = true;
+        need_localization_ = false;
     else
         relocalization_.InitParams(nh);
 
@@ -367,7 +367,7 @@ bool LaserMapping::IMUUpdate()
 }
 
 void LaserMapping::Run() {
-    if (!localization_init_)
+    if (need_localization_)
     {
         if (lidar_buffer_.size() < 10)
             return;
@@ -405,7 +405,7 @@ void LaserMapping::Run() {
         {
             R_wrt_ = result.rotation() * R_wrt_;
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
-            localization_init_ = true;
+            need_localization_ = false;
             relocalization_.clear();
             LOG(INFO) << "Localization Finished!";
         }

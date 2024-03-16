@@ -194,7 +194,7 @@ geometry_msgs::Point FARUtil::Point3DToGeoMsgPoint(const Point3D& point) {
   geometry_msgs::Point p;
   p.x = point.x;
   p.y = point.y;
-  p.z = point.z;
+  p.z = 0;
   return p;
 }
 

@@ -1,0 +1,7 @@
+use_pose_goal: false
+track_target: false
+extrinsic:
+  right_gimbal:
+    extrinsic_T: [0.5, 0, 0.2 ]
+  left_gimbal:
+    extrinsic_T: [-0.5, 0, 0.2 ]

@@ -58,6 +58,8 @@ private:
     bool is_reset_env_, is_stop_update_;
 
     geometry_msgs::PointStamped goal_waypoint_stamped_;
+    geometry_msgs::PointStamped last_goal_;
+    int ignore_num_ = 0;
 
     bool is_cloud_init_, is_scan_init_, is_odom_init_, is_planner_running_;
     bool is_graph_init_;

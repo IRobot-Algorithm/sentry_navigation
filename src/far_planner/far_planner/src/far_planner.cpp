@@ -20,7 +20,7 @@ void FARMaster::Init() {
   terrain_local_sub_  = nh.subscribe("/terrain_local_cloud", 1, &FARMaster::TerrainLocalCallBack, this);
   joy_command_sub_    = nh.subscribe("/joy", 5, &FARMaster::JoyCommandCallBack, this);
   update_command_sub_ = nh.subscribe("/update_visibility_graph", 5, &FARMaster::UpdateCommandCallBack, this);
-  goal_pub_           = nh.advertise<geometry_msgs::PointStamped>("/way_point",5);
+  goal_pub_           = nh.advertise<geometry_msgs::PointStamped>("/far_way_point",5);
   boundary_pub_       = nh.advertise<geometry_msgs::PolygonStamped>("/navigation_boundary",5);
   // Timers
   runtime_pub_        = nh.advertise<std_msgs::Float32>("/runtime",1);
@@ -701,6 +701,20 @@ void FARMaster::WaypointCallBack(const geometry_msgs::PointStamped& route_goal) 
     if (FARUtil::IsDebug) ROS_WARN("FARMaster: wait for v-graph to init before sending any goals");
     return;
   }
+
+  float dis_x = route_goal.point.x - last_goal_.point.x;
+  float dis_y = route_goal.point.y - last_goal_.point.y;
+  if (sqrt(dis_x * dis_x + dis_y * dis_y) < 0.1 && ignore_num_ < 100)
+  {
+    ignore_num_++;
+    return;
+  }
+  else
+  {
+    ignore_num_ = 0;
+    last_goal_ = route_goal;
+  }
+
   Point3D goal_p(route_goal.point.x, route_goal.point.y, route_goal.point.z);
   const std::string goal_frame = route_goal.header.frame_id;
   if (!FARUtil::IsSameFrameID(goal_frame, master_params_.world_frame)) {

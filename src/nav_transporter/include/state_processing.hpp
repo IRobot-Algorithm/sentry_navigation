@@ -38,6 +38,8 @@ class StateProcess {
 
 		void globalPathHandler(const nav_msgs::Path::ConstPtr& path);
 
+		void farWaypointHandler(const geometry_msgs::PointStamped::ConstPtr& point);
+
 		/*
 		* @brief 决策导航信息服务器
 		* @auther wyq
@@ -68,19 +70,24 @@ class StateProcess {
 
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_global_path_;
+		ros::Subscriber sub_far_waypoint_;
 		ros::ServiceServer nav_goal_server;
 		ros::ServiceServer nav_target_server;
 
-		ros::Publisher pub_waypoint_;
 		ros::Publisher pub_goal_;
+		ros::Publisher pub_waypoint_;
 
 		nav_msgs::Path global_path_;
 		geometry_msgs::PoseStamped goal_;
+		geometry_msgs::PointStamped point_goal_;
 		geometry_msgs::PointStamped way_point_;
+		geometry_msgs::PointStamped far_way_point_;
 		nav_msgs::Odometry odom_;
 
 		ros::Timer loop_timer_;
 
+		bool use_pose_goal_;
+		bool track_target_;
 		bool have_odom_ = false;
 		bool path_init_ = false;
 

@@ -75,8 +75,8 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   std::vector<double> right_gimbal_T{3, 0.0};  // lidar-imu translation
   std::vector<double> left_gimbal_T{3, 0.0};  // lidar-imu rotation
 
-  nh.param<std::vector<double>>("right_gimbal/extrinsic_T", right_gimbal_T, std::vector<double>());
-  nh.param<std::vector<double>>("left_gimbal/extrinsic_T", left_gimbal_T, std::vector<double>());
+  nh.param<std::vector<double>>("extrinsic/right_gimbal/extrinsic_T", right_gimbal_T, std::vector<double>());
+  nh.param<std::vector<double>>("extrinsic/left_gimbal/extrinsic_T", left_gimbal_T, std::vector<double>());
 
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans_.setOrigin(tf::Vector3(0, 0, 0));

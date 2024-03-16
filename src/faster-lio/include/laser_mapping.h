@@ -193,7 +193,7 @@ class LaserMapping {
 
     // relocalization
     Relocalization relocalization_;
-    bool localization_init_ = false;
+    bool need_localization_ = true;
 
     // final RT
     common::V3D T_wrt_;
