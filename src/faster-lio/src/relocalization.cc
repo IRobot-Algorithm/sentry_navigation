@@ -87,9 +87,12 @@ bool Relocalization::InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT
     //使用ICP进行点云匹配
     if (!ScanMatchWithICP(match_result, cloud_scan_, cloud_map_))
     {
+        location_loss_num_++;
+        std::cout << "location_loss_num_: " << location_loss_num_ << std::endl;
         return false; 
     }
 
+    location_loss_num_ = 0;
     first_icp_ = true;
     return true;
 }
@@ -193,11 +196,9 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
             // \033[1;33m，\033[0m 终端显示成黄色
             std::cout << "\033[1;33m" << "result out of threshold" << "\033[0m" << std::endl;
             std::cout << " score: " << icp_.getFitnessScore() << "\033[0m" << std::endl;
-            std::cout << "location_loss_num_: " << location_loss_num_ << std::endl;
         }
         return false;
     }
-    location_loss_num_ = 0;
 
     trans.matrix() = transform.matrix().cast<double>();      //Matrix4f类型转换为Isometry3d类型
 

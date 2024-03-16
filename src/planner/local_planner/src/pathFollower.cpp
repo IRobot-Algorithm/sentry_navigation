@@ -87,6 +87,7 @@ double slowInitTime = 0;
 double stopInitTime = false;
 int pathPointID = 0;
 bool pathInit = false;
+bool odomInit = false;
 bool navFwd = true;
 double switchTime = 0;
 
@@ -124,6 +125,8 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleZ = odomIn->pose.pose.position.z;
   velocityX = odomIn->twist.twist.linear.x;
   velocityY = odomIn->twist.twist.linear.y;
+
+  odomInit = true;
 
   if ((fabs(roll) > inclThre * PI / 180.0 || fabs(pitch) > inclThre * PI / 180.0) && useInclToStop) {
     stopInitTime = odomIn->header.stamp.toSec();
@@ -276,7 +279,7 @@ int main(int argc, char** argv)
     rate.sleep();
     ros::spinOnce();
 
-    if (pathInit) {
+    if (pathInit && odomInit) {
       tf::StampedTransform transform;
       try{
         ls.lookupTransform("/map_link", "/world",  
