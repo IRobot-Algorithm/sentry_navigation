@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- 启动地图 -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(find global_planner)/maps/map.yaml"/>
+
+  <node pkg="obstacle_generater" type="obstacleGenerating" respawn="true" name="obstacleGenerating" output="screen"/>
+
+</launch>

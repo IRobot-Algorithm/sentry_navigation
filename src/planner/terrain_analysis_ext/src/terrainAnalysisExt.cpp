@@ -48,16 +48,16 @@ double ceilingFilteringThre = 2.0;
 double localTerrainMapRadius = 4.0;
 
 // terrain voxel parameters
-float terrainVoxelSize = 2.0;
+float terrainVoxelSize = 0.4;
 int terrainVoxelShiftX = 0;
 int terrainVoxelShiftY = 0;
-const int terrainVoxelWidth = 41;
+const int terrainVoxelWidth = 51;
 int terrainVoxelHalfWidth = (terrainVoxelWidth - 1) / 2;
 const int terrainVoxelNum = terrainVoxelWidth * terrainVoxelWidth;
 
 // planar voxel parameters
-float planarVoxelSize = 0.4;
-const int planarVoxelWidth = 101;
+float planarVoxelSize = 0.2;
+const int planarVoxelWidth = 81;
 int planarVoxelHalfWidth = (planarVoxelWidth - 1) / 2;
 const int planarVoxelNum = planarVoxelWidth * planarVoxelWidth;
 
@@ -67,6 +67,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr laserCloudDwz(new pcl::PointCloud<pcl::Poin
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainCloud(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainCloudElev(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainCloudLocal(new pcl::PointCloud<pcl::PointXYZI>());
+pcl::PointCloud<pcl::PointXYZI>::Ptr staticObstacles(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloud[terrainVoxelNum];
 
 int terrainVoxelUpdateNum[terrainVoxelNum] = { 0 };
@@ -166,6 +167,18 @@ void clearingHandler(const std_msgs::Float32::ConstPtr& dis)
   clearingCloud = true;
 }
 
+void staticObstaclesHandler(const sensor_msgs::PointCloud2ConstPtr& staticObstacles2)
+{
+  staticObstacles->clear();
+  pcl::fromROSMsg(*staticObstacles2, *staticObstacles);
+
+  int staticObstaclesSize = staticObstacles->points.size();
+  for (int i = 0; i < staticObstaclesSize; i++)
+  {
+    staticObstacles->points[i].intensity = vehicleHeight;
+  }
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "terrainAnalysisExt");
@@ -197,6 +210,8 @@ int main(int argc, char** argv)
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy>("/joy", 5, joystickHandler);
 
   ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32>("/cloud_clearing", 5, clearingHandler);
+
+  ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
 
   ros::Subscriber subTerrainCloudLocal = nh.subscribe<sensor_msgs::PointCloud2>("/terrain_map", 2, terrainCloudLocalHandler);
 
@@ -525,14 +540,14 @@ int main(int argc, char** argv)
           terrainCloudElev->push_back(point);
         }
       }
-
       clearingCloud = false;
 
+      *terrainCloudElev += *staticObstacles;
       // publish points with elevation
       sensor_msgs::PointCloud2 terrainCloud2;
       pcl::toROSMsg(*terrainCloudElev, terrainCloud2);
       terrainCloud2.header.stamp = ros::Time().fromSec(laserCloudTime);
-      terrainCloud2.header.frame_id = "map";//"map"
+      terrainCloud2.header.frame_id = "map";
       pubTerrainCloud.publish(terrainCloud2);
     }
 

@@ -2,6 +2,7 @@
 
   <arg name="twoWayDrive" default="true"/><!--false-->
   <arg name="maxSpeed" default="1.0"/><!--2.0-->
+  <arg name="maxAccel" default="1.0"/>
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
   <arg name="autonomySpeed" default="1.0"/><!--5.0-->
@@ -62,7 +63,7 @@
     <param name="stopYawRateGain" type="double" value="2.0" /><!--7.5-->
     <param name="maxYawRate" type="double" value="360.0" /><!--360  120.0-->
     <param name="maxSpeed" value="$(arg maxSpeed)" />
-    <param name="maxAccel" type="double" value="2.0" /><!--5.0-->
+    <param name="maxAccel" value="$(arg maxAccel)" /><!--5.0-->
     <param name="switchTimeThre" type="double" value="1.0" />
     <param name="dirDiffThre" type="double" value="0.2" /><!--0.3-->
     <param name="stopDisThre" type="double" value="0.02" /><!--xz:0.2  xy:0.1-->

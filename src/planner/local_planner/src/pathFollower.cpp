@@ -273,7 +273,8 @@ int main(int argc, char** argv)
 
   static tf::TransformBroadcaster br;
   static tf::TransformListener ls;
-  ros::Rate rate(200);//100
+  int r = 200;
+  ros::Rate rate(r);
   bool status = ros::ok();
   while (status) {
     rate.sleep();
@@ -296,7 +297,8 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
-      // if (endDis < 4.0 && goalZ < -5) // tracking
+      
+      // if (endDis < 4.0 && goalZ < -1e4) // tracking
       // {
       //   cmd_vel.twist.linear.x = 0.0;
       //   cmd_vel.twist.linear.y = 0.0;

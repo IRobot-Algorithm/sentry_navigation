@@ -75,6 +75,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr laserCloudCrop(new pcl::PointCloud<pcl::Poi
 pcl::PointCloud<pcl::PointXYZI>::Ptr laserCloudDwz(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainCloud(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainCloudElev(new pcl::PointCloud<pcl::PointXYZI>());
+pcl::PointCloud<pcl::PointXYZI>::Ptr staticObstacles(new pcl::PointCloud<pcl::PointXYZI>());
 pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloud[terrainVoxelNum];
 
 int terrainVoxelUpdateNum[terrainVoxelNum] = {0};
@@ -207,6 +208,18 @@ void clearingHandler(const std_msgs::Float32::ConstPtr& dis)
   clearingCloud = true;
 }
 
+void staticObstaclesHandler(const sensor_msgs::PointCloud2ConstPtr& staticObstacles2)
+{
+  staticObstacles->clear();
+  pcl::fromROSMsg(*staticObstacles2, *staticObstacles);
+
+  int staticObstaclesSize = staticObstacles->points.size();
+  for (int i = 0; i < staticObstaclesSize; i++)
+  {
+    staticObstacles->points[i].intensity = vehicleHeight;
+  }
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "terrainAnalysis");
@@ -249,6 +262,8 @@ int main(int argc, char** argv)
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy> ("/joy", 5, joystickHandler);
 
   ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32> ("/map_clearing", 5, clearingHandler);
+
+  ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
 
   ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/terrain_map", 2);
 
@@ -646,9 +661,9 @@ int main(int argc, char** argv)
           }
         }
       }
-
       clearingCloud = false;
 
+      *terrainCloudElev += *staticObstacles;
       // publish points with elevation
       sensor_msgs::PointCloud2 terrainCloud2;
       pcl::toROSMsg(*terrainCloudElev, terrainCloud2);
