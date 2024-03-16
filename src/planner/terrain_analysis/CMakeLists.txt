@@ -51,7 +51,7 @@ link_directories(
 )
 
 ## Declare executables
-add_executable(terrainAnalysis src/origin.cpp)
+add_executable(terrainAnalysis src/terrainAnalysis.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(terrainAnalysis ${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PCL_LIBRARIES})
