@@ -369,12 +369,18 @@ bool LaserMapping::IMUUpdate()
 void LaserMapping::Run() {
     if (!localization_init_)
     {
+        if (lidar_buffer_.size() < 10)
+            return;
 
         LOG(INFO) << "Localization Initing!";
         PointCloudType::Ptr cloud_xyzi(new PointCloudType());
         
         mtx_buffer_.lock();
-        cloud_xyzi = lidar_buffer_.back();
+        for (int i = 0; i < 10; i++)
+        {
+            *cloud_xyzi += *(lidar_buffer_.front());
+            lidar_buffer_.pop_front();
+        }
         lidar_buffer_.clear();
         time_buffer_.clear();
         imu_buffer_.clear();
@@ -400,6 +406,7 @@ void LaserMapping::Run() {
             init_R_wrt_ = result.rotation();
             init_T_wrt_ = result.translation();
             localization_init_ = true;
+            relocalization_.clear();
             LOG(INFO) << "Localization Finished!";
         }
         else

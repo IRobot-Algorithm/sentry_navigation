@@ -1,10 +1,10 @@
 #include "relocalization.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 
+#define PI 3.1415927
+
 Relocalization::Relocalization()
 {
-    // \033[1;32m，\033[0m 终端显示成绿色
-    ROS_INFO_STREAM("\033[1;32m----> ICP location started.\033[0m");
 
     // 指针的初始化
     cloud_map_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
@@ -16,18 +16,33 @@ Relocalization::~Relocalization()
 {
 }
 
+void Relocalization::clear()
+{
+    cloud_map_->clear();
+    cloud_scan_->clear();
+    RGBcloud_map_->clear();
+    RGBcloud_scan_->clear();
+    RGBcloud_result_->clear();
+}
+
 /*
  * 的参数初始化
  */
 void Relocalization::InitParams(ros::NodeHandle &nh)
 {
-    nh.param<std::string>("icp/pcd_path", pcd_path_);   //scan与匹配的最大时间间隔
+    // \033[1;32m，\033[0m 终端显示成绿色
+    ROS_INFO_STREAM("\033[1;32m----> ICP location started.\033[0m");
+
+    nh.param<bool>("icp/save_result", save_result_, false);
+    nh.param<bool>("icp/pub_result", pub_result_, false);
+
+    nh.param<std::string>("icp/map_pcd_path", map_pcd_path_, "");
+    nh.param<std::string>("icp/ori_pcd_path", ori_pcd_path_, "");
+    nh.param<std::string>("icp/res_pcd_path", res_pcd_path_, "");
 
     //ICP匹配相关参数
     nh.param<double>("icp/AGE_THRESHOLD", AGE_THRESHOLD_, 1);   //scan与匹配的最大时间间隔
     nh.param<double>("icp/ANGLE_UPPER_THRESHOLD", ANGLE_UPPER_THRESHOLD_, 10);    //最大变换角度
-    nh.param<double>("icp/ANGLE_THRESHOLD", ANGLE_THRESHOLD_, 0.01);    //最小变换角度
-    nh.param<double>("icp/DIST_THRESHOLD", DIST_THRESHOLD_, 0.01);    //最小变换距离
     nh.param<double>("icp/SCORE_THRESHOLD_MAX", SCORE_THRESHOLD_MAX_, 0.1);    //达到最大迭代次数或者到达差分阈值后后，代价仍高于此值，认为无法收敛,自适应使用
     nh.param<double>("icp/Point_Quantity_THRESHOLD", Point_Quantity_THRESHOLD_, 200);   //点云数阈值,低于此值不匹配
     nh.param<double>("icp/Maximum_Iterations", Maximum_Iterations_, 100);   //ICP中的最大迭代次数
@@ -39,7 +54,21 @@ void Relocalization::InitParams(ros::NodeHandle &nh)
     //如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点，有最大和最小值，会随着icp迭代的SCORE值按比例进行更新
     nh.param<double>("icp/ObstacleRemoval_Distance_Max", ObstacleRemoval_Distance_Max_, 2);     //最大距离
 
-    if (pcl::io::loadPCDFile<PointT>(pcd_path_, *cloud_scan_) == -1)
+    if (save_result_ || pub_result_)
+    {
+        RGBcloud_map_ = boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>>(new pcl::PointCloud<pcl::PointXYZRGB>);
+        RGBcloud_scan_ = boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>>(new pcl::PointCloud<pcl::PointXYZRGB>);
+        RGBcloud_result_ = boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>>(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+        if (pub_result_)
+        {
+            pub_map_ = nh.advertise<sensor_msgs::PointCloud2>("/icp_cloud_map", 1);
+            pub_scan_ = nh.advertise<sensor_msgs::PointCloud2>("/icp_cloud_scan", 1);
+        }
+    }
+    
+
+    if (pcl::io::loadPCDFile<PointT>(map_pcd_path_, *cloud_map_) == -1)
     {
         PCL_ERROR("Couldn't read PCD file\n");
         return;
@@ -54,16 +83,14 @@ bool Relocalization::InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT
     // PointCloudOutlierRemoval(cloud_scan_);
     PointCloudVoxelGridRemoval(cloud_scan_, VoxelGridRemoval_LeafSize_);
     PointCloudObstacleRemoval(cloud_map_, cloud_scan_, ObstacleRemoval_Distance_Max_);
-    // scan_pointcloud_publisher_.publish(cloud_scan_);
-    // map_pointcloud_publisher_.publish(cloud_map_);   //发布pointcloud地图
 
     //使用ICP进行点云匹配
     if (!ScanMatchWithICP(match_result, cloud_scan_, cloud_map_))
     {
-        // scan_initialized_ = false;  //数据错误，需要重新初始化
         return false; 
     }
 
+    first_icp_ = true;
     return true;
 }
 
@@ -72,6 +99,43 @@ bool Relocalization::InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT
  */
 bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Ptr &cloud_scan, PointCloudT::Ptr &cloud_map)
 {
+    if (first_icp_ && pub_result_)
+    {
+        RGBcloud_map_->clear();
+        for (const pcl::PointXYZ& point : *cloud_map)
+        {
+            pcl::PointXYZRGB colored_point;
+            colored_point.x = point.x;
+            colored_point.y = point.y;
+            colored_point.z = point.z;
+            colored_point.r = 128;
+            colored_point.g = 128;
+            colored_point.b = 128;
+            RGBcloud_map_->push_back(colored_point);
+        }
+
+        RGBcloud_scan_->clear();
+        for (const pcl::PointXYZ& point : *cloud_scan)
+        {
+            pcl::PointXYZRGB colored_point;
+            colored_point.x = point.x;
+            colored_point.y = point.y;
+            colored_point.z = point.z;
+            colored_point.r = 255;
+            colored_point.g = 255;
+            colored_point.b = 0;
+            RGBcloud_scan_->push_back(colored_point);
+        }
+
+        sensor_msgs::PointCloud2 map_msg;
+        sensor_msgs::PointCloud2 scan_msg;
+        pcl::toROSMsg(*RGBcloud_map_, map_msg);
+        pcl::toROSMsg(*RGBcloud_scan_, scan_msg);
+        map_msg.header.frame_id = "map";
+        scan_msg.header.frame_id = "map";
+        pub_map_.publish(map_msg);
+        pub_scan_.publish(scan_msg);
+    }
 
     icp_.setTransformationEpsilon (1e-6);    //为中止条件设置最小转换差异
     icp_.setEuclideanFitnessEpsilon(1e-6);
@@ -94,61 +158,88 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
     }
 
     // 收敛了之后, 获取坐标变换
-    Eigen::Affine3f transfrom;
-    transfrom = icp_.getFinalTransformation();
+    Eigen::Affine3f transform;
+    transform = icp_.getFinalTransformation();
 
     // 将Eigen::Affine3f转换成x, y, theta, 并打印出来
     float x, y, z, roll, pitch, yaw;
-    pcl::getTranslationAndEulerAngles(transfrom, x, y, z, roll, pitch, yaw);
-    // std::cout << "ICP transfrom: (" << x << ", " << y << ", " << yaw << ")" << std::endl;
+    pcl::getTranslationAndEulerAngles(transform, x, y, z, roll, pitch, yaw);
 
     double tranDist = sqrt(x*x + y*y);
-    double angleDist = abs(yaw);
 
     if (if_debug_)
     {
-        std::cout<< "tranDist:" << tranDist << " angleDist: " << angleDist 
-        << " score: " << icp_.getFitnessScore() << std::endl;
-    }
-
-    if (if_debug_)
-    {
+        std::cout << "ICP transform: (" << x << ", " << y << ", " << z << ")" << std::endl;
+        std::cout << "ICP rotation: (" << roll * 180.0 / PI << ", " << pitch * 180.0 / PI << ", " << yaw * 180.0 / PI << ")" << std::endl; 
+        std::cout << " score: " << icp_.getFitnessScore() << std::endl;
         std::cout << "cloud_scan->points.size() : " << cloud_scan->points.size() << std::endl;
     }
-    
-    std::pair<double,double> coord = {x,y};
-    // 如果变换小于一定值，不发布结果，退出
-    if(tranDist < DIST_THRESHOLD_ && angleDist < ANGLE_THRESHOLD_ ||
-         cloud_scan->points.size() < Point_Quantity_THRESHOLD_ )
+
+    if(cloud_scan->points.size() < Point_Quantity_THRESHOLD_ )
     {
         if(if_debug_)
         {
             // \033[1;33m，\033[0m 终端显示成黄色
-            std::cout << "\033[1;33m" << "Distance or point_Quantity out of threshold" << "\033[0m" << std::endl;
-            std::cout << "\033[1;33m"  << "tranDist:" << tranDist << " angleDist: " << angleDist 
-            << " score: " << icp_.getFitnessScore() << "\033[0m" << std::endl;
+            std::cout << "\033[1;33m" << "Point_Quantity out of threshold" << "\033[0m" << std::endl;
+            std::cout << " score: " << icp_.getFitnessScore() << "\033[0m" << std::endl;
         }
         return false;
     }
 
     //如果匹配结果不满足条件，退出
-    if(angleDist > ANGLE_UPPER_THRESHOLD_ || icp_.getFitnessScore() > SCORE_THRESHOLD_MAX_)
+    if(icp_.getFitnessScore() > SCORE_THRESHOLD_MAX_)
     {
         if(if_debug_)
         {
             // \033[1;33m，\033[0m 终端显示成黄色
             std::cout << "\033[1;33m" << "result out of threshold" << "\033[0m" << std::endl;
-            std::cout << "\033[1;33m"  << "tranDist:" << tranDist << " angleDist: " << angleDist 
-            << " score: " << icp_.getFitnessScore() << "\033[0m" << std::endl;
+            std::cout << " score: " << icp_.getFitnessScore() << "\033[0m" << std::endl;
             std::cout << "location_loss_num_: " << location_loss_num_ << std::endl;
         }
         return false;
     }
     location_loss_num_ = 0;
 
-    trans.matrix() = transfrom.matrix().cast<double>();      //Matrix4f类型转换为Isometry3d类型
+    trans.matrix() = transform.matrix().cast<double>();      //Matrix4f类型转换为Isometry3d类型
 
-    // icp_pointcloud_publisher_.publish(pointcloud_result);   //发布匹配结果
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_result(new pcl::PointCloud<pcl::PointXYZ>);
+    if (first_icp_ && (save_result_ || pub_result_))
+    {
+        // 对点云进行变换
+        pcl::transformPointCloud(*cloud_scan, *cloud_result, transform);
+
+        RGBcloud_result_->clear();
+        for (const pcl::PointXYZ& point : *cloud_result)
+        {
+            pcl::PointXYZRGB colored_point;
+            colored_point.x = point.x;
+            colored_point.y = point.y;
+            colored_point.z = point.z;
+            colored_point.r = 255;
+            colored_point.g = 255;
+            colored_point.b = 0;
+            RGBcloud_result_->push_back(colored_point);
+        }
+        
+        if (save_result_)
+        {
+            
+            pcl::io::savePCDFileBinary(ori_pcd_path_, *RGBcloud_map_ + *RGBcloud_scan_);
+            pcl::io::savePCDFileBinary(res_pcd_path_, *RGBcloud_map_ + *RGBcloud_result_);
+        }
+        if (pub_result_)
+        {
+            sensor_msgs::PointCloud2 map_msg;
+            sensor_msgs::PointCloud2 scan_msg;
+            pcl::toROSMsg(*RGBcloud_map_, map_msg);
+            pcl::toROSMsg(*RGBcloud_result_, scan_msg);
+            map_msg.header.frame_id = "map";
+            scan_msg.header.frame_id = "map";
+            pub_map_.publish(map_msg);
+            pub_scan_.publish(scan_msg);
+        }
+    }
+
     return true;
 }
 
@@ -164,7 +255,7 @@ void Relocalization::PointCloudObstacleRemoval(PointCloudT::Ptr &cloud_map, Poin
 
     pcl::KdTreeFLANN<pcl::PointXYZ>kdtree;  //创建kd_tree对象
     kdtree.setInputCloud (cloud_map); //设置搜索空间
-    int K =1;   // k近邻收索
+    int K = 1;   // k近邻收索
 
     // for (int i = 0; i < cloud_scan->points.size(); i++)
     int i = 0;
@@ -192,18 +283,6 @@ void Relocalization::PointCloudObstacleRemoval(PointCloudT::Ptr &cloud_map, Poin
         }
     }
 
-    // cloud_removaled->width = cloud_removaled->points.size() ;
-    // cloud_removaled->height = 1;
-    // cloud_removaled->is_dense = false; // contains nans
-
-    // std_msgs::Header header;
-    // header.stamp = ros::Time::now();
-    // // header.frame_id = lidar_frame_;
-    // header.frame_id = "map";
-    // cloud_removaled->header = pcl_conversions::toPCL(header);
-    // removal_pointcloud_publisher_.publish(cloud_removaled);
-    // std::cout<<"size of clound ObstacleRemovaled : " << cloud_scan->points.size() << std::endl;
-
 }
 
 /**
@@ -211,11 +290,7 @@ void Relocalization::PointCloudObstacleRemoval(PointCloudT::Ptr &cloud_map, Poin
  */
 void Relocalization::PointCloudOutlierRemoval(PointCloudT::Ptr &cloud_scan)
 {
-    // std::cout<<"size of clound UnOutlierRemoval : " << cloud_scan->points.size() << std::endl;
 
-    /* 声明 离群点滤波 后 的点云 */
-    // pcl::PointCloud<PointT>::Ptr cloud_OutRemove_filtered (new pcl::PointCloud<PointT>);
- 
     /* 声明 离群点滤波 的 类实例 */
     pcl::StatisticalOutlierRemoval<PointT> sor_OutRemove;
     /* 设置输入点云 */
@@ -226,10 +301,7 @@ void Relocalization::PointCloudOutlierRemoval(PointCloudT::Ptr &cloud_scan)
     sor_OutRemove.setStddevMulThresh (1.0);
      /* 执行滤波 返回 滤波后 的 点云 */
     sor_OutRemove.filter (*cloud_scan);
- 
- 
-    /* 打印滤波前后的点数 */
-    // std::cout << "size of clound OutlierRemovaled : " << cloud_scan->points.size() << std::endl;
+
 }
 
 /**
