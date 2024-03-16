@@ -33,13 +33,30 @@ StateProcess::StateProcess()
 
 void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
 {
-  nh.param<bool>("use_pose_goal", use_pose_goal_, false);
-  nh.param<bool>("track_target", track_target_, false);
+  nh.param<bool>("/state_processing/use_pose_goal", use_pose_goal_, false);
+  nh.param<bool>("/state_processing/track_target", track_target_, false);
+  nh.param<bool>("/state_processing/use_map", use_map_, false);
+  nh.param<std::string>("/state_processing/map_path", map_path_, "");
+
+  if (!use_pose_goal_ && !use_map_)
+  {
+    ROS_INFO("SLAMMING!!!");
+    ROS_INFO("SLAMMING!!!");
+    ROS_INFO("SLAMMING!!!");
+  }
+  if (use_map_ && use_pose_goal_)
+  {
+    ROS_ERROR("Use map but not use far planner!!!");
+    ROS_ERROR("Use map but not use far planner!!!");
+    ROS_ERROR("Use map but not use far planner!!!");
+    use_map_ = false;
+  }
 
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &StateProcess::odometryHandler, this);
   this->sub_global_path_ = nh.subscribe<nav_msgs::Path>("/global_planner/planner/plan", 5, &StateProcess::globalPathHandler, this);
   this->sub_far_waypoint_ = nh.subscribe<geometry_msgs::PointStamped>("/far_way_point", 5, &StateProcess::farWaypointHandler, this);
+  this->sub_map_result_ = nh.subscribe<std_msgs::Bool>("/map_result", 5, &StateProcess::mapResultHandler, this);
   this->nav_goal_server = nh.advertiseService("/nav_goal", &StateProcess::navGoalHandler, this);
   this->nav_target_server = nh.advertiseService("/nav_target", &StateProcess::navTargetHandler, this);
 
@@ -48,7 +65,10 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   if (use_pose_goal_)
     this->pub_goal_ = nh.advertise<geometry_msgs::PoseStamped>("/rviz_goal", 5);
   else
+  {
+    this->pub_map_ = nh.advertise<std_msgs::String>("/read_file_dir", 1);
     this->pub_goal_ = nh.advertise<geometry_msgs::PointStamped>("/goal_point", 5);
+  }
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
@@ -69,6 +89,11 @@ void StateProcess::farWaypointHandler(const geometry_msgs::PointStamped::ConstPt
 {
   far_way_point_ = *point;
   far_way_point_.point.z = 0;
+}
+
+void StateProcess::mapResultHandler(const std_msgs::Bool::ConstPtr& res)
+{
+  use_map_ = false;
 }
 
 bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res)
@@ -178,6 +203,12 @@ void StateProcess::loop(const ros::TimerEvent& event)
   nav_num++;
   if (nav_num == 100)
   {
+    if (use_map_)
+    {
+      std_msgs::String msg;
+      msg.data = map_path_;
+      pub_map_.publish(msg);
+    }
     printNavExecState();
     if (!have_odom_)
       ROS_WARN("no odom.");

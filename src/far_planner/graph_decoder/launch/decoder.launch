@@ -1,5 +1,6 @@
 <launch>
     <arg name="graph_topic" default="/planner_nav_graph"/>
+
     <node pkg="graph_decoder" type="graph_decoder" name="graph_decoder" output="screen">
         <rosparam command="load" file="$(find graph_decoder)/config/default.yaml" />
         <remap from="/planner_nav_graph" to="$(arg graph_topic)"/> 

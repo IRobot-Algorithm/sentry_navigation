@@ -19,7 +19,7 @@ void GraphDecoder::Init() {
 
     this->LoadParmas();
     save_graph_sub_ = nh.subscribe("/save_file_dir", 5, &GraphDecoder::SaveGraphCallBack, this);
-    read_graph_sub_ = nh.subscribe("/read_file_dir", 5, &GraphDecoder::ReadGraphCallBack, this);
+    read_graph_sub_ = nh.subscribe("/read_file_dir", 1, &GraphDecoder::ReadGraphCallBack, this);
     request_graph_service_  = nh.advertiseService("/request_graph_service",  &GraphDecoder::RequestGraphService, this);
     robot_id_ = 0;
     this->ResetGraph(received_graph_);

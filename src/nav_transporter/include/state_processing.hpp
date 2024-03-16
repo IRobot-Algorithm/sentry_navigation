@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 
 #include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/Point.h>
@@ -40,6 +41,8 @@ class StateProcess {
 
 		void farWaypointHandler(const geometry_msgs::PointStamped::ConstPtr& point);
 
+		void mapResultHandler(const std_msgs::Bool::ConstPtr& res);
+
 		/*
 		* @brief 决策导航信息服务器
 		* @auther wyq
@@ -71,12 +74,16 @@ class StateProcess {
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_global_path_;
 		ros::Subscriber sub_far_waypoint_;
+		ros::Subscriber sub_map_result_;
 		ros::ServiceServer nav_goal_server;
 		ros::ServiceServer nav_target_server;
 
 		ros::Publisher pub_goal_;
+		ros::Publisher pub_map_;
 		ros::Publisher pub_waypoint_;
 
+		bool use_map_;
+		std::string map_path_;
 		nav_msgs::Path global_path_;
 		geometry_msgs::PoseStamped goal_;
 		geometry_msgs::PointStamped point_goal_;

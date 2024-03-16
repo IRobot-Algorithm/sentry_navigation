@@ -14,6 +14,7 @@ void GraphMsger::Init(const ros::NodeHandle& nh, const GraphMsgerParams& params)
     nh_ = nh;
     gm_params_ = params;
     graph_pub_ = nh_.advertise<visibility_graph_msg::Graph>("/robot_vgraph", 5);
+    map_result_pub_ = nh_.advertise<std_msgs::Bool>("/map_result", 5);
     graph_sub_ = nh_.subscribe("/decoded_vgraph", 5, &GraphMsger::GraphCallBack, this);
 
     global_graph_.clear();
@@ -148,6 +149,10 @@ void GraphMsger::GraphCallBack(const visibility_graph_msg::GraphConstPtr& msg) {
             }
         }
     }
+
+    std_msgs::Bool res;
+    res.data = true;
+    map_result_pub_.publish(res);
 }
 
 NavNodePtr GraphMsger::NearestNodePtrOnGraph(const Point3D p, const float radius) {

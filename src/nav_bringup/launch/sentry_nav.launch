@@ -23,7 +23,12 @@
     <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
 
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
-    <include file="$(find nav_transporter)/launch/transporter.launch" />
+    <include file="$(find nav_transporter)/launch/transporter.launch" >
+        <arg name="use_pose_goal" value="false"/>
+        <arg name="track_target" value="false"/>
+        <arg name="use_map" value="true"/>
+        <arg name="map_path" value="$(find far_planner)/data/3floor.vgh"/>
+    </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
     <!-- /////////////////////// rviz /////////////////////// -->

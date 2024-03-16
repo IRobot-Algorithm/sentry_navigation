@@ -1,9 +1,18 @@
 <launch>
+    <arg name="use_pose_goal" default="false"/>
+    <arg name="track_target" default="false"/>
+    <arg name="use_map" default="false"/>
+    <arg name="map_path" default=""/>
 
 	<rosparam command="load" file="$(find nav_transporter)/config/config.yaml" />
 	<rosparam command="load" file="$(find nav_transporter)/config/hardware_settings.yaml" />
 
-    <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" />
+    <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" >
+        <param name="use_pose_goal" type="bool" value="$(arg use_pose_goal)" />
+        <param name="track_target" type="bool" value="$(arg track_target)" />
+        <param name="use_map" type="bool" value="$(arg use_map)" />
+        <param name="map_path" type="string" value="$(arg map_path)" />
+    </node>
     <!-- <node pkg="nav_transporter" type="can_comm_node" respawn="true" name="can_comm_node" output="screen" /> -->
     <!-- <node pkg="nav_transporter" type="usb_comm_node" respawn="true" name="usb_comm_node" output="screen" /> -->
 

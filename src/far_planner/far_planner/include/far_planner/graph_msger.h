@@ -27,6 +27,7 @@ private:
     ros::NodeHandle nh_;
     GraphMsgerParams gm_params_;
     ros::Publisher  graph_pub_;
+    ros::Publisher  map_result_pub_;
     ros::Subscriber graph_sub_;
 
     NodePtrStack   global_graph_;
