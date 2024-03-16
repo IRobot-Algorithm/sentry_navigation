@@ -48,10 +48,6 @@ icp:
     save_result: true
     pub_result: true
 
-    map_pcd_path: "/home/niuoruo/workspace/sentry/ws/sentry_navigation/src/faster-lio/PCD/scans.pcd"
-    ori_pcd_path: "/home/niuoruo/workspace/sentry/ws/sentry_navigation/src/faster-lio/PCD/origin.pcd"
-    res_pcd_path: "/home/niuoruo/workspace/sentry/ws/sentry_navigation/src/faster-lio/PCD/result.pcd"
-
     # ICP定位参数
     SCORE_THRESHOLD_MAX: 0.05     # 达到最大迭代次数后，代价仍高于此值，认为无法收敛
     ANGLE_UPPER_THRESHOLD_: 180    # 最大角度变换

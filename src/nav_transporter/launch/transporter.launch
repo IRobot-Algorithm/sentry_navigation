@@ -14,6 +14,6 @@
         <param name="map_path" type="string" value="$(arg map_path)" />
     </node>
     <!-- <node pkg="nav_transporter" type="can_comm_node" respawn="true" name="can_comm_node" output="screen" /> -->
-    <!-- <node pkg="nav_transporter" type="usb_comm_node" respawn="true" name="usb_comm_node" output="screen" /> -->
+    <node pkg="nav_transporter" type="usb_comm_node" respawn="true" name="usb_comm_node" output="screen" />
 
 </launch>

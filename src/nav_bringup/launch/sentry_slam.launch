@@ -6,6 +6,14 @@
     <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" />
     <!-- <include file="$(find Point-LIO)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
-    <include file="$(find faster_lio)/launch/mapping_mid360_slam.launch" />
+    <include file="$(find faster_lio)/launch/mapping_mid360_slam.launch" >
+	    <arg name="rviz" value="true" />
+    </include>
+
+    <include file="$(find far_planner)/launch/far_planner.launch" />
+    <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
+    <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
+    
+    <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/>
 
 </launch>

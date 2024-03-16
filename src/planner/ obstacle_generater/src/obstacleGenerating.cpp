@@ -40,7 +40,7 @@ void OccupancyGridToPointCloud(const nav_msgs::OccupancyGrid &map_msg, pcl::Poin
                 pcl::PointXYZ point;
                 point.x = pos_x;
                 point.y = pos_y;
-                point.z = 1.0;
+                point.z = 0.0;
                 cloud->push_back(point);
             }
         }

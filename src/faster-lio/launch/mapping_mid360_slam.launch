@@ -13,6 +13,9 @@
 	<param name="cube_side_length" type="double" value="1000" />
 	<param name="runtime_pos_log_enable" type="bool" value="1" />
 	<param name="pcd_save/pcd_save_en" type="bool" value="true" />
+	<param name="icp/use_icp" type="bool" value="false" />
+	<param name="icp/save_result" type="bool" value="false" />
+	<param name="icp/pub_result" type="bool" value="false" />
     <node pkg="faster_lio" type="run_mapping_online" name="laserMapping" output="screen" />
 
 	<group if="$(arg rviz)">

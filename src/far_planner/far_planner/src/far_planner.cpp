@@ -108,10 +108,10 @@ void FARMaster::Init() {
 
 void FARMaster::ResetEnvironmentAndGraph() {
   this->ResetInternalValues();
-  if (!FARUtil::IsDebug) { // Terminal Output
-    printf("\033[A"), printf("\033[A"), printf("\033[2K");
-    std::cout<< "\033[1;31m V-Graph Resetting...\033[0m\n" << std::endl;
-  }
+  // if (!FARUtil::IsDebug) { // Terminal Output
+  //   printf("\033[A"), printf("\033[A"), printf("\033[2K");
+  //   std::cout<< "\033[1;31m V-Graph Resetting...\033[0m\n" << std::endl;
+  // }
   graph_manager_.ResetCurrentGraph();
   map_handler_.ResetGripMapCloud();
   graph_planner_.ResetPlannerInternalValues();
@@ -160,8 +160,8 @@ void FARMaster::Loop() {
     contour_detector_.BuildTerrainImgAndExtractContour(odom_node_ptr_, FARUtil::surround_obs_cloud_, realworld_contour_);
     contour_graph_.UpdateContourGraph(odom_node_ptr_, realworld_contour_);
     if (is_graph_init_) {
-      if (!FARUtil::IsDebug) printf("\033[2K");
-      std::cout<<"    "<<"Local V-Graph Updated. Number of local vertices: "<<ContourGraph::contour_graph_.size()<<std::endl;
+      // if (!FARUtil::IsDebug) printf("\033[2K");
+      // std::cout<<"    "<<"Local V-Graph Updated. Number of local vertices: "<<ContourGraph::contour_graph_.size()<<std::endl;
     }
     /* Adjust heights with terrain */
     map_handler_.AdjustCTNodeHeight(ContourGraph::contour_graph_);
@@ -182,8 +182,8 @@ void FARMaster::Loop() {
       new_nodes_ = graph_manager_.GetNewNodes();
     }
     if (is_graph_init_) {
-      if (!FARUtil::IsDebug) printf("\033[2K");
-      std::cout<<"    "<< "Number of new vertices adding to global V-Graph: "<< new_nodes_.size()<<std::endl;
+      // if (!FARUtil::IsDebug) printf("\033[2K");
+      // std::cout<<"    "<< "Number of new vertices adding to global V-Graph: "<< new_nodes_.size()<<std::endl;
     }
     /* Graph Updating */
     graph_manager_.UpdateNavGraph(new_nodes_, is_stop_update_, clear_nodes_);
@@ -193,8 +193,8 @@ void FARMaster::Loop() {
     /* Update v-graph in other modules */
     nav_graph_ = graph_manager_.GetNavGraph();
     if (is_graph_init_) {
-      if (!FARUtil::IsDebug) printf("\033[2K");
-      std::cout<<"    "<<"Global V-Graph Updated. Number of global vertices: "<<nav_graph_.size()<<std::endl;
+      // if (!FARUtil::IsDebug) printf("\033[2K");
+      // std::cout<<"    "<<"Global V-Graph Updated. Number of global vertices: "<<nav_graph_.size()<<std::endl;
     }
     contour_graph_.ExtractGlobalContours();      // Global Polygon Update
     graph_planner_.UpdaetVGraph(nav_graph_);     // Graph Planner Update
@@ -239,11 +239,11 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
   const NavNodePtr goal_ptr = graph_planner_.GetGoalNodePtr();
   if (goal_ptr == NULL) {
     /* Graph Traversablity Update */
-    if (!FARUtil::IsDebug) printf("\033[2K");
-    std::cout<<"    "<<"Adding Goal to V-Graph "<<"Time: "<<0.f<<"ms"<<std::endl;
+    // if (!FARUtil::IsDebug) printf("\033[2K");
+    // std::cout<<"    "<<"Adding Goal to V-Graph "<<"Time: "<<0.f<<"ms"<<std::endl;
     graph_planner_.UpdateGraphTraverability(odom_node_ptr_, NULL);
-    if (!FARUtil::IsDebug) printf("\033[2K");
-    std::cout<<"    "<<"Path Search "<<"Time: "<<0.f<<"ms"<<std::endl;
+    // if (!FARUtil::IsDebug) printf("\033[2K");
+    // std::cout<<"    "<<"Path Search "<<"Time: "<<0.f<<"ms"<<std::endl;
   } else { 
     // Update goal postion with nearby terrain cloud
     const Point3D ori_p = graph_planner_.GetOriginNodePos(true);
@@ -258,7 +258,7 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
     FARUtil::Timer.start_time("Adding Goal to V-Graph");
     graph_planner_.UpdateGoalNavNodeConnects(goal_ptr); 
     graph_planner_.UpdaetVGraph(graph_manager_.GetNavGraph());
-    if (!FARUtil::IsDebug) printf("\033[2K");
+    // if (!FARUtil::IsDebug) printf("\033[2K");
     FARUtil::Timer.end_time("Adding Goal to V-Graph");
 
     // Update v-graph traversibility 
@@ -297,7 +297,7 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
         goal_pub_.publish(goal_waypoint_stamped_);
       }
     }
-    if (!FARUtil::IsDebug) printf("\033[2K");
+    // if (!FARUtil::IsDebug) printf("\033[2K");
 
     // publish planner status and timers
     std_msgs::Bool reach_goal_msg;
