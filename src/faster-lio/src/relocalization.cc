@@ -142,7 +142,6 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
     icp_.setMaxCorrespondenceDistance(5);
     icp_.setMaximumIterations (Maximum_Iterations_);    //设置匹配迭代最大次数
 
-    // ICP 输入数据,输出数据的设置,还可以进行参数配置,这里使用默认参宿
     icp_.setInputSource(cloud_scan);
     icp_.setInputTarget(cloud_map);
 
@@ -223,7 +222,6 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
         
         if (save_result_)
         {
-            
             pcl::io::savePCDFileBinary(ori_pcd_path_, *RGBcloud_map_ + *RGBcloud_scan_);
             pcl::io::savePCDFileBinary(res_pcd_path_, *RGBcloud_map_ + *RGBcloud_result_);
         }

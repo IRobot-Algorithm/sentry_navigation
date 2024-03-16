@@ -134,9 +134,6 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     else
         relocalization_.InitParams(nh);
 
-    init_R_wrt_.setIdentity();
-    init_T_wrt_.setZero();
-
     path_.header.stamp = ros::Time::now();
     path_.header.frame_id = "odom";
 
@@ -147,7 +144,10 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
 
     IMU_T_wrt_BOT_ = common::VecFromArray<double>(extrinT_IMU_BOT);
     IMU_R_wrt_BOT_ = common::MatFromArray<double>(extrinR_IMU_BOT);
+    BOT_T_wrt_IMU_ = -IMU_T_wrt_BOT_;
     BOT_R_wrt_IMU_ = IMU_R_wrt_BOT_.inverse();
+    T_wrt_ = BOT_T_wrt_IMU_;
+    R_wrt_ = BOT_R_wrt_IMU_;
 
     p_imu_->SetExtrinsic(lidar_T_wrt_IMU, lidar_R_wrt_IMU);
     p_imu_->SetGyrCov(common::V3D(gyr_cov, gyr_cov, gyr_cov));
@@ -391,7 +391,7 @@ void LaserMapping::Run() {
         for (const PointType& point_xyzi : *cloud_xyzi)
         {
             common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
-            common::V3D p_BOT(BOT_R_wrt_IMU_ * p_lidar - IMU_T_wrt_BOT_);
+            common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
 
             pcl::PointXYZ point_xyz;
             point_xyz.x = p_BOT(0);
@@ -403,8 +403,8 @@ void LaserMapping::Run() {
         Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
         if (relocalization_.InitExtrinsic(result, cloud_xyz))
         {
-            init_R_wrt_ = result.rotation();
-            init_T_wrt_ = result.translation();
+            R_wrt_ = result.rotation() * R_wrt_;
+            T_wrt_ = result.rotation() * T_wrt_ + result.translation();
             localization_init_ = true;
             relocalization_.clear();
             LOG(INFO) << "Localization Finished!";
@@ -816,8 +816,8 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     common::V3D init_T_lidar(odom_lidar.pose.pose.position.x, 
                              odom_lidar.pose.pose.position.y, 
                              odom_lidar.pose.pose.position.z);
-    common::V3D MAP_T_lidar(BOT_R_wrt_IMU_ * init_T_lidar - IMU_T_wrt_BOT_);
-    common::V3D MAP_T_BOT(MAP_T_lidar + MAP_R_BOT * IMU_T_wrt_BOT_);
+    common::V3D MAP_T_lidar(R_wrt_ * init_T_lidar + T_wrt_);
+    common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * T_wrt_);
 
     odom_base.pose.pose.position.x = MAP_T_BOT(0);
     odom_base.pose.pose.position.y = MAP_T_BOT(1);
@@ -988,10 +988,10 @@ void LaserMapping::SetPosestamp(geometry_msgs::PoseStamped &out ,state_ikfom sta
 
 void LaserMapping::PointBodyToMap(const PointType *pi, PointType *const po) {
     common::V3D p_body(pi->x, pi->y, pi->z);
-    // common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-    //                      state_point_.pos) - IMU_T_wrt_BOT_);
-    common::V3D p_global(init_R_wrt_ * (BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos) - IMU_T_wrt_BOT_) + init_T_wrt_);
+    // common::V3D p_global(R_wrt_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos) + T_wrt_);
+    common::V3D p_global(R_wrt_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) + T_wrt_);
 
     po->x = p_global(0);
     po->y = p_global(1);
@@ -1001,10 +1001,10 @@ void LaserMapping::PointBodyToMap(const PointType *pi, PointType *const po) {
 
 void LaserMapping::PointBodyToMap(const common::V3F &pi, PointType *const po) {
     common::V3D p_body(pi.x(), pi.y(), pi.z());
-    // common::V3D p_global(BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-    //                      state_point_.pos) - IMU_T_wrt_BOT_);
-    common::V3D p_global(init_R_wrt_ * (BOT_R_wrt_IMU_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
-                         state_point_.pos) - IMU_T_wrt_BOT_) + init_T_wrt_);
+    // common::V3D p_global(R_wrt_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+    //                      state_point_.pos) + T_wrt_);
+    common::V3D p_global(R_wrt_ * (state_point_.rot * (state_point_.offset_R_L_I * p_body + state_point_.offset_T_L_I) +
+                         state_point_.pos) + T_wrt_);
 
     po->x = p_global(0);
     po->y = p_global(1);

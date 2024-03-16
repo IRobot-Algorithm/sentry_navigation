@@ -187,18 +187,17 @@ class LaserMapping {
     tf::Quaternion tr_quat_;
     common::V3D IMU_T_wrt_BOT_;
     common::M3D IMU_R_wrt_BOT_;
+    common::V3D BOT_T_wrt_IMU_;
     common::M3D BOT_R_wrt_IMU_;
     tf::Vector3 tf_T_;
 
     // relocalization
     Relocalization relocalization_;
-    common::M3D init_R_wrt_;
-    common::V3D init_T_wrt_;
     bool localization_init_ = false;
 
     // final RT
+    common::V3D T_wrt_;
     common::M3D R_wrt_;
-    common::M3D T_wrt_;
 
 };
 
