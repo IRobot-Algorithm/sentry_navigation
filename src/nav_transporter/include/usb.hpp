@@ -34,7 +34,6 @@ typedef unsigned int    uint32_t;
 
 #pragma pack(push, 1)
 
-// 49字节
 typedef struct
 {
   // 包头
@@ -86,7 +85,6 @@ typedef struct
   uint8_t _EOF;
 } RMOSRefereeReceivePackage;
 
-// 23字节
 typedef struct
 {
   // 包头
@@ -105,13 +103,13 @@ typedef struct
   uint8_t _EOF;
 } NavIMUReceivePackage;
 
-// 15字节
 typedef struct
 {
     // 包头
     uint8_t _SOF;
     uint8_t ID;
 		// nuc控制
+		uint8_t chassis_mode;
     float vx;
     float vy;
     float yaw_imu;
@@ -119,7 +117,6 @@ typedef struct
     uint8_t _EOF;
 } NavVelocitySendPackage;
 
-// 15字节
 typedef struct
 {
     // 包头
@@ -135,7 +132,6 @@ typedef struct
     uint8_t _EOF;
 } RMOSIMUReceivePackage;
 
-// 15字节
 typedef struct
 {
     // 包头
