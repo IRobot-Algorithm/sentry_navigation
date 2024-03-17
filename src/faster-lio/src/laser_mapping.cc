@@ -370,6 +370,7 @@ void LaserMapping::Run() {
     if (need_localization_)
     {
         if (lidar_buffer_.size() < 10)
+        // if (lidar_buffer_.empty())
             return;
 
         LOG(INFO) << "Localization Initing!";
@@ -378,9 +379,10 @@ void LaserMapping::Run() {
         mtx_buffer_.lock();
         for (int i = 0; i < 10; i++)
         {
-            *cloud_xyzi += *(lidar_buffer_.front());
-            lidar_buffer_.pop_front();
+            *cloud_xyzi += *(lidar_buffer_.back());
+            lidar_buffer_.pop_back();
         }
+        // cloud_xyzi = lidar_buffer_.back();
         lidar_buffer_.clear();
         time_buffer_.clear();
         imu_buffer_.clear();
@@ -407,11 +409,11 @@ void LaserMapping::Run() {
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
             need_localization_ = false;
             relocalization_.clear();
-            LOG(INFO) << "Localization Finished!";
+            LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
         }
         else
         {
-            LOG(WARNING) << "Localization Failed!";
+            LOG(WARNING) << "----> Localization Failed!";
         }
 
         return;
