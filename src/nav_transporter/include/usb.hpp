@@ -144,8 +144,8 @@ typedef struct
 		// 自瞄状态
 		uint8_t AimbotState;
 		// 自瞄数据
-		int16_t PitchRelativeAngle;
-    int16_t YawRelativeAngle;
+		float PitchRelativeAngle;
+    float YawRelativeAngle;
     uint32_t SystemTimer;
     // 包尾
     uint8_t _EOF;
