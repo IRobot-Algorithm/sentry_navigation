@@ -9,12 +9,12 @@
     <param name="clearingDis" type="double" value="10.0" />
     <param name="useSorting" type="bool" value="false" />
     <param name="quantileZ" type="double" value="0.1" />
-    <param name="vehicleHeight" type="double" value="0.32" /><!--0.5-->
+    <param name="vehicleHeight" type="double" value="1.5" /><!--0.5-->
     <param name="voxelPointUpdateThre" type="int" value="40" />
     <param name="voxelTimeUpdateThre" type="double" value="2.0" />
-    <param name="lowerBoundZ" type="double" value="-2.5" />
+    <param name="lowerBoundZ" type="double" value="-2.0" />
     <param name="upperBoundZ" type="double" value="0.35" />
-    <param name="disRatioZ" type="double" value="0.1" />
+    <param name="disRatioZ" type="double" value="0.2" />
     <param name="checkTerrainConn" type="bool" value="$(arg checkTerrainConn)" />
     <param name="terrainConnThre" type="double" value="0.5" />
     <param name="terrainUnderVehicle" type="double" value="-0.75" />
