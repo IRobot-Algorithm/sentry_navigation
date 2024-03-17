@@ -104,6 +104,22 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   send_package_._SOF = 0x55;
   send_package_._EOF = 0xFF;
   send_package_.ID = NAV_VELOCITY_SEND_ID;
+  if (vel->twist.linear.z < 1e4) 
+  {
+    send_package_.chassis_mode = 0; // SLOW_ROTING
+  }
+  else if (vel->twist.linear.z < 1 + 1e-4)
+  {
+    send_package_.chassis_mode = 1; // RANDOM_ROTING
+  }
+  else if (vel->twist.linear.z < 2 + 1e-4)
+  {
+    send_package_.chassis_mode = 2; // QUICK_ROTING
+  }
+  else if (vel->twist.linear.z < 3 + 1e-4)
+  {
+    send_package_.chassis_mode = 3; // KEEP
+  }
   send_package_.vx = vel->twist.linear.x;
   send_package_.vy = vel->twist.linear.y;
   send_package_.yaw_imu = vel->twist.angular.z;
