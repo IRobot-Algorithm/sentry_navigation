@@ -37,7 +37,7 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 5);
 
   // ROS timer initialization
-  // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
+  this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
   this->receive_thread_ = std::thread(&UsbCommNode::receiveCallback, this);
 }
 
@@ -120,17 +120,15 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   {
     send_package_.chassis_mode = 3; // KEEP
   }
-  send_package_.vx = vel->twist.linear.x;
-  send_package_.vy = vel->twist.linear.y;
-  send_package_.yaw_imu = vel->twist.angular.z;
-  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+  send_package_.vx = static_cast<float>(vel->twist.linear.x);
+  send_package_.vy = static_cast<float>(vel->twist.linear.y);
+  send_package_.yaw_imu = static_cast<float>(vel->twist.angular.z);
 }
 
-// void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)
-// {
-//   this->can_.send(VEL_SEND_ID, vel_buf_, 7);
-//   // std::cout << "sent" << std::endl;
-// }
+void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)
+{
+  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+}
 
 void UsbCommNode::syncPackages()
 {
@@ -184,18 +182,18 @@ void UsbCommNode::syncPackages()
 
 void UsbCommNode::receiveCallback()
 {
-  ros::Rate rate(5000);
+  // ros::Rate rate(5000);
   while (ros::ok())
   {
-    rate.sleep();
-    syncPackages();
+    // rate.sleep();
+    // ros::Time t = ros::Time::now();
 
     uint8_t receive_package[64];
     int read_size = transporter_->read(receive_package, 64);
-    ROS_INFO("read_size: %d", read_size);
+    // ROS_INFO("read_size: %d", read_size);
 
-    if (read_size == -1)
-      return;
+    // if (read_size == -1)
+    //   return;
 
     switch (receive_package[1])
     {
@@ -273,6 +271,11 @@ void UsbCommNode::receiveCallback()
         break;
       }
     }
+
+    syncPackages();
+    // std::cout << "cost : " << (ros::Time::now().toSec() - t.toSec()) * 1000 << "ms" << std::endl;
+    // std::this_thread::sleep_for(std::chrono::microseconds(10));
+
   }
 }
 

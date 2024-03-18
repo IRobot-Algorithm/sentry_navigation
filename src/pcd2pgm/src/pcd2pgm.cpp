@@ -47,6 +47,11 @@ void PassThroughFilter(const double &thre_low, const double &thre_high,
 //半径滤波
 void RadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud,
                          const double &radius, const int &thre_count);
+
+//半径滤波
+void MapRadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud,
+                         const double &radius, const int &thre_count);
+
 //转换为栅格地图数据并发布
 void SetMapTopicMsg(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                     nav_msgs::OccupancyGrid &msg);
@@ -84,6 +89,8 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "初始点云数据点数：" << pcd_cloud->points.size() << std::endl;
+  //处理地图数据
+  MapRadiusOutlierFilter(pcd_cloud, thre_radius, thres_point_count);
   //对数据进行直通滤波
   PassThroughFilter(thre_z_min, thre_z_max, bool(flag_pass_through));
   //对数据进行半径滤波
@@ -139,6 +146,25 @@ void RadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud0,
   radiusoutlier.filter(*cloud_after_Radius);
   // test 保存滤波后的点云到文件
   pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map_radius_filter.pcd",
+                                      *cloud_after_Radius);
+  std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()
+            << std::endl;
+}
+
+//半径滤波
+void MapRadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud0,
+                         const double &radius, const int &thre_count) {
+  //创建滤波器
+  pcl::RadiusOutlierRemoval<pcl::PointXYZ> radiusoutlier;
+  //设置输入点云
+  radiusoutlier.setInputCloud(pcd_cloud0);
+  //设置半径,在该范围内找临近点
+  radiusoutlier.setRadiusSearch(radius);
+  //设置查询点的邻域点集数，小于该阈值的删除
+  radiusoutlier.setMinNeighborsInRadius(thre_count);
+  radiusoutlier.filter(*cloud_after_Radius);
+  // test 保存滤波后的点云到文件
+  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map.pcd",
                                       *cloud_after_Radius);
   std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()
             << std::endl;
@@ -203,7 +229,7 @@ void SetMapTopicMsg(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
   msg.data.resize(msg.info.width * msg.info.height);
   msg.data.assign(msg.info.width * msg.info.height, 0);
 
-  ROS_INFO("data size = %d\n", msg.data.size());
+  ROS_INFO("data size = %ld\n", msg.data.size());
 
   for (int iter = 0; iter < cloud->points.size(); iter++) {
     int i = int((cloud->points[iter].x - x_min) / map_resolution);

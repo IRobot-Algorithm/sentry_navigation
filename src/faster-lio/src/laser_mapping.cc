@@ -512,43 +512,43 @@ void LaserMapping::Run() {
         PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
     }
 
-    if (use_icp_)
-    {
-        static int cnt = 0;
-        if (cnt > 100)
-        {
-            int size = laser_cloud_imu_body_->size();
-            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
-            int i = 0;
-            for (const PointType& point_xyzi : *laser_cloud_imu_body_)
-            {
-                common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
-                common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
+    // if (use_icp_)
+    // {
+    //     static int cnt = 0;
+    //     if (cnt > 100)
+    //     {
+    //         int size = laser_cloud_imu_body_->size();
+    //         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
+    //         int i = 0;
+    //         for (const PointType& point_xyzi : *laser_cloud_imu_body_)
+    //         {
+    //             common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
+    //             common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
 
-                pcl::PointXYZ point_xyz;
-                point_xyz.x = p_BOT(0);
-                point_xyz.y = p_BOT(1);
-                point_xyz.z = p_BOT(2);
-                cloud_xyz->points[i] = point_xyz;
-                i++;
-            }
+    //             pcl::PointXYZ point_xyz;
+    //             point_xyz.x = p_BOT(0);
+    //             point_xyz.y = p_BOT(1);
+    //             point_xyz.z = p_BOT(2);
+    //             cloud_xyz->points[i] = point_xyz;
+    //             i++;
+    //         }
 
-            Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
-            if (relocalization_.InitExtrinsic(result, cloud_xyz))
-            {
-                R_wrt_ = result.rotation() * R_wrt_;
-                T_wrt_ = result.rotation() * T_wrt_ + result.translation();
-                // relocalization_.clear();
-                LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
-            }
-            else
-            {
-                LOG(WARNING) << "----> Localization Failed!";
-            }
-            cnt = 0;
-        }
-        cnt ++;
-    }
+    //         Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
+    //         if (relocalization_.InitExtrinsic(result, cloud_xyz))
+    //         {
+    //             R_wrt_ = result.rotation() * R_wrt_;
+    //             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
+    //             // relocalization_.clear();
+    //             LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
+    //         }
+    //         else
+    //         {
+    //             LOG(WARNING) << "----> Localization Failed!";
+    //         }
+    //         cnt = 0;
+    //     }
+    //     cnt ++;
+    // }
 
     IMUUpdate();
     // Debug variables

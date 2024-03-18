@@ -23,7 +23,7 @@ mapping:
 
 irobot:
     # 侧装双头龙
-    extrinsic_T: [ -0.16, 0, 0 ]
+    extrinsic_T: [ -0.14, 0, 0 ]
     extrinsic_R: [ 0.7071, 0, -0.7071,
                    0, 1, 0,
                    0.7071, 0, 0.7071]
@@ -50,11 +50,11 @@ icp:
 
     # ICP定位参数
     SCORE_THRESHOLD_MAX: 0.03     # 达到最大迭代次数后，代价仍高于此值，认为无法收敛
-    ANGLE_UPPER_THRESHOLD_: 10    # 最大角度变换
+    ANGLE_UPPER_THRESHOLD_: 15    # 最大角度变换
     Point_Quantity_THRESHOLD: 500 # 点云数阈值
     Maximum_Iterations: 300        # 最大迭代次数
     VoxelGridRemoval_LeafSize: 0.1        # 体素滤波的边长
-    ObstacleRemoval_Distance_Max: 1.0     # 如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点
+    ObstacleRemoval_Distance_Max: 100     # 如果雷达点云中点在地图点云最近点大于此值，就认为该点为障碍点
 
 publish:
     path_en:  false

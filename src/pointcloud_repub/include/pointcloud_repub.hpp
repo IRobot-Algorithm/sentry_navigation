@@ -71,6 +71,7 @@ private:
   ros::Publisher pub_livox_msg_;
   ros::Publisher pub_livox_cloud_;
   ros::Publisher pub_D435_cloud_;
+  ros::Publisher pub_test_cloud_;
   ros::Publisher pub_registered_cloud_;
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr D435_cloud_out_;
@@ -78,6 +79,10 @@ private:
   Eigen::Vector3d extrinT_IMU_BOT_;
   Eigen::Matrix3d extrinR_IMU_BOT_;
   Eigen::Matrix3d extrinR_BOT_IMU_;
+
+  double undecay_dis_;
+  double undecay_angle_;
+  double undecay_radio_;
 
 };
 

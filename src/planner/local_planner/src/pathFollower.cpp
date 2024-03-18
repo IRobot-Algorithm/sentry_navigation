@@ -273,13 +273,11 @@ int main(int argc, char** argv)
 
   static tf::TransformBroadcaster br;
   static tf::TransformListener ls;
-  int r = 200;
-  ros::Rate rate(r);
+  ros::Rate rate(200);
   bool status = ros::ok();
   while (status) {
     rate.sleep();
     ros::spinOnce();
-
     if (pathInit && odomInit) {
       tf::StampedTransform transform;
       try{
@@ -287,10 +285,18 @@ int main(int argc, char** argv)
                                 ros::Time(0), transform);
       }
       catch (tf::TransformException &ex) {
-        // ROS_WARN("%s",ex.what());
+        ROS_WARN("%s",ex.what());
       }
+
       tf::Matrix3x3 rotation(transform.getRotation());
       rotation.getRPY(worldRoll, worldPitch, worldYaw);
+
+        // cmd_vel.twist.linear.x = 0.5;
+        // cmd_vel.twist.linear.y = 0.0;
+        // cmd_vel.twist.linear.z = 1.0;
+        // cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+        // pubSpeed.publish(cmd_vel);
+        continue;
 
       int pathSize = path.poses.size();
       float endDisX = goalX - vehicleX;
@@ -311,7 +317,7 @@ int main(int argc, char** argv)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 1.0;
+        // cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
         pubSpeed.publish(cmd_vel);
         continue;
@@ -320,7 +326,7 @@ int main(int argc, char** argv)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 1.0;
+        // cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
         pubSpeed.publish(cmd_vel);
         continue;
@@ -390,34 +396,29 @@ int main(int argc, char** argv)
         yawDiff -= 2 * PI;
       else if (yawDiff < -PI) 
         yawDiff += 2 * PI;
-      if (twoWayDrive) {
-        double time = ros::Time::now().toSec();
-        if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
-          navFwd = false;
-          switchTime = time;
-        } else if (fabs(yawDiff) < PI / 2 && !navFwd && time - switchTime > switchTimeThre) {
-          navFwd = true;
-          switchTime = time;
-        }
-      }
+      // if (twoWayDrive) {
+      //   double time = ros::Time::now().toSec();
+      //   if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
+      //     navFwd = false;
+      //     switchTime = time;
+      //   } else if (fabs(yawDiff) < PI / 2 && !navFwd && time - switchTime > switchTimeThre) {
+      //     navFwd = true;
+      //     switchTime = time;
+      //   }
+      // }
 
-      if (!navFwd) {
-        yawDiff += PI;
-        if (yawDiff > PI) yawDiff -= 2 * PI;
-      }
+      // if (!navFwd) {
+      //   yawDiff += PI;
+      //   if (yawDiff > PI) yawDiff -= 2 * PI;
+      // }
 
-      if (speed < 0.05)
-      {
-        speed_x = 0;
-        speed_y = 0;
-        yawDiff = vehicleYaw - worldYaw;
-      }
       if (fabs(pathDir - vehicleYaw) > PI / 5)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = yawDiff;
+        // cmd_vel.twist.linear.z = 1.0;
+        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+        // cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
         continue;
       }
@@ -427,7 +428,8 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = cos(worldYaw) * speed_x + sin(worldYaw) * speed_y;
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
-        cmd_vel.twist.angular.z = yawDiff;
+        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+        // cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
 
         pubSkipCount = pubSkipNum;
@@ -437,7 +439,7 @@ int main(int argc, char** argv)
     {
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;
-      cmd_vel.twist.linear.z = 1.0;
+      // cmd_vel.twist.linear.z = 1.0;
       cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
       pubSpeed.publish(cmd_vel);
     }

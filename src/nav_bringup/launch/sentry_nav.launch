@@ -3,14 +3,17 @@
     <include file="$(find nav_bringup)/launch/robot_state_publisher.launch" />
     <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
     <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch" /> -->
-    <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" />
+    <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" >
+        <arg name="undecay_dis" value="0.33"/>
+        <arg name="undecay_angle" value="0.15"/> <!-- rad -->
+    </include>
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
 	    <arg name="rviz" value="true" />
     </include>
 
-    <include file="$(find far_planner)/launch/far_planner.launch" />
+    <!-- <include file="$(find far_planner)/launch/far_planner.launch" /> -->
 
     <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" />
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
@@ -26,7 +29,7 @@
     <include file="$(find nav_transporter)/launch/transporter.launch" >
         <arg name="use_pose_goal" value="false"/>
         <arg name="track_target" value="false"/>
-        <arg name="use_map" value="true"/>
+        <arg name="use_map" value="false"/>
         <arg name="map_path" value="$(find far_planner)/data/3floor.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
@@ -34,6 +37,6 @@
     <!-- /////////////////////// rviz /////////////////////// -->
     <!-- <include file="$(find ego_planner)/launch/rviz.launch"/> -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
-    <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" /> -->
+    <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" />
     <!-- <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/> -->
 </launch>
