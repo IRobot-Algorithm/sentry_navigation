@@ -220,8 +220,8 @@ void SetMapTopicMsg(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
       y_max = y;
   }
   // origin的确定
-  msg.info.origin.position.x = 0;
-  msg.info.origin.position.y = 0;
+  msg.info.origin.position.x = x_min;
+  msg.info.origin.position.y = y_min;
   msg.info.origin.position.z = 0.0;
   msg.info.origin.orientation.x = 0.0;
   msg.info.origin.orientation.y = 0.0;
