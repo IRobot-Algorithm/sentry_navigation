@@ -109,6 +109,7 @@ class LaserMapping {
     CloudPtr scan_undistort_{new PointCloudType()};   // scan after undistortion
     CloudPtr scan_down_body_{new PointCloudType()};   // downsampled scan in body
     CloudPtr scan_down_world_{new PointCloudType()};  // downsampled scan in world
+    CloudPtr laser_cloud_imu_body_{new PointCloudType()};  // downsampled scan in world
     std::vector<PointVector> nearest_points_;         // nearest points of current scan
     common::VV4F corr_pts_;                           // inlier pts
     common::VV4F corr_norm_;                          // inlier plane norms
@@ -193,7 +194,8 @@ class LaserMapping {
 
     // relocalization
     Relocalization relocalization_;
-    bool need_localization_ = true;
+    bool use_icp_ = false;
+    bool init_localization_ = false;
 
     // final RT
     common::V3D T_wrt_;

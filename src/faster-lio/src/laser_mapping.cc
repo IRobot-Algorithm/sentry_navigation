@@ -54,7 +54,6 @@ bool LaserMapping::InitWithoutROS(const std::string &config_yaml) {
 
 bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     // get params from param server
-    bool use_icp;
     int lidar_type, ivox_nearby_type;
     double gyr_cov, acc_cov, b_gyr_cov, b_acc_cov;
     double filter_size_surf_min;
@@ -63,7 +62,7 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     std::vector<double> extrinT_IMU_BOT{3, 0.0};  // lidar-imu translation
     std::vector<double> extrinR_IMU_BOT{9, 0.0};  // lidar-imu rotation
 
-    nh.param<bool>("icp/use_icp", use_icp, false);
+    nh.param<bool>("icp/use_icp", use_icp_, false);
     nh.param<bool>("path_save_en", path_save_en_, true);
     nh.param<bool>("publish/path_publish_en", path_pub_en_, true);
     nh.param<bool>("publish/scan_publish_en", scan_pub_en_, true);
@@ -129,10 +128,11 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
         ivox_options_.nearby_type_ = IVoxType::NearbyType::NEARBY18;
     }
 
-    if (!use_icp)
-        need_localization_ = false;
-    else
+    if (use_icp_)
+    {
         relocalization_.InitParams(nh);
+        init_localization_ = true;
+    }
 
     path_.header.stamp = ros::Time::now();
     path_.header.frame_id = "odom";
@@ -367,7 +367,7 @@ bool LaserMapping::IMUUpdate()
 }
 
 void LaserMapping::Run() {
-    if (need_localization_)
+    if (use_icp_ && init_localization_)
     {
         if (lidar_buffer_.size() < 10)
         // if (lidar_buffer_.empty())
@@ -389,7 +389,9 @@ void LaserMapping::Run() {
         imu_buf_.clear();
         mtx_buffer_.unlock();
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
+        int size = cloud_xyzi->size();
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
+        int i = 0;
         for (const PointType& point_xyzi : *cloud_xyzi)
         {
             common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
@@ -399,7 +401,8 @@ void LaserMapping::Run() {
             point_xyz.x = p_BOT(0);
             point_xyz.y = p_BOT(1);
             point_xyz.z = p_BOT(2);
-            cloud_xyz->push_back(point_xyz);
+            cloud_xyz->points[i] = point_xyz;
+            i++;
         }
 
         Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
@@ -407,13 +410,13 @@ void LaserMapping::Run() {
         {
             R_wrt_ = result.rotation() * R_wrt_;
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
-            need_localization_ = false;
-            relocalization_.clear();
-            LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
+            init_localization_ = false;
+            // relocalization_.clear();
+            LOG(INFO) << "\033[1;32m----> Init Localization Finished.\033[0m";
         }
         else
         {
-            LOG(WARNING) << "----> Localization Failed!";
+            LOG(WARNING) << "----> Init Localization Failed!";
         }
 
         return;
@@ -502,11 +505,49 @@ void LaserMapping::Run() {
     if (scan_pub_en_ || pcd_save_en_) {
         PublishFrameWorld();
     }
-    if (scan_pub_en_ && scan_body_pub_en_) {
+    if (use_icp_ || (scan_pub_en_ && scan_body_pub_en_)) {
         PublishFrameBody(pub_laser_cloud_body_);
     }
     if (scan_pub_en_ && scan_effect_pub_en_) {
         PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
+    }
+
+    if (use_icp_)
+    {
+        static int cnt = 0;
+        if (cnt > 100)
+        {
+            int size = laser_cloud_imu_body_->size();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
+            int i = 0;
+            for (const PointType& point_xyzi : *laser_cloud_imu_body_)
+            {
+                common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
+                common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
+
+                pcl::PointXYZ point_xyz;
+                point_xyz.x = p_BOT(0);
+                point_xyz.y = p_BOT(1);
+                point_xyz.z = p_BOT(2);
+                cloud_xyz->points[i] = point_xyz;
+                i++;
+            }
+
+            Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
+            if (relocalization_.InitExtrinsic(result, cloud_xyz))
+            {
+                R_wrt_ = result.rotation() * R_wrt_;
+                T_wrt_ = result.rotation() * T_wrt_ + result.translation();
+                // relocalization_.clear();
+                LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
+            }
+            else
+            {
+                LOG(WARNING) << "----> Localization Failed!";
+            }
+            cnt = 0;
+        }
+        cnt ++;
     }
 
     IMUUpdate();
@@ -905,14 +946,16 @@ void LaserMapping::PublishFrameWorld() {
 
 void LaserMapping::PublishFrameBody(const ros::Publisher &pub_laser_cloud_body) {
     int size = scan_undistort_->points.size();
-    PointCloudType::Ptr laser_cloud_imu_body(new PointCloudType(size, 1));
+    // PointCloudType::Ptr laser_cloud_imu_body(new PointCloudType(size, 1));
+    laser_cloud_imu_body_->resize(size);
 
-    for (int i = 0; i < size; i++) {
-        PointBodyLidarToIMU(&scan_undistort_->points[i], &laser_cloud_imu_body->points[i]);
+    for (int i = 0; i < size; i++)
+    {
+        PointBodyLidarToIMU(&scan_undistort_->points[i], &laser_cloud_imu_body_->points[i]);
     }
 
     sensor_msgs::PointCloud2 laserCloudmsg;
-    pcl::toROSMsg(*laser_cloud_imu_body, laserCloudmsg);
+    pcl::toROSMsg(*laser_cloud_imu_body_, laserCloudmsg);
     laserCloudmsg.header.stamp = ros::Time().fromSec(lidar_end_time_);
     laserCloudmsg.header.frame_id = "body";
     pub_laser_cloud_body.publish(laserCloudmsg);

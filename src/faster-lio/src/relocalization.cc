@@ -81,7 +81,17 @@ bool Relocalization::InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT
     cloud_scan_ = scan;
     // 进行离群点滤波，剔除离群点
     // PointCloudOutlierRemoval(cloud_scan_);
+    if (cloud_scan_->size() < 100)
+    {
+        std::cout << "\033[1;33m" << "Too less cloud to relocalization" << "\033[0m" << std::endl;
+        return false;
+    }
     PointCloudVoxelGridRemoval(cloud_scan_, VoxelGridRemoval_LeafSize_);
+    if (cloud_scan_->size() < 100)
+    {
+        std::cout << "\033[1;33m" << "Too less cloud to relocalization" << "\033[0m" << std::endl;
+        return false;
+    }
     PointCloudObstacleRemoval(cloud_map_, cloud_scan_, ObstacleRemoval_Distance_Max_);
 
     //使用ICP进行点云匹配
@@ -102,7 +112,7 @@ bool Relocalization::InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT
  */
 bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Ptr &cloud_scan, PointCloudT::Ptr &cloud_map)
 {
-    if (first_icp_ && pub_result_)
+    if (pub_result_)
     {
         RGBcloud_map_->clear();
         for (const pcl::PointXYZ& point : *cloud_map)
@@ -203,7 +213,7 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
     trans.matrix() = transform.matrix().cast<double>();      //Matrix4f类型转换为Isometry3d类型
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_result(new pcl::PointCloud<pcl::PointXYZ>);
-    if (first_icp_ && (save_result_ || pub_result_))
+    if ((first_icp_ && save_result_) || pub_result_)
     {
         // 对点云进行变换
         pcl::transformPointCloud(*cloud_scan, *cloud_result, transform);
@@ -221,7 +231,7 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
             RGBcloud_result_->push_back(colored_point);
         }
         
-        if (save_result_)
+        if (first_icp_ && save_result_)
         {
             pcl::io::savePCDFileBinary(ori_pcd_path_, *RGBcloud_map_ + *RGBcloud_scan_);
             pcl::io::savePCDFileBinary(res_pcd_path_, *RGBcloud_map_ + *RGBcloud_result_);
@@ -237,6 +247,10 @@ bool Relocalization::ScanMatchWithICP(Eigen::Isometry3d &trans , PointCloudT::Pt
             pub_map_.publish(map_msg);
             pub_scan_.publish(scan_msg);
         }
+        RGBcloud_map_->clear();
+        RGBcloud_scan_->clear();
+        RGBcloud_result_->clear();
+
     }
 
     return true;
