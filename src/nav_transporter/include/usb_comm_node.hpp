@@ -28,7 +28,7 @@ class UsbCommNode {
 		void velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel);
 		// void velHandler(const geometry_msgs::Twist::ConstPtr& vel);
 
-		// void sendVelCallback(const ros::TimerEvent& event);
+		void sendVelCallback(const ros::TimerEvent& event);
 		
 		/*
 		* @brief 电控imu四元数与odom差值
@@ -41,7 +41,7 @@ class UsbCommNode {
 		ros::Subscriber sub_vel_;
 		ros::Publisher pub_referee_info_;
 
-		// ros::Timer send_vel_timer_;
+		ros::Timer send_vel_timer_;
 
     sentry_msgs::RefereeInformation referee_info_;
     geometry_msgs::Quaternion odom_quat_;

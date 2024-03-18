@@ -104,7 +104,7 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   send_package_._SOF = 0x55;
   send_package_._EOF = 0xFF;
   send_package_.ID = NAV_VELOCITY_SEND_ID;
-  if (vel->twist.linear.z < 1e4) 
+  if (vel->twist.linear.z < 1e-4) 
   {
     send_package_.chassis_mode = 0; // SLOW_ROTING
   }
@@ -184,13 +184,18 @@ void UsbCommNode::syncPackages()
 
 void UsbCommNode::receiveCallback()
 {
-  ros::Rate rate(1000);
+  ros::Rate rate(5000);
   while (ros::ok())
   {
+    rate.sleep();
+    syncPackages();
 
     uint8_t receive_package[64];
     int read_size = transporter_->read(receive_package, 64);
-    // ROS_INFO("read_size: %d", read_size);
+    ROS_INFO("read_size: %d", read_size);
+
+    if (read_size == -1)
+      return;
 
     switch (receive_package[1])
     {
@@ -203,12 +208,14 @@ void UsbCommNode::receiveCallback()
         geometry_msgs::QuaternionStamped::Ptr msg(new geometry_msgs::QuaternionStamped());
 
         msg->header.stamp.fromSec(ros::Time::now().toSec());
-        msg->quaternion.x = -(double)package.q1;
-        msg->quaternion.y = -(double)package.q2;
-        msg->quaternion.z = -(double)package.q3;
-        msg->quaternion.w = (double)package.q0;
+        msg->quaternion.x = -static_cast<double>(package.q1);
+        msg->quaternion.y = -static_cast<double>(package.q2);
+        msg->quaternion.z = -static_cast<double>(package.q3);
+        msg->quaternion.w = static_cast<double>(package.q0);
 
         quat_buffer_.emplace_back(msg);
+        if (quat_buffer_.size() > 1000)
+          quat_buffer_.pop_front();
 
         right_trans_.setRotation(tf::createQuaternionFromYaw(package.RightMotorAngle));
         left_trans_.setRotation(tf::createQuaternionFromYaw(package.LeftMotorAngle));
@@ -224,7 +231,7 @@ void UsbCommNode::receiveCallback()
         memcpy(&package, receive_package, 
                   sizeof(transporter::DesicionRefereeReceivePackage));
 
-        int progress = static_cast<int>(package.game_type_progress & 0xf0 >> 4);
+        int progress = static_cast<int>((package.game_type_progress & 0xf0) >> 4);
         if (progress == 4)
           referee_info_.game_start = true;
         else
@@ -234,23 +241,23 @@ void UsbCommNode::receiveCallback()
         referee_info_.robot_hp = package.remain_HP;
         referee_info_.max_hp = package.max_HP;
         referee_info_.bullets = package.projectile_allowance_17mm;
-          
-         if (package.robot_id < 10) // red
-         {
-           referee_info_.our_outpost_hp = package.red_outpose_HP;
-           referee_info_.our_base_hp = package.red_base_HP;
-           referee_info_.enemy_hp[7] = package.blue_outpose_HP;
-           referee_info_.enemy_hp[0] = package.blue_base_HP;
-         }
-         else // blue
-         {
-           referee_info_.our_outpost_hp = package.blue_outpose_HP;
-           referee_info_.our_base_hp = package.blue_base_HP;
-           referee_info_.enemy_hp[7] = package.red_outpose_HP;
-           referee_info_.enemy_hp[0] = package.red_base_HP;
-         }
-         referee_info_.base_shield = package.base_state;
-         referee_info_.gold_coins = package.remaining_gold_coin;
+        
+        if (package.robot_id < 10) // red
+        {
+          referee_info_.our_outpost_hp = package.red_outpose_HP;
+          referee_info_.our_base_hp = package.red_base_HP;
+          referee_info_.enemy_hp[7] = package.blue_outpose_HP;
+          referee_info_.enemy_hp[0] = package.blue_base_HP;
+        }
+        else // blue
+        {
+          referee_info_.our_outpost_hp = package.blue_outpose_HP;
+          referee_info_.our_base_hp = package.blue_base_HP;
+          referee_info_.enemy_hp[7] = package.red_outpose_HP;
+          referee_info_.enemy_hp[0] = package.red_base_HP;
+        }
+        referee_info_.base_shield = package.base_state;
+        referee_info_.gold_coins = package.remaining_gold_coin;
 
         referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
 
@@ -266,8 +273,6 @@ void UsbCommNode::receiveCallback()
         break;
       }
     }
-    syncPackages();
-    rate.sleep();
   }
 }
 
