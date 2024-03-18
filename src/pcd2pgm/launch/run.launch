@@ -19,6 +19,8 @@
     <param name="map_resolution" value= "0.1" />
     <!-- 转换后发布的二维地图的topic，默认使用map即可，可使用map_server保存-->
     <param name="map_topic_name" value= "map" />
+
+    <param name="save_map_pcd" value= "false" />
   </node>
 
 </launch>

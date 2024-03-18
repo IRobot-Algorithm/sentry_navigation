@@ -31,6 +31,7 @@ double map_resolution = 0.05;
 double thre_radius = 0.1;
 //半径滤波的点数阈值
 int thres_point_count = 10;
+bool save_map_pcd;
 
 //直通滤波后数据指针
 pcl::PointCloud<pcl::PointXYZ>::Ptr
@@ -78,6 +79,7 @@ int main(int argc, char **argv) {
   private_nh.param("map_resolution", map_resolution, 0.05);
   private_nh.param("thres_point_count", thres_point_count, 10);
   private_nh.param("map_topic_name", map_topic_name, std::string("map"));
+  private_nh.param("save_map_pcd", save_map_pcd, false);
 
   ros::Publisher map_topic_pub =
       nh.advertise<nav_msgs::OccupancyGrid>(map_topic_name, 1);
@@ -89,8 +91,11 @@ int main(int argc, char **argv) {
   }
 
   std::cout << "初始点云数据点数：" << pcd_cloud->points.size() << std::endl;
-  //处理地图数据
-  MapRadiusOutlierFilter(pcd_cloud, thre_radius, thres_point_count);
+  if (save_map_pcd)
+  {
+    //处理地图数据
+    MapRadiusOutlierFilter(pcd_cloud, thre_radius, thres_point_count);
+  }
   //对数据进行直通滤波
   PassThroughFilter(thre_z_min, thre_z_max, bool(flag_pass_through));
   //对数据进行半径滤波
@@ -215,8 +220,8 @@ void SetMapTopicMsg(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
       y_max = y;
   }
   // origin的确定
-  msg.info.origin.position.x = x_min;
-  msg.info.origin.position.y = y_min;
+  msg.info.origin.position.x = 0;
+  msg.info.origin.position.y = 0;
   msg.info.origin.position.z = 0.0;
   msg.info.origin.orientation.x = 0.0;
   msg.info.origin.orientation.y = 0.0;
