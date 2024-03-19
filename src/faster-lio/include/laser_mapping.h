@@ -193,6 +193,7 @@ class LaserMapping {
     tf::Vector3 tf_T_;
 
     // relocalization
+    std::thread relocalization_thread_;
     Relocalization relocalization_;
     bool use_icp_ = false;
     bool init_localization_ = false;

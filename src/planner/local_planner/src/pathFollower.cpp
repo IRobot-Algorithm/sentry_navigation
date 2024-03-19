@@ -296,7 +296,7 @@ int main(int argc, char** argv)
         // cmd_vel.twist.linear.z = 1.0;
         // cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
         // pubSpeed.publish(cmd_vel);
-        continue;
+        // continue;
 
       int pathSize = path.poses.size();
       float endDisX = goalX - vehicleX;
@@ -322,15 +322,15 @@ int main(int argc, char** argv)
         pubSpeed.publish(cmd_vel);
         continue;
       }
-      if (endDis > 0.2 && pathSize <= 5)
-      {
-        cmd_vel.twist.linear.x = 0.0;
-        cmd_vel.twist.linear.y = 0.0;
-        // cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
-        pubSpeed.publish(cmd_vel);
-        continue;
-      }
+      // if (endDis > 0.2 && pathSize <= 5)
+      // {
+      //   cmd_vel.twist.linear.x = 0.0;
+      //   cmd_vel.twist.linear.y = 0.0;
+      //   // cmd_vel.twist.linear.z = 1.0;
+      //   cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
+      //   pubSpeed.publish(cmd_vel);
+      //   continue;
+      // }
 
       float dis_x, dis_y, dis;
       while (pathPointID < pathSize - 1)
@@ -417,8 +417,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
         // cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        // cmd_vel.twist.angular.z = yawDiff;
+        cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
         continue;
       }
@@ -428,8 +427,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = cos(worldYaw) * speed_x + sin(worldYaw) * speed_y;
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        // cmd_vel.twist.angular.z = yawDiff;
+        cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
 
         pubSkipCount = pubSkipNum;
