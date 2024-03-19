@@ -14,7 +14,7 @@
 void GraphDecoder::Init() {
     /* initialize subscriber and publisher */
     graph_sub_     = nh.subscribe("/robot_vgraph", 5, &GraphDecoder::GraphCallBack, this);
-    graph_pub_     = nh.advertise<visibility_graph_msg::Graph>("decoded_vgraph", 5);
+    graph_pub_     = nh.advertise<visibility_graph_msg::Graph>("decoded_vgraph", 1);
     graph_viz_pub_ = nh.advertise<MarkerArray>("/graph_decoder_viz",5);
 
     this->LoadParmas();

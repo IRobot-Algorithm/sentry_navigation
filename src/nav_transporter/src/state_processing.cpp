@@ -36,7 +36,11 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   nh.param<bool>("/state_processing/use_pose_goal", use_pose_goal_, false);
   nh.param<bool>("/state_processing/track_target", track_target_, false);
   nh.param<bool>("/state_processing/use_map", use_map_, false);
+  nh.param<bool>("/state_processing/is_test", is_test_, false);
   nh.param<std::string>("/state_processing/map_path", map_path_, "");
+
+  if (is_test_)
+    exec_state_ = NAVIGATE;
 
   if (!use_pose_goal_ && !use_map_)
   {
@@ -203,15 +207,18 @@ void StateProcess::loop(const ros::TimerEvent& event)
   nav_num++;
   if (nav_num == 100)
   {
-    if (use_map_)
-    {
-      std_msgs::String msg;
-      msg.data = map_path_;
-      pub_map_.publish(msg);
-    }
     printNavExecState();
     if (!have_odom_)
       ROS_WARN("no odom.");
+    else
+    {
+      if (use_map_)
+      {
+        std_msgs::String msg;
+        msg.data = map_path_;
+        pub_map_.publish(msg);
+      }
+    }
     nav_num = 0;
   }
 
@@ -240,7 +247,8 @@ void StateProcess::loop(const ros::TimerEvent& event)
     {
       if (use_pose_goal_)
       {
-        pub_goal_.publish(goal_);
+        if (!is_test_)
+          pub_goal_.publish(goal_);
         if (path_init_)
         {
           cutWaypointFromPath();
@@ -250,7 +258,8 @@ void StateProcess::loop(const ros::TimerEvent& event)
       }
       else
       {
-        pub_goal_.publish(point_goal_);
+        if (!is_test_)
+          pub_goal_.publish(point_goal_);
         pub_waypoint_.publish(far_way_point_);
       }
       break;

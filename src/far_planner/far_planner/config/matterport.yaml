@@ -13,7 +13,7 @@ is_opencv_visual                        : false # Obstalce Image Display
 is_static_env                           : false
 is_pub_boundary                         : false
 is_debug_output                         : false
-is_attempt_autoswitch                   : false  # Auto switch to attemptable navigation
+is_attempt_autoswitch                   : true  # Auto switch to attemptable navigation
 world_frame                             : map
 
 # Graph Messager
@@ -21,7 +21,7 @@ GraphMsger/robot_id                     : 1  # graph from robot id "0" is extrac
 
 # Map Handler Params
 MapHandler/floor_height                 : 2.0    # Unit: meter
-MapHandler/cell_length                  : 2.5    # Unit: meter
+MapHandler/cell_length                  : 2.0    # Unit: meter
 MapHandler/map_grid_max_length          : 60.0  # Unit: meter
 MapHandler/map_grad_max_height          : 5.0   # Unit: meter
 
@@ -50,7 +50,7 @@ CDetector/img_folder_path               : /path
 
 # Graph Planner Params
 GPlanner/converge_distance              : 0.2  # Unit: meter
-GPlanner/goal_adjust_radius             : 0.2   # Unit: meter
+GPlanner/goal_adjust_radius             : 0.5   # Unit: meter
 GPlanner/free_counter_thred             : 7
 GPlanner/reach_goal_vote_size           : 3
 GPlanner/path_momentum_thred            : 3

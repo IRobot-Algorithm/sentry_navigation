@@ -97,6 +97,7 @@ class StateProcess {
 		bool track_target_;
 		bool have_odom_ = false;
 		bool path_init_ = false;
+		bool is_test_ = false;
 
 };
 
