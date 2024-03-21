@@ -111,7 +111,8 @@ pause(1.0);
 %% find correspondence
 %{.
 voxelSize = 0.02;
-searchRadius = 1.0;%1.5
+searchRadius = 1.5;%1.5
+vehicleRadius = 1.0;%1.5
 offsetX = 3.2;%3.2  4.7
 offsetY = 4.5;%4.5  6.0
 voxelNumX = 161;%161  236
@@ -140,7 +141,7 @@ pause(1.0);
 
 fprintf('\nCollision checking\n');
 
-[ind, dis] = rangesearch(pathAll(1 : 2, :)', voxelPoints, searchRadius);
+[ind, dis] = rangesearch(pathAll(1 : 2, :)', voxelPoints, vehicleRadius);
 
 fprintf('\nSaving correspondences\n');
 

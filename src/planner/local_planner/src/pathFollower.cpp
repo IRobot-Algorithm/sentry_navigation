@@ -317,7 +317,7 @@ int main(int argc, char** argv)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        // cmd_vel.twist.linear.z = 1.0;
+        cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
         pubSpeed.publish(cmd_vel);
         continue;
@@ -326,7 +326,7 @@ int main(int argc, char** argv)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        // cmd_vel.twist.linear.z = 1.0;
+        cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
         pubSpeed.publish(cmd_vel);
         continue;
@@ -416,7 +416,7 @@ int main(int argc, char** argv)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
-        // cmd_vel.twist.linear.z = 1.0;
+        cmd_vel.twist.linear.z = 0.0;
         cmd_vel.twist.angular.z = yawDiff;
         pubSpeed.publish(cmd_vel);
         continue;
@@ -437,8 +437,7 @@ int main(int argc, char** argv)
     {
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;
-      // cmd_vel.twist.linear.z = 1.0;
-      cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
+      cmd_vel.twist.linear.z = 1.0;
       pubSpeed.publish(cmd_vel);
     }
 

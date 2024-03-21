@@ -29,7 +29,7 @@
     <include file="$(find nav_transporter)/launch/transporter.launch" >
         <arg name="use_pose_goal" value="false"/>
         <arg name="track_target" value="false"/>
-        <arg name="use_map" value="true"/>
+        <arg name="use_map" value="false"/>
         <arg name="is_test" value="true"/>
         <arg name="map_path" value="$(find far_planner)/data/3floor.vgh"/>
     </include>

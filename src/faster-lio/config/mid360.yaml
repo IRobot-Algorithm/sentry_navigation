@@ -44,7 +44,7 @@ irobot:
     #                0, 0, -1]
 
 icp:
-    use_icp: true
+    use_icp: false
     save_result: true
     pub_result: true
 

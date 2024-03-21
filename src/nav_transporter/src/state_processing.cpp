@@ -29,6 +29,10 @@ StateProcess::StateProcess()
   way_point_.point.x = 0;
   way_point_.point.y = 0;
   way_point_.point.z = 0;
+  far_way_point_.header.frame_id = "map";
+  far_way_point_.point.x = 0;
+  far_way_point_.point.y = 0;
+  far_way_point_.point.z = 0;
 }
 
 void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
