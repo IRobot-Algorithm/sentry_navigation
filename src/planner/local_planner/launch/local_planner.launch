@@ -2,7 +2,7 @@
 
   <arg name="twoWayDrive" default="true"/><!--false-->
   <arg name="maxSpeed" default="1.0"/><!--2.0-->
-  <arg name="maxAccel" default="1.0"/>
+  <arg name="maxAccel" default="5.0"/>
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
   <arg name="autonomySpeed" default="1.0"/><!--5.0-->

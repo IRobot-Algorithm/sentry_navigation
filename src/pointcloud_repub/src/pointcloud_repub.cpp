@@ -43,8 +43,8 @@ bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
 
   nh.param<std::vector<double>>("lidar/extrinsic_T", extrinT_IMU_BOT, std::vector<double>());
   nh.param<std::vector<double>>("lidar/extrinsic_R", extrinR_IMU_BOT, std::vector<double>());
-  nh.param<double>("undecay_dis", undecay_dis_, 0.33);
-  nh.param<double>("undecay_angle", undecay_angle_, 0.15);
+  nh.param<double>("/pointcloud_repub/undecay_dis", undecay_dis_, 0.33);
+  nh.param<double>("/pointcloud_repub/undecay_angle", undecay_angle_, 0.15);
   undecay_radio_ = tan(undecay_angle_);
 
   extrinT_IMU_BOT_ << extrinT_IMU_BOT[0], extrinT_IMU_BOT[1], extrinT_IMU_BOT[2];

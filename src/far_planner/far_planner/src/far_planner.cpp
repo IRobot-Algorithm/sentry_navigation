@@ -702,18 +702,18 @@ void FARMaster::WaypointCallBack(const geometry_msgs::PointStamped& route_goal) 
     return;
   }
 
-  float dis_x = route_goal.point.x - last_goal_.point.x;
-  float dis_y = route_goal.point.y - last_goal_.point.y;
-  if (sqrt(dis_x * dis_x + dis_y * dis_y) < 0.1 && ignore_num_ < 100)
-  {
-    ignore_num_++;
-    return;
-  }
-  else
-  {
-    ignore_num_ = 0;
-    last_goal_ = route_goal;
-  }
+  // float dis_x = route_goal.point.x - last_goal_.point.x;
+  // float dis_y = route_goal.point.y - last_goal_.point.y;
+  // if (sqrt(dis_x * dis_x + dis_y * dis_y) < 0.1 && ignore_num_ < 250)
+  // {
+  //   ignore_num_++;
+  //   return;
+  // }
+  // else
+  // {
+  //   ignore_num_ = 0;
+  //   last_goal_ = route_goal;
+  // }
 
   Point3D goal_p(route_goal.point.x, route_goal.point.y, route_goal.point.z);
   const std::string goal_frame = route_goal.header.frame_id;

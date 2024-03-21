@@ -24,6 +24,10 @@ StateProcess::StateProcess()
 	goal_.pose.orientation.y = 0.0;
 	goal_.pose.orientation.z = 0.0;
 	goal_.pose.orientation.w = 1.0;
+	point_goal_.header.frame_id = "map";
+	point_goal_.point.x = 0.0;
+	point_goal_.point.y = 0.0;
+	point_goal_.point.z = 0.0;
 
   way_point_.header.frame_id = "map";
   way_point_.point.x = 0;
@@ -274,6 +278,8 @@ void StateProcess::loop(const ros::TimerEvent& event)
 
 void StateProcess::changeNavExecState(NAV_EXEC_STATE new_state, std::string pos_call)
 {
+  if (new_state == exec_state_)
+    return;
   static std::string state_str[3] = {"INIT", "TRACK", "NAVIGATE"};
   int pre_s = int(exec_state_);
   if (new_state == NAVIGATE && exec_state_ != NAVIGATE)

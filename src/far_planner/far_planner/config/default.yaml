@@ -22,7 +22,7 @@ GraphMsger/robot_id                     : 1  # graph from robot id "0" is extrac
 # Map Handler Params
 MapHandler/floor_height                 : 2.0     # Unit: meter
 MapHandler/cell_length                  : 5.0     # Unit: meter
-MapHandler/map_grid_max_length          : 1000.0  # Unit: meter
+MapHandler/map_grid_max_length          linear: 1000.0  # Unit: meter
 MapHandler/map_grad_max_height          : 100.0   # Unit: meter
 
 # Dynamic Planner Utility Params

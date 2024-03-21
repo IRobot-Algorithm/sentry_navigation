@@ -1,6 +1,6 @@
 <launch>
   <arg name="undecay_dis" default="0.33"/>
-  <arg name="undecay_angle" default="0.15"/> <!-- rad -->
+  <arg name="undecay_angle" default="0.2"/> <!-- rad -->
 	<rosparam command="load" file="$(find pointcloud_repub)/config/extrinsic.yaml" />
 
   <node pkg="pointcloud_repub" type="pointcloud_repub" name="pointcloud_repub" output="screen" >

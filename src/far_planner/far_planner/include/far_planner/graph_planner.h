@@ -33,7 +33,7 @@ NavNodePtr odom_node_ptr_  = NULL;
 NavNodePtr goal_node_ptr_   = NULL;
 Point3D origin_goal_pos_    = Point3D(0,0,0);
 bool is_use_internav_goal_  = false;
-bool command_is_free_nav_   = true;
+bool command_is_free_nav_   = false;
 bool is_goal_in_freespace_  = false;
 bool is_terrain_associated_ = false;
 bool is_goal_init_;

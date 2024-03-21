@@ -313,7 +313,7 @@ int main(int argc, char** argv)
       //   pubSpeed.publish(cmd_vel);
       //   continue;
       // }
-      if (endDis < 0.2) // navigating
+      if (endDis < 0.1) // navigating
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
@@ -322,7 +322,7 @@ int main(int argc, char** argv)
         pubSpeed.publish(cmd_vel);
         continue;
       }
-      if (endDis > 0.2 && pathSize <= 5)
+      if (endDis > 0.1 && pathSize <= 5)
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
@@ -378,11 +378,17 @@ int main(int argc, char** argv)
       last_err_x = dis_x;
       last_err_y = dis_y;
       
-      if (speed > maxSpeed)
+      float endMaxSpeed = maxSpeed;
+      if (endDis < 0.8)
       {
-        speed_x *= maxSpeed / speed;
-        speed_y *= maxSpeed / speed;
+        endMaxSpeed *= endDis + 0.2;
       }
+      if (speed > endMaxSpeed)
+      {
+        speed_x *= endMaxSpeed / speed;
+        speed_y *= endMaxSpeed / speed;
+      }
+
 
       // angle
       float pathDir = atan2(speed_y, speed_x);

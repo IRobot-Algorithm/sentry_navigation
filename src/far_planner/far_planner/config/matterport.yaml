@@ -1,7 +1,7 @@
 # Dynamic Planner Default Params
-main_run_freq                           : 5
+main_run_freq                           : 2.5
 voxel_dim                               : 0.1   # Unit: meter
-robot_dim                               : 0.3   # Unit: meter
+robot_dim                               : 0.7   # Unit: meter
 vehicle_height                          : 0.5   # Unit: meter
 sensor_range                            : 12.0  # Unit: meter
 terrain_range                           : 8.0   # Unit: meter
@@ -28,17 +28,17 @@ MapHandler/map_grad_max_height          : 5.0   # Unit: meter
 # Dynamic Planner Utility Params
 Util/angle_noise                        : 15.0  # Unit: degree
 Util/accept_max_align_angle             : 4.0   # Unit: degree
-Util/obs_inflate_size                   : 0.5
+Util/obs_inflate_size                   : 1.0
 Util/new_intensity_thred                : 1.0
 Util/terrain_free_Z                     : 0.1
 Util/dyosb_update_thred                 : 4
-Util/new_point_counter                  : 5
+Util/new_point_counter                  : 1
 Util/dynamic_obs_dacay_time             : 5.0  # Unit: second
 Util/new_points_decay_time              : 1.0   # Unit: second
 
 # Dynamic Graph Params
 Graph/connect_votes_size                : 10        
-Graph/clear_dumper_thred                : 4
+Graph/clear_dumper_thred                : 1
 Graph/node_finalize_thred               : 6
 Graph/filter_pool_size                  : 12
 
@@ -49,8 +49,8 @@ CDetector/is_save_img                   : false
 CDetector/img_folder_path               : /path
 
 # Graph Planner Params
-GPlanner/converge_distance              : 0.2  # Unit: meter
-GPlanner/goal_adjust_radius             : 0.5   # Unit: meter
-GPlanner/free_counter_thred             : 7
-GPlanner/reach_goal_vote_size           : 3
-GPlanner/path_momentum_thred            : 3
+GPlanner/converge_distance              : 0.1  # Unit: meter
+GPlanner/goal_adjust_radius             : 0.1   # Unit: meter
+GPlanner/free_counter_thred             : 4
+GPlanner/reach_goal_vote_size           : 2
+GPlanner/path_momentum_thred            : 2
