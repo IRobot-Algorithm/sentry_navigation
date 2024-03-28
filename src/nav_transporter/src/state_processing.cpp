@@ -229,6 +229,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
+        return true;
       }
     }
     double yaw = tf::getYaw(map2gimbal_transform.getRotation());
@@ -247,7 +248,10 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     // if(req.is_lost)
     //   way_point_.point.z = 0;
     // else
+    if (req.gimbal) // 0 for right, 1 for left
       way_point_.point.z = -0.1;
+    else
+      way_point_.point.z = -0.2;
   }
 
 

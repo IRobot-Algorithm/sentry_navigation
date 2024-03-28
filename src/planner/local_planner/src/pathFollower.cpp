@@ -303,6 +303,8 @@ int main(int argc, char** argv)
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
+      // normal
+      cmd_vel.twist.angular.x = 0.0;
       
       if (endDis < 3.0 && goalZ < -1e-3) // tracking
       {
@@ -316,6 +318,10 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
         cmd_vel.twist.angular.z = yawDiff;
+        if (goalZ >= -0.1 - 1e-3) // left
+          cmd_vel.twist.angular.x = 1.0;
+        else // right
+          cmd_vel.twist.angular.x = 2.0;
         pubSpeed.publish(cmd_vel);
         continue;
       }
@@ -341,6 +347,10 @@ int main(int argc, char** argv)
             yawDiff -= 2 * PI;
           else if (yawDiff < -PI) 
             yawDiff += 2 * PI;
+          if (goalZ >= -0.1 - 1e-3) // left
+            cmd_vel.twist.angular.x = 1.0;
+          else // right
+            cmd_vel.twist.angular.x = 2.0;
           cmd_vel.twist.angular.z = yawDiff;
           pubSpeed.publish(cmd_vel);
         }
@@ -412,44 +422,47 @@ int main(int argc, char** argv)
         speed_y *= endMaxSpeed / speed;
       }
 
-
-      // angle
-      float pathDir = atan2(speed_y, speed_x);
-      float yawDiff = pathDir - worldYaw;
-
-      if (yawDiff > PI) 
-        yawDiff -= 2 * PI;
-      else if (yawDiff < -PI) 
-        yawDiff += 2 * PI;
-      if (yawDiff > PI) 
-        yawDiff -= 2 * PI;
-      else if (yawDiff < -PI) 
-        yawDiff += 2 * PI;
-      // if (twoWayDrive) {
-      //   double time = ros::Time::now().toSec();
-      //   if (fabs(yawDiff) > PI / 2 && navFwd && time - switchTime > switchTimeThre) {
-      //     navFwd = false;
-      //     switchTime = time;
-      //   } else if (fabs(yawDiff) < PI / 2 && !navFwd && time - switchTime > switchTimeThre) {
-      //     navFwd = true;
-      //     switchTime = time;
-      //   }
-      // }
-
-      // if (!navFwd) {
-      //   yawDiff += PI;
-      //   if (yawDiff > PI) yawDiff -= 2 * PI;
-      // }
-
-      if (fabs(pathDir - vehicleYaw) > PI / 5)
+      float yawDiff;
+      if (goalZ < -1e-3)
       {
-        cmd_vel.twist.linear.x = 0.0;
-        cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 0.0;
+        float pathDir = atan2(endDisY, endDisX);
+        yawDiff = pathDir - worldYaw;
+        if (yawDiff > PI) 
+          yawDiff -= 2 * PI;
+        else if (yawDiff < -PI) 
+          yawDiff += 2 * PI;
         cmd_vel.twist.angular.z = yawDiff;
-        pubSpeed.publish(cmd_vel);
-        continue;
+        if (goalZ >= -0.1 - 1e-3) // left
+          cmd_vel.twist.angular.x = 1.0;
+        else // right
+          cmd_vel.twist.angular.x = 2.0;
       }
+      else
+      {
+        // angle
+        float pathDir = atan2(speed_y, speed_x);
+        yawDiff = pathDir - worldYaw;
+
+        if (yawDiff > PI) 
+          yawDiff -= 2 * PI;
+        else if (yawDiff < -PI) 
+          yawDiff += 2 * PI;
+        if (yawDiff > PI) 
+          yawDiff -= 2 * PI;
+        else if (yawDiff < -PI) 
+          yawDiff += 2 * PI;
+
+        if (fabs(pathDir - vehicleYaw) > PI / 5)
+        {
+          cmd_vel.twist.linear.x = 0.0;
+          cmd_vel.twist.linear.y = 0.0;
+          cmd_vel.twist.linear.z = 0.0;
+          cmd_vel.twist.angular.z = yawDiff;
+          pubSpeed.publish(cmd_vel);
+          continue;
+        }        
+      }
+
 
       pubSkipCount--;
       if (pubSkipCount < 0) {

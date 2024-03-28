@@ -123,6 +123,12 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   send_package_.vx = static_cast<float>(vel->twist.linear.x);
   send_package_.vy = static_cast<float>(vel->twist.linear.y);
   send_package_.yaw_imu = static_cast<float>(vel->twist.angular.z);
+  if (vel->twist.angular.x < 1e-3) // normal
+    send_package_.direction = 0;
+  else if (vel->twist.angular.x < 1 + 1e-3) // 逆时针
+    send_package_.direction = 1;
+  else // 顺时针
+    send_package_.direction = 2;
 }
 
 void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)
