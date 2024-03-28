@@ -242,16 +242,22 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
                         req.pose.pose.position.x * sin_yaw +
                         req.pose.pose.position.y * cos_yaw;
 
-    std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
-    std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
+    // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
+    // std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
 
     // if(req.is_lost)
     //   way_point_.point.z = 0;
     // else
+
     if (req.gimbal) // 0 for right, 1 for left
       way_point_.point.z = -0.1;
     else
       way_point_.point.z = -0.2;
+
+    if (req.pose.pose.position.z < -50) // static
+      way_point_.point.z -= 0.2;
+
+    return true;
   }
 
 

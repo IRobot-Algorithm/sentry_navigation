@@ -306,6 +306,26 @@ int main(int argc, char** argv)
       // normal
       cmd_vel.twist.angular.x = 0.0;
       
+      if (goalZ < -0.2 - 1e-3) // static
+      {
+        cmd_vel.twist.linear.x = 0.0;
+        cmd_vel.twist.linear.y = 0.0;
+        cmd_vel.twist.linear.z = 1.0;
+        float pathDir = atan2(endDisY, endDisX);
+        float yawDiff = pathDir - worldYaw;
+        if (yawDiff > PI) 
+          yawDiff -= 2 * PI;
+        else if (yawDiff < -PI) 
+          yawDiff += 2 * PI;
+        cmd_vel.twist.angular.z = yawDiff;
+        if (goalZ >= -0.3 - 1e-3) // left
+          cmd_vel.twist.angular.x = 1.0;
+        else // right
+          cmd_vel.twist.angular.x = 2.0;
+        pubSpeed.publish(cmd_vel);
+        continue; 
+      }
+
       if (endDis < 3.0 && goalZ < -1e-3) // tracking
       {
         cmd_vel.twist.linear.x = 0.0;
