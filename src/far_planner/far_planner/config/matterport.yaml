@@ -30,7 +30,7 @@ Util/angle_noise                        : 15.0  # Unit: degree
 Util/accept_max_align_angle             : 4.0   # Unit: degree
 Util/obs_inflate_size                   : 1.0
 Util/new_intensity_thred                : 1.0
-Util/terrain_free_Z                     : 0.1
+Util/terrain_free_Z                     : 0.13
 Util/dyosb_update_thred                 : 4
 Util/new_point_counter                  : 1
 Util/dynamic_obs_dacay_time             : 5.0  # Unit: second

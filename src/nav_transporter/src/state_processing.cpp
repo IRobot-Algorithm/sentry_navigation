@@ -137,23 +137,82 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
 
 bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res)
 {
+  // if (track_target_)
+  // {
+  //   static tf::TransformListener ls;
+  //   tf::StampedTransform map2gimbal_transform, base2gimbal_transform, map2base_transform;
+  //   if (req.gimbal) // 0 for right, 1 for left
+  //   {
+  //     try {
+  //       ls.lookupTransform("/map", "/left_gimbal",  
+  //                           req.pose.header.stamp, map2gimbal_transform);
+  //     }
+  //     catch (tf::TransformException &ex) {
+  //       ROS_WARN("TargetTrans : %s",ex.what());
+  //       return true;
+  //     }
+  //     try {
+  //       ls.lookupTransform("/base_link", "/left_gimbal",  
+  //                           req.pose.header.stamp, base2gimbal_transform);
+  //     }
+  //     catch (tf::TransformException &ex) {
+  //       ROS_WARN("TargetTrans : %s",ex.what());
+  //       return true;
+  //     }
+  //   }
+  //   else
+  //   {
+  //     try {
+  //       ls.lookupTransform("/map", "/right_gimbal",  
+  //                           req.pose.header.stamp, map2gimbal_transform);
+  //     }
+  //     catch (tf::TransformException &ex) {
+  //       ROS_WARN("TargetTrans : %s",ex.what());
+  //     }
+  //     try {
+  //       ls.lookupTransform("/base_link", "/right_gimbal",  
+  //                           req.pose.header.stamp, base2gimbal_transform);
+  //     }
+  //     catch (tf::TransformException &ex) {
+  //       ROS_WARN("TargetTrans : %s",ex.what());
+  //       return true;
+  //     }
+  //   }
+  //   try {
+  //     ls.lookupTransform("/map", "/base_link",  
+  //                         req.pose.header.stamp, map2base_transform);
+  //   }
+  //   catch (tf::TransformException &ex) {
+  //     ROS_WARN("TargetTrans : %s",ex.what());
+  //     return true;
+  //   }
+  //   double yaw = tf::getYaw(map2base_transform.getRotation()) + tf::getYaw(base2gimbal_transform.getRotation());
+  //   double cos_yaw = cos(yaw);
+  //   double sin_yaw = sin(yaw);
+  //   way_point_.point.x = map2gimbal_transform.getOrigin().x() +
+  //                       req.pose.pose.position.x * cos_yaw -
+  //                       req.pose.pose.position.y * sin_yaw;
+  //   way_point_.point.y = map2gimbal_transform.getOrigin().y() +
+  //                       req.pose.pose.position.x * sin_yaw +
+  //                       req.pose.pose.position.y * cos_yaw;
+
+  //   if(req.is_lost)
+  //     way_point_.point.z = 0;
+  //   else
+  //     way_point_.point.z = -0.1;
+  // }
   if (track_target_)
   {
     static tf::TransformListener ls;
-    tf::StampedTransform map2gimbal_transform, base2gimbal_transform, map2base_transform;
+    tf::StampedTransform map2gimbal_transform;
+    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.01);
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
+        // ls.lookupTransform("/map", "/left_gimbal",  
+        //                     ros::Time(0), map2gimbal_transform);
         ls.lookupTransform("/map", "/left_gimbal",  
-                            req.pose.header.stamp, map2gimbal_transform);
-      }
-      catch (tf::TransformException &ex) {
-        ROS_WARN("TargetTrans : %s",ex.what());
-        return true;
-      }
-      try {
-        ls.lookupTransform("/base_link", "/left_gimbal",  
-                            req.pose.header.stamp, base2gimbal_transform);
+                            t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
@@ -163,30 +222,16 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     else
     {
       try {
+        // ls.lookupTransform("/map", "/right_gimbal",  
+        //                     ros::Time(0), map2gimbal_transform);
         ls.lookupTransform("/map", "/right_gimbal",  
-                            req.pose.header.stamp, map2gimbal_transform);
+                            t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
       }
-      try {
-        ls.lookupTransform("/base_link", "/right_gimbal",  
-                            req.pose.header.stamp, base2gimbal_transform);
-      }
-      catch (tf::TransformException &ex) {
-        ROS_WARN("TargetTrans : %s",ex.what());
-        return true;
-      }
     }
-    try {
-      ls.lookupTransform("/map", "/base_link",  
-                          req.pose.header.stamp, map2base_transform);
-    }
-    catch (tf::TransformException &ex) {
-      ROS_WARN("TargetTrans : %s",ex.what());
-      return true;
-    }
-    double yaw = tf::getYaw(map2base_transform.getRotation()) + tf::getYaw(base2gimbal_transform.getRotation());
+    double yaw = tf::getYaw(map2gimbal_transform.getRotation());
     double cos_yaw = cos(yaw);
     double sin_yaw = sin(yaw);
     way_point_.point.x = map2gimbal_transform.getOrigin().x() +
@@ -196,11 +241,15 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
                         req.pose.pose.position.x * sin_yaw +
                         req.pose.pose.position.y * cos_yaw;
 
-    if(req.is_lost)
-      way_point_.point.z = 0;
-    else
+    std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
+    std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
+
+    // if(req.is_lost)
+    //   way_point_.point.z = 0;
+    // else
       way_point_.point.z = -0.1;
   }
+
 
   changeNavExecState(TRACK, "desicion");
 

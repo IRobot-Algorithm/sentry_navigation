@@ -13,7 +13,7 @@
 void FARMaster::Init() {
   /* initialize subscriber and publisher */
   reset_graph_sub_    = nh.subscribe("/reset_visibility_graph", 5, &FARMaster::ResetGraphCallBack, this);
-  odom_sub_           = nh.subscribe("/odom_world", 5, &FARMaster::OdomCallBack, this);
+  odom_sub_           = nh.subscribe("/odom_world", 1, &FARMaster::OdomCallBack, this);
   terrain_sub_        = nh.subscribe("/terrain_cloud", 1, &FARMaster::TerrainCallBack, this);
   scan_sub_           = nh.subscribe("/scan_cloud", 5, &FARMaster::ScanCallBack, this);
   waypoint_sub_       = nh.subscribe("/goal_point", 1, &FARMaster::WaypointCallBack, this);

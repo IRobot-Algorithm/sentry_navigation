@@ -243,7 +243,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subOdom = nh.subscribe<nav_msgs::Odometry> ("/Odometry", 1, odomHandler);
 
-  ros::Subscriber subPath = nh.subscribe<nav_msgs::Path> ("/nav_path", 5, pathHandler);
+  ros::Subscriber subPath = nh.subscribe<nav_msgs::Path> ("/nav_path", 1, pathHandler);
 
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy> ("/joy", 5, joystickHandler);
 
@@ -304,15 +304,21 @@ int main(int argc, char** argv)
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
 
       
-      // if (endDis < 4.0 && goalZ < -1e4) // tracking
-      // {
-      //   cmd_vel.twist.linear.x = 0.0;
-      //   cmd_vel.twist.linear.y = 0.0;
-      //   cmd_vel.twist.linear.z = 1.0;
-      //   cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-      //   pubSpeed.publish(cmd_vel);
-      //   continue;
-      // }
+      if (endDis < 3.0 && goalZ < -1e-3) // tracking
+      {
+        cmd_vel.twist.linear.x = 0.0;
+        cmd_vel.twist.linear.y = 0.0;
+        cmd_vel.twist.linear.z = 1.0;
+        float pathDir = atan2(endDisY, endDisX);
+        float yawDiff = pathDir - worldYaw;
+        if (yawDiff > PI) 
+          yawDiff -= 2 * PI;
+        else if (yawDiff < -PI) 
+          yawDiff += 2 * PI;
+        cmd_vel.twist.angular.z = yawDiff;
+        pubSpeed.publish(cmd_vel);
+        continue;
+      }
       if (endDis < 0.1) // navigating
       {
         cmd_vel.twist.linear.x = 0.0;
@@ -324,11 +330,28 @@ int main(int argc, char** argv)
       }
       if (endDis > 0.1 && pathSize <= 5)
       {
-        cmd_vel.twist.linear.x = 0.0;
-        cmd_vel.twist.linear.y = 0.0;
-        cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
-        pubSpeed.publish(cmd_vel);
+        if (goalZ < -1e-3)
+        {
+          cmd_vel.twist.linear.x = 0.0;
+          cmd_vel.twist.linear.y = 0.0;
+          cmd_vel.twist.linear.z = 1.0;
+          float pathDir = atan2(endDisY, endDisX);
+          float yawDiff = pathDir - worldYaw;
+          if (yawDiff > PI) 
+            yawDiff -= 2 * PI;
+          else if (yawDiff < -PI) 
+            yawDiff += 2 * PI;
+          cmd_vel.twist.angular.z = yawDiff;
+          pubSpeed.publish(cmd_vel);
+        }
+        else
+        {
+          cmd_vel.twist.linear.x = 0.0;
+          cmd_vel.twist.linear.y = 0.0;
+          cmd_vel.twist.linear.z = 1.0;
+          cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
+          pubSpeed.publish(cmd_vel);
+        }
         continue;
       }
 

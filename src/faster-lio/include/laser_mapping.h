@@ -201,6 +201,7 @@ class LaserMapping {
     // final RT
     common::V3D T_wrt_;
     common::M3D R_wrt_;
+    common::M3D R_wrt_inv_;
 
 };
 

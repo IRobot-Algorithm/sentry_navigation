@@ -30,11 +30,11 @@ UsbCommNode::~UsbCommNode()
 void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
 {
   // ROS subscribe initialization
-  this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &UsbCommNode::odomHandler, this);
-  this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
+  this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 1, &UsbCommNode::odomHandler, this);
+  this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 1, &UsbCommNode::velHandler, this);
   // this->sub_vel_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
         
-  this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 5);
+  this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 1);
 
   // ROS timer initialization
   this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);

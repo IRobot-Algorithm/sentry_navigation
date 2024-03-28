@@ -559,7 +559,7 @@ int main(int argc, char** argv)
   nhPrivate.getParam("vehicleRadio", vehicleRadio);
 
   ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry>
-                                ("/Odometry", 5, odometryHandler);
+                                ("/Odometry", 1, odometryHandler);
 
   ros::Subscriber subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2>
                                   ("/registered_scan", 5, laserCloudHandler);
@@ -569,7 +569,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy> ("/joy", 5, joystickHandler);
 
-  ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
+  ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 1, goalHandler);
 
   ros::Subscriber subSpeed = nh.subscribe<std_msgs::Float32> ("/speed", 5, speedHandler);
 
@@ -579,7 +579,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subCheckObstacle = nh.subscribe<std_msgs::Bool> ("/check_obstacle", 5, checkObstacleHandler);
 
-  ros::Publisher pubPath = nh.advertise<nav_msgs::Path> ("/nav_path", 5);
+  ros::Publisher pubPath = nh.advertise<nav_msgs::Path> ("/nav_path", 1);
   nav_msgs::Path path;
 
   tf::TransformBroadcaster tfBroadcaster_maplink;
