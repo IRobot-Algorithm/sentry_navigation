@@ -257,7 +257,6 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     if (req.pose.pose.position.z < -50) // static
       way_point_.point.z -= 0.2;
 
-    return true;
   }
 
 

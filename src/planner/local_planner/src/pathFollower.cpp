@@ -306,7 +306,7 @@ int main(int argc, char** argv)
       // normal
       cmd_vel.twist.angular.x = 0.0;
       
-      if (goalZ < -0.2 - 1e-3) // static
+      if (goalZ < -0.25) // static
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
@@ -318,15 +318,23 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
         cmd_vel.twist.angular.z = yawDiff;
-        if (goalZ >= -0.3 - 1e-3) // left
-          cmd_vel.twist.angular.x = 1.0;
-        else // right
-          cmd_vel.twist.angular.x = 2.0;
+        float vehicleDiff = pathDir - vehicleYaw;
+        if (vehicleDiff > PI) 
+          vehicleDiff -= 2 * PI;
+        else if (vehicleDiff < -PI) 
+          vehicleDiff += 2 * PI;
+        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
+        {
+          if (goalZ >= -0.35) // left
+            cmd_vel.twist.angular.x = 1.0;
+          else // right
+            cmd_vel.twist.angular.x = 2.0;
+        }
         pubSpeed.publish(cmd_vel);
         continue; 
       }
 
-      if (endDis < 3.0 && goalZ < -1e-3) // tracking
+      if (endDis < 3.0 && goalZ < -0.05) // tracking
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
@@ -338,10 +346,18 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
         cmd_vel.twist.angular.z = yawDiff;
-        if (goalZ >= -0.1 - 1e-3) // left
-          cmd_vel.twist.angular.x = 1.0;
-        else // right
-          cmd_vel.twist.angular.x = 2.0;
+        float vehicleDiff = pathDir - vehicleYaw;
+        if (vehicleDiff > PI) 
+          vehicleDiff -= 2 * PI;
+        else if (vehicleDiff < -PI) 
+          vehicleDiff += 2 * PI;
+        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
+        {
+          if (goalZ >= -0.15) // left
+            cmd_vel.twist.angular.x = 1.0;
+          else // right
+            cmd_vel.twist.angular.x = 2.0;
+        }
         pubSpeed.publish(cmd_vel);
         continue;
       }
@@ -356,7 +372,7 @@ int main(int argc, char** argv)
       }
       if (endDis > 0.1 && pathSize <= 5)
       {
-        if (goalZ < -1e-3)
+        if (goalZ < -0.05)
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
@@ -367,11 +383,19 @@ int main(int argc, char** argv)
             yawDiff -= 2 * PI;
           else if (yawDiff < -PI) 
             yawDiff += 2 * PI;
-          if (goalZ >= -0.1 - 1e-3) // left
-            cmd_vel.twist.angular.x = 1.0;
-          else // right
-            cmd_vel.twist.angular.x = 2.0;
           cmd_vel.twist.angular.z = yawDiff;
+          float vehicleDiff = pathDir - vehicleYaw;
+          if (vehicleDiff > PI) 
+            vehicleDiff -= 2 * PI;
+          else if (vehicleDiff < -PI) 
+            vehicleDiff += 2 * PI;
+          if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
+          {
+            if (goalZ >= -0.15) // left
+              cmd_vel.twist.angular.x = 1.0;
+            else // right
+              cmd_vel.twist.angular.x = 2.0;
+          }
           pubSpeed.publish(cmd_vel);
         }
         else
@@ -443,7 +467,7 @@ int main(int argc, char** argv)
       }
 
       float yawDiff;
-      if (goalZ < -1e-3)
+      if (goalZ < -0.05)
       {
         float pathDir = atan2(endDisY, endDisX);
         yawDiff = pathDir - worldYaw;
@@ -452,10 +476,18 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
         cmd_vel.twist.angular.z = yawDiff;
-        if (goalZ >= -0.1 - 1e-3) // left
-          cmd_vel.twist.angular.x = 1.0;
-        else // right
-          cmd_vel.twist.angular.x = 2.0;
+        float vehicleDiff = pathDir - vehicleYaw;
+        if (vehicleDiff > PI) 
+          vehicleDiff -= 2 * PI;
+        else if (vehicleDiff < -PI) 
+          vehicleDiff += 2 * PI;
+        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
+        {
+          if (goalZ >= -0.15) // left
+            cmd_vel.twist.angular.x = 1.0;
+          else // right
+            cmd_vel.twist.angular.x = 2.0;
+        }
       }
       else
       {
