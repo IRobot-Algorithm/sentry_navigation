@@ -201,6 +201,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
   //   else
   //     way_point_.point.z = -0.1;
   // }
+
   if (track_target_)
   {
     static tf::TransformListener ls;
@@ -244,10 +245,18 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
 
     // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
     // std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
-
+    
     // if(req.is_lost)
     //   way_point_.point.z = 0;
     // else
+
+    // rmul 在对面补给区
+    if (way_point_.point.x > 7.55 && way_point_.point.x < 9.35 &&
+        way_point_.point.y > -3.9 && way_point_.point.y < -1.1)
+    {
+      res.success = false;
+      return true;
+    }
 
     if (req.gimbal) // 0 for right, 1 for left
       way_point_.point.z = -0.1;
@@ -255,7 +264,9 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       way_point_.point.z = -0.2;
 
     if (req.pose.pose.position.z < -50) // static
+    {
       way_point_.point.z -= 0.2;
+    }
 
   }
 
