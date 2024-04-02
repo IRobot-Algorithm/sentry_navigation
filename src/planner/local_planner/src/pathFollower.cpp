@@ -61,6 +61,7 @@ double stopTime = 5.0;
 bool autonomyMode = false;
 double autonomySpeed = 1.0;
 double joyToSpeedDelay = 2.0;
+bool limitByAcc = false;
 
 float joySpeed = 0;
 float joySpeedRaw = 0;
@@ -104,6 +105,11 @@ float I_y = 0.0;
 
 float last_err_x = 0;
 float last_err_y = 0;
+
+float last_speed_x = 0;
+float last_speed_y = 0;
+
+ros::Time sendTime;
 
 nav_msgs::Path path;
 
@@ -202,6 +208,45 @@ void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
   goalZ = goal->point.z;
 }
 
+void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const float& dis)
+{
+
+  float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
+                     vel.twist.linear.y * vel.twist.linear.y);
+  float endMaxSpeed = maxSpeed;
+  if (dis < 0.8)
+  {
+    endMaxSpeed *= dis + 0.2;
+  }
+  if (speed > endMaxSpeed)
+  {
+    vel.twist.linear.x *= endMaxSpeed / speed;
+    vel.twist.linear.y *= endMaxSpeed / speed;
+  }
+
+  if (limitByAcc)
+  {
+    double dt = ros::Time::now().toSec() - sendTime.toSec();
+
+    // 根据最大加速度修正速度
+    float delta_speed_x = vel.twist.linear.x - last_speed_x;
+    float delta_speed_y = vel.twist.linear.y - last_speed_y;
+    float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
+    if (delta_speed > maxAccel * dt)
+    {
+      vel.twist.linear.x = last_speed_x + (maxAccel * dt) * (delta_speed_x / delta_speed);
+      vel.twist.linear.y = last_speed_y + (maxAccel * dt) * (delta_speed_y / delta_speed);
+    }
+
+    last_speed_x = vel.twist.linear.x;
+    last_speed_y = vel.twist.linear.y;
+    sendTime = ros::Time::now();
+  }
+
+  pub.publish(vel);
+
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "pathFollower");
@@ -234,6 +279,7 @@ int main(int argc, char** argv)
   nhPrivate.getParam("autonomyMode", autonomyMode);
   nhPrivate.getParam("autonomySpeed", autonomySpeed);
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
+  nhPrivate.getParam("limitByAcc", limitByAcc);
   nhPrivate.getParam("goalX", goalX);
   nhPrivate.getParam("goalY", goalY);
   nhPrivate.getParam("goalZ", goalZ);
@@ -291,13 +337,6 @@ int main(int argc, char** argv)
       tf::Matrix3x3 rotation(transform.getRotation());
       rotation.getRPY(worldRoll, worldPitch, worldYaw);
 
-        // cmd_vel.twist.linear.x = 0.5;
-        // cmd_vel.twist.linear.y = 0.0;
-        // cmd_vel.twist.linear.z = 1.0;
-        // cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        // pubSpeed.publish(cmd_vel);
-        // continue;
-
       int pathSize = path.poses.size();
       float endDisX = goalX - vehicleX;
       float endDisY = goalY - vehicleY;
@@ -330,7 +369,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        pubSpeed.publish(cmd_vel);
+        publishVel(cmd_vel, pubSpeed, endDis);
         continue; 
       }
 
@@ -358,7 +397,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        pubSpeed.publish(cmd_vel);
+        publishVel(cmd_vel, pubSpeed, endDis);
         continue;
       }
       if (endDis < 0.1) // navigating
@@ -367,7 +406,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        pubSpeed.publish(cmd_vel);
+        publishVel(cmd_vel, pubSpeed, endDis);
         continue;
       }
       if (endDis > 0.1 && pathSize <= 5)
@@ -396,7 +435,7 @@ int main(int argc, char** argv)
             else // right
               cmd_vel.twist.angular.x = 2.0;
           }
-          pubSpeed.publish(cmd_vel);
+          publishVel(cmd_vel, pubSpeed, endDis);
         }
         else
         {
@@ -404,7 +443,7 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 1.0;
           cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
-          pubSpeed.publish(cmd_vel);
+          publishVel(cmd_vel, pubSpeed, endDis);
         }
         continue;
       }
@@ -451,21 +490,6 @@ int main(int argc, char** argv)
       // float speed_x = v_kp * target_vx;
       // float speed_y = v_kp * target_vy;
 
-      float speed = sqrt(speed_x * speed_x + speed_y * speed_y);
-      last_err_x = dis_x;
-      last_err_y = dis_y;
-      
-      float endMaxSpeed = maxSpeed;
-      if (endDis < 0.8)
-      {
-        endMaxSpeed *= endDis + 0.2;
-      }
-      if (speed > endMaxSpeed)
-      {
-        speed_x *= endMaxSpeed / speed;
-        speed_y *= endMaxSpeed / speed;
-      }
-
       float yawDiff;
       if (goalZ < -0.05)
       {
@@ -510,7 +534,7 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 0.0;
           cmd_vel.twist.angular.z = yawDiff;
-          pubSpeed.publish(cmd_vel);
+          publishVel(cmd_vel, pubSpeed, endDis);
           continue;
         }        
       }
@@ -522,7 +546,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
         cmd_vel.twist.angular.z = yawDiff;
-        pubSpeed.publish(cmd_vel);
+        publishVel(cmd_vel, pubSpeed, endDis);
 
         pubSkipCount = pubSkipNum;
       }
@@ -532,7 +556,7 @@ int main(int argc, char** argv)
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;
       cmd_vel.twist.linear.z = 1.0;
-      pubSpeed.publish(cmd_vel);
+      publishVel(cmd_vel, pubSpeed, 0.0);
     }
 
     status = ros::ok();
