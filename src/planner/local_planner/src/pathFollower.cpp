@@ -300,10 +300,6 @@ int main(int argc, char** argv)
   //订阅航点（位姿）
   ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
 
-  //发布导航状态
-  ros::Publisher pubnavState = nh.advertise<std_msgs::Bool> ("/nav_state", 5);
-  std_msgs::Bool navpoint_stateMsgs;
-
   ros::Publisher pubSpeed = nh.advertise<geometry_msgs::TwistStamped> ("/cmd_vel", 5);
   geometry_msgs::TwistStamped cmd_vel;
   cmd_vel.header.frame_id = "world";
