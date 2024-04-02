@@ -61,7 +61,8 @@ double stopTime = 5.0;
 bool autonomyMode = false;
 double autonomySpeed = 1.0;
 double joyToSpeedDelay = 2.0;
-bool limitByAcc = false;
+bool limitByAcc = true;
+bool adjustByPitch = false;
 
 float joySpeed = 0;
 float joySpeedRaw = 0;
@@ -211,13 +212,38 @@ void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
 void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const float& dis)
 {
 
+  float endMaxSpeed = maxSpeed;
+  float endMaxAccel = maxAccel;
+  if (vehiclePitch < -0.0872 && adjustByPitch) // 5度上坡
+  {
+    std::cout << "up" << std::endl;
+    endMaxSpeed *= 2;
+    endMaxAccel *= 1.5;
+    vel.twist.linear.x *= 2;
+    vel.twist.linear.y *= 2;
+    // vel.twist.angular.x = 3.0;
+  }
+  else if (vehiclePitch > 0.0872 && adjustByPitch) // 5度下坡
+  {
+    std::cout << "down" << std::endl;
+    endMaxSpeed *= 0.6;
+    endMaxAccel *= 0.4;
+    vel.twist.linear.x *= 0.6;
+    vel.twist.linear.y *= 0.6;
+    // vel.twist.angular.x = 3.0;
+  }
+  else
+  {
+    std::cout << "none" << std::endl;
+    if (dis < 0.8)
+    {
+      endMaxSpeed *= dis + 0.2;
+    }
+  }
+
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
                      vel.twist.linear.y * vel.twist.linear.y);
-  float endMaxSpeed = maxSpeed;
-  if (dis < 0.8)
-  {
-    endMaxSpeed *= dis + 0.2;
-  }
+  
   if (speed > endMaxSpeed)
   {
     vel.twist.linear.x *= endMaxSpeed / speed;
@@ -232,10 +258,10 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     float delta_speed_x = vel.twist.linear.x - last_speed_x;
     float delta_speed_y = vel.twist.linear.y - last_speed_y;
     float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
-    if (delta_speed > maxAccel * dt)
+    if (delta_speed > endMaxAccel * dt)
     {
-      vel.twist.linear.x = last_speed_x + (maxAccel * dt) * (delta_speed_x / delta_speed);
-      vel.twist.linear.y = last_speed_y + (maxAccel * dt) * (delta_speed_y / delta_speed);
+      vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
+      vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
     }
 
     last_speed_x = vel.twist.linear.x;
@@ -280,6 +306,7 @@ int main(int argc, char** argv)
   nhPrivate.getParam("autonomySpeed", autonomySpeed);
   nhPrivate.getParam("joyToSpeedDelay", joyToSpeedDelay);
   nhPrivate.getParam("limitByAcc", limitByAcc);
+  nhPrivate.getParam("adjustByPitch", adjustByPitch);
   nhPrivate.getParam("goalX", goalX);
   nhPrivate.getParam("goalY", goalY);
   nhPrivate.getParam("goalZ", goalZ);

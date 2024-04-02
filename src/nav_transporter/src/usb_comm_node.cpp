@@ -37,7 +37,7 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 1);
 
   // ROS timer initialization
-  this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
+  // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
   this->receive_thread_ = std::thread(&UsbCommNode::receiveCallback, this);
 }
 
@@ -129,6 +129,9 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
     send_package_.direction = 1;
   else // 顺时针
     send_package_.direction = 2;
+
+  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+  
 }
 
 void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)

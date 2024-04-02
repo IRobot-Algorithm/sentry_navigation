@@ -130,6 +130,7 @@ double joyTime = 0;
 
 float vehicleRoll = 0, vehiclePitch = 0, vehicleYaw = 0;
 float vehicleX = 0, vehicleY = 0, vehicleZ = 0;
+float vehicleAngle = 0, vehicleAngleYaw = 0;
 
 pcl::VoxelGrid<pcl::PointXYZI> laserDwzFilter, terrainDwzFilter;
 
@@ -150,6 +151,29 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   vehicleX = odom->pose.pose.position.x;
   vehicleY = odom->pose.pose.position.y;
   vehicleZ = odom->pose.pose.position.z;
+
+  // 将四元数消息转换为Eigen库中的四元数
+  Eigen::Quaterniond quaternion(geoQuat.w, geoQuat.x, geoQuat.y, geoQuat.z);
+
+  // 将四元数转换为旋转矩阵
+  Eigen::Matrix3d rotation_matrix = quaternion.normalized().toRotationMatrix();
+
+  // 定义原始坐标系的Z轴向量
+  Eigen::Vector3d original_z_axis(0, 0, 1);
+
+  // 计算刚体Z轴在原始坐标系下的方向
+  Eigen::Vector3d body_z_axis = rotation_matrix.col(2);
+
+  // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
+  double angle = std::acos(original_z_axis.dot(body_z_axis));
+  vehicleAngle = angle;
+
+  // 计算刚体Z轴在原始坐标系下的Yaw角
+  // 首先计算旋转后的Y轴在XY平面上的投影
+  Eigen::Vector3d projected_y_axis(body_z_axis[0], body_z_axis[1], 0);
+  // 计算投影与原始Y轴的夹角
+  double yaw_angle = std::acos(original_z_axis.dot(projected_y_axis));
+  vehicleAngleYaw = yaw_angle;
 
   //发布map_link的tf
   odomTrans_maplink.stamp_ = odom->header.stamp;
@@ -585,10 +609,6 @@ int main(int argc, char** argv)
   tf::TransformBroadcaster tfBroadcaster_maplink;
   tfBroadcasterPointer_maplink = &tfBroadcaster_maplink;
 
-  //发布在家的状态
-  ros::Publisher pubHome = nh.advertise<std_msgs::Bool> ("/Home_state", 5);
-  std_msgs::Bool home_state;
-
   #if PLOTPATHSET == 1
   ros::Publisher pubFreePaths = nh.advertise<sensor_msgs::PointCloud2> ("/free_paths", 2);
   #endif
@@ -636,20 +656,6 @@ int main(int argc, char** argv)
   while (status) {
     ros::spinOnce();
 
-    //发布在家的状态
-    bool home_flag = false;
-    float dis_home = sqrt(vehicleX*vehicleX+vehicleY*vehicleY);
-    if(dis_home<=10)//0.25 0.80
-    {
-      home_flag = true;
-    }
-    else
-    {
-      home_flag = false;
-    }
-    home_state.data = home_flag;
-    pubHome.publish(home_state);
-    
     if (newOdom || newLaserCloud || newTerrainCloud) {
 
       ros::Time t = ros::Time::now();
@@ -695,6 +701,8 @@ int main(int argc, char** argv)
         point.y = -pointX1 * sinVehicleYaw + pointY1 * cosVehicleYaw;
         point.z = pointZ1;
         point.intensity = plannerCloud->points[i].intensity;
+
+        // std::cout << "intensity:" << point.intensity << std::endl;
 
         float dis = sqrt(point.x * point.x + point.y * point.y);
         if (dis < adjacentRange && ((point.z > minRelZ && point.z < maxRelZ) || useTerrainAnalysis)) {
@@ -776,6 +784,7 @@ int main(int argc, char** argv)
           float h = plannerCloudCrop->points[i].intensity;
           float dis = sqrt(x * x + y * y);
 
+          // std::cout << "h:" << h << " thre:" << obstacleHeightThre << std::endl;
           if (dis < pathRange / pathScale + vehicleRadio && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
             // 36个方向的路径组
             for (int rotDir = 0; rotDir < 36; rotDir++) {
@@ -844,7 +853,7 @@ int main(int argc, char** argv)
           if (clearPathList[i] < pointPerPathThre) {
             float penaltyScore = 1.0 - pathPenaltyList[i] / costHeightThre;
             if (penaltyScore < costScore) penaltyScore = costScore;
-
+            // std::cout << "pathPenaltyList:" << pathPenaltyList[i] << " penaltyScore:" << penaltyScore << std::endl;
             float dirDiff = fabs(joyDir - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
             if (dirDiff > 360.0) {
               dirDiff -= 360.0;
