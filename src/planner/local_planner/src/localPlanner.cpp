@@ -168,11 +168,7 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   double angle = std::acos(original_z_axis.dot(body_z_axis));
   vehicleAngle = angle;
 
-  // 计算刚体Z轴在原始坐标系下的Yaw角
-  // 首先计算旋转后的Y轴在XY平面上的投影
-  Eigen::Vector3d projected_y_axis(body_z_axis[0], body_z_axis[1], 0);
-  // 计算投影与原始Y轴的夹角
-  double yaw_angle = std::acos(original_z_axis.dot(projected_y_axis));
+  double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
   vehicleAngleYaw = yaw_angle;
 
   //发布map_link的tf
@@ -183,6 +179,15 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   odomTrans_maplink.setOrigin(tf::Vector3(vehicleX, vehicleY, vehicleZ));//0.25
 
   tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
+
+  // tf::Quaternion q;
+  // q.setRPY(0, vehicleAngle, vehicleAngleYaw);
+
+  // odomTrans_maplink.frame_id_ = "map";
+  // odomTrans_maplink.child_frame_id_ = "po";
+  // odomTrans_maplink.setRotation(q);
+
+  // tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
 
   newOdom = true;
 }
