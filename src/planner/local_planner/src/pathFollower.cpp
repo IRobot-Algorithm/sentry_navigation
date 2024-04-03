@@ -122,7 +122,8 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   geometry_msgs::Quaternion geoQuat = odomIn->pose.pose.orientation;
   
   tf::Quaternion odomQuat = tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w);
-  tf::Matrix3x3(odomQuat).getRPY(roll, pitch, yaw);
+  tf::Matrix3x3 tf_mat = tf::Matrix3x3(tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w));
+  tf_mat.getRPY(roll, pitch, yaw);
 
   vehicleRoll = roll;
   vehiclePitch = pitch;
@@ -130,8 +131,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleX = odomIn->pose.pose.position.x;
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
-  velocityX = odomIn->twist.twist.linear.x;
-  velocityY = odomIn->twist.twist.linear.y;
 
   odomInit = true;
 

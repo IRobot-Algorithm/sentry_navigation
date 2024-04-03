@@ -132,7 +132,7 @@ double joyTime = 0;
 
 float vehicleRoll = 0, vehiclePitch = 0, vehicleYaw = 0;
 float vehicleX = 0, vehicleY = 0, vehicleZ = 0;
-float vehicleAngle = 0, vehicleAngleYaw = 0;
+float vehicleSlopeAngle = 0, vehicleSlopeYaw = 0;
 
 pcl::VoxelGrid<pcl::PointXYZI> laserDwzFilter, terrainDwzFilter;
 
@@ -168,11 +168,11 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
 
   // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
   double angle = std::acos(original_z_axis.dot(body_z_axis));
-  vehicleAngle = angle;
+  vehicleSlopeAngle = angle;
 
   // 计算刚体Z轴的朝向
   double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
-  vehicleAngleYaw = yaw_angle;
+  vehicleSlopeYaw = yaw_angle;
 
   //发布map_link的tf
   odomTrans_maplink.stamp_ = odom->header.stamp;
@@ -184,7 +184,7 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
 
   // tf::Quaternion q;
-  // q.setRPY(0, vehicleAngle, vehicleAngleYaw);
+  // q.setRPY(0, vehicleSlopeAngle, vehicleSlopeYaw);
 
   // odomTrans_maplink.frame_id_ = "map";
   // odomTrans_maplink.child_frame_id_ = "po";
@@ -851,10 +851,10 @@ int main(int argc, char** argv)
         // 坡度判断 优先走斜率最大的路
         float slopeAngle;
         bool useSlope = false;
-        if (fabs(vehicleAngle) > 0.0873) // 5度
+        if (fabs(vehicleSlopeAngle) > 0.0873) // 5度
         {
           useSlope = true;
-          slopeAngle = vehicleAngleYaw - vehicleYaw;
+          slopeAngle = vehicleSlopeYaw - vehicleYaw;
           if (slopeAngle > PI)
             slopeAngle -= 2.0 * PI;
           else if (slopeAngle < - PI)
