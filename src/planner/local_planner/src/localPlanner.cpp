@@ -143,7 +143,8 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
 
   double roll, pitch, yaw;
   geometry_msgs::Quaternion geoQuat = odom->pose.pose.orientation;
-  tf::Matrix3x3(tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w)).getRPY(roll, pitch, yaw);
+  tf::Matrix3x3 tf_mat = tf::Matrix3x3(tf::Quaternion(geoQuat.x, geoQuat.y, geoQuat.z, geoQuat.w));
+  tf_mat.getRPY(roll, pitch, yaw);
 
   vehicleRoll = roll;
   vehiclePitch = pitch;
@@ -152,22 +153,22 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
   vehicleY = odom->pose.pose.position.y;
   vehicleZ = odom->pose.pose.position.z;
 
-  // 将四元数消息转换为Eigen库中的四元数
-  Eigen::Quaterniond quaternion(geoQuat.w, geoQuat.x, geoQuat.y, geoQuat.z);
-
-  // 将四元数转换为旋转矩阵
-  Eigen::Matrix3d rotation_matrix = quaternion.normalized().toRotationMatrix();
-
+  Eigen::Matrix3d eigen_mat;
+  eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
+               tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
+               tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
+              
   // 定义原始坐标系的Z轴向量
   Eigen::Vector3d original_z_axis(0, 0, 1);
 
   // 计算刚体Z轴在原始坐标系下的方向
-  Eigen::Vector3d body_z_axis = rotation_matrix.col(2);
+  Eigen::Vector3d body_z_axis = eigen_mat.col(2);
 
   // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
   double angle = std::acos(original_z_axis.dot(body_z_axis));
   vehicleAngle = angle;
 
+  // 计算刚体Z轴的朝向
   double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
   vehicleAngleYaw = yaw_angle;
 
