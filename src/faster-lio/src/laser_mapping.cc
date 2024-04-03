@@ -142,10 +142,17 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     lidar_T_wrt_IMU = common::VecFromArray<double>(extrinT_);
     lidar_R_wrt_IMU = common::MatFromArray<double>(extrinR_);
 
+    // 初始变换矩阵
     IMU_T_wrt_BOT_ = common::VecFromArray<double>(extrinT_IMU_BOT);
     IMU_R_wrt_BOT_ = common::MatFromArray<double>(extrinR_IMU_BOT);
     BOT_T_wrt_IMU_ = -IMU_T_wrt_BOT_;
     BOT_R_wrt_IMU_ = IMU_R_wrt_BOT_.inverse();
+
+    // icp迭代结果
+    icp_T_wrt_.setZero();
+    icp_R_wrt_.setIdentity();
+    
+    // 点云最终转换矩阵
     T_wrt_ = BOT_T_wrt_IMU_;
     R_wrt_ = BOT_R_wrt_IMU_;
     R_wrt_inv_ = IMU_R_wrt_BOT_;
@@ -409,6 +416,8 @@ void LaserMapping::Run() {
         Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
         if (relocalization_.InitExtrinsic(result, cloud_xyz))
         {
+            icp_R_wrt_ = result.rotation();
+            icp_T_wrt_ = result.translation();
             R_wrt_ = result.rotation() * R_wrt_;
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
             R_wrt_inv_ = R_wrt_.inverse();
@@ -513,44 +522,6 @@ void LaserMapping::Run() {
     if (scan_pub_en_ && scan_effect_pub_en_) {
         PublishFrameEffectWorld(pub_laser_cloud_effect_world_);
     }
-
-    // if (use_icp_)
-    // {
-    //     static int cnt = 0;
-    //     if (cnt > 100)
-    //     {
-    //         int size = laser_cloud_imu_body_->size();
-    //         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
-    //         int i = 0;
-    //         for (const PointType& point_xyzi : *laser_cloud_imu_body_)
-    //         {
-    //             common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
-    //             common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
-
-    //             pcl::PointXYZ point_xyz;
-    //             point_xyz.x = p_BOT(0);
-    //             point_xyz.y = p_BOT(1);
-    //             point_xyz.z = p_BOT(2);
-    //             cloud_xyz->points[i] = point_xyz;
-    //             i++;
-    //         }
-
-    //         Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
-    //         if (relocalization_.InitExtrinsic(result, cloud_xyz))
-    //         {
-    //             R_wrt_ = result.rotation() * R_wrt_;
-    //             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
-    //             // relocalization_.clear();
-    //             LOG(INFO) << "\033[1;32m----> Localization Finished.\033[0m";
-    //         }
-    //         else
-    //         {
-    //             LOG(WARNING) << "----> Localization Failed!";
-    //         }
-    //         cnt = 0;
-    //     }
-    //     cnt ++;
-    // }
 
     IMUUpdate();
     // Debug variables
@@ -851,6 +822,8 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                                   odom_lidar.pose.pose.orientation.z);
     common::M3D init_R_lidar = eigen_quat.toRotationMatrix();
     common::M3D MAP_R_BOT = BOT_R_wrt_IMU_ * init_R_lidar * IMU_R_wrt_BOT_;
+    if (use_icp_)
+        MAP_R_BOT = icp_R_wrt_ * MAP_R_BOT;
 
     // 转换为tf与odom
     Eigen::Quaterniond q(MAP_R_BOT);
@@ -861,22 +834,24 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     common::V3D init_T_lidar(odom_lidar.pose.pose.position.x, 
                              odom_lidar.pose.pose.position.y, 
                              odom_lidar.pose.pose.position.z);
-    common::V3D MAP_T_lidar(R_wrt_ * init_T_lidar + T_wrt_);
-    common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * T_wrt_);
+    common::V3D MAP_T_lidar(BOT_R_wrt_IMU_ * init_T_lidar + BOT_T_wrt_IMU_);
+    common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * BOT_T_wrt_IMU_);
+    if (use_icp_)
+        MAP_T_BOT = icp_R_wrt_ * MAP_T_BOT + icp_T_wrt_;
 
     odom_base.pose.pose.position.x = MAP_T_BOT(0);
     odom_base.pose.pose.position.y = MAP_T_BOT(1);
     odom_base.pose.pose.position.z = MAP_T_BOT(2);
 
-    // twist linear
-    common::V3D init_V(odom_lidar.twist.twist.linear.x, 
-                       odom_lidar.twist.twist.linear.y, 
-                       odom_lidar.twist.twist.linear.z);    
-    common::V3D MAP_V(BOT_R_wrt_IMU_ * init_V);
+    // twist linear // 暂时未用 未消除离心力
+    // common::V3D init_V(odom_lidar.twist.twist.linear.x, 
+    //                    odom_lidar.twist.twist.linear.y, 
+    //                    odom_lidar.twist.twist.linear.z);    
+    // common::V3D MAP_V(BOT_R_wrt_IMU_ * init_V);
 
-    odom_base.twist.twist.linear.x = MAP_V(0);
-    odom_base.twist.twist.linear.y = MAP_V(1);
-    odom_base.twist.twist.linear.z = MAP_V(2);
+    // odom_base.twist.twist.linear.x = MAP_V(0);
+    // odom_base.twist.twist.linear.y = MAP_V(1);
+    // odom_base.twist.twist.linear.z = MAP_V(2);
 
     pub_odom_aft_mapped.publish(odom_base);
     auto P = kf_.get_P();

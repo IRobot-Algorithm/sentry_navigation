@@ -198,6 +198,10 @@ class LaserMapping {
     bool use_icp_ = false;
     bool init_localization_ = false;
 
+    // icp RT
+    common::V3D icp_T_wrt_;
+    common::M3D icp_R_wrt_;
+
     // final RT
     common::V3D T_wrt_;
     common::M3D R_wrt_;
