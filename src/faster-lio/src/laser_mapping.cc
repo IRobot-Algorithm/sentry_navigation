@@ -148,6 +148,7 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     BOT_R_wrt_IMU_ = IMU_R_wrt_BOT_.inverse();
     T_wrt_ = BOT_T_wrt_IMU_;
     R_wrt_ = BOT_R_wrt_IMU_;
+    R_wrt_inv_ = IMU_R_wrt_BOT_;
 
     p_imu_->SetExtrinsic(lidar_T_wrt_IMU, lidar_R_wrt_IMU);
     p_imu_->SetGyrCov(common::V3D(gyr_cov, gyr_cov, gyr_cov));
@@ -410,6 +411,7 @@ void LaserMapping::Run() {
         {
             R_wrt_ = result.rotation() * R_wrt_;
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
+            R_wrt_inv_ = R_wrt_.inverse();
             init_localization_ = false;
             // relocalization_.clear();
             LOG(INFO) << "\033[1;32m----> Init Localization Finished.\033[0m";
