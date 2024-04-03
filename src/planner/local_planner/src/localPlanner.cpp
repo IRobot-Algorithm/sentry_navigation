@@ -57,7 +57,9 @@ int pointPerPathThre = 2;
 double minRelZ = -0.1;//-0.5
 double maxRelZ = 0.1;//0.25
 double maxSpeed = 1.0;
-double dirWeight = 0.02;
+double dirWeight = 0.5;
+double rotWeight = 0.3;
+double slopeWeight = 1.0;
 double dirThre = 90.0;
 bool dirToVehicle = false;
 double pathScale = 1.0;
@@ -569,6 +571,8 @@ int main(int argc, char** argv)
   nhPrivate.getParam("maxRelZ", maxRelZ);
   nhPrivate.getParam("maxSpeed", maxSpeed);
   nhPrivate.getParam("dirWeight", dirWeight);
+  nhPrivate.getParam("rotWeight", rotWeight);
+  nhPrivate.getParam("slopeWeight", slopeWeight);
   nhPrivate.getParam("dirThre", dirThre);
   nhPrivate.getParam("dirToVehicle", dirToVehicle);
   nhPrivate.getParam("pathScale", pathScale);
@@ -844,6 +848,20 @@ int main(int argc, char** argv)
         if (minObsAngCW > 0) minObsAngCW = 0;
         if (minObsAngCCW < 0) minObsAngCCW = 0;
 
+        // 坡度判断 优先走斜率最大的路
+        float slopeAngle;
+        bool useSlope = false;
+        if (fabs(vehicleAngle) > 0.0873) // 5度
+        {
+          useSlope = true;
+          slopeAngle = vehicleAngleYaw - vehicleYaw;
+          if (slopeAngle > PI)
+            slopeAngle -= 2.0 * PI;
+          else if (slopeAngle < - PI)
+            slopeAngle += 2.0 * PI;
+          slopeAngle = slopeAngle * 180.0 / PI;
+        }
+
         // 筛选路径
         for (int i = 0; i < 36 * pathNum; i++) {
           int rotDir = int(i / pathNum);
@@ -867,15 +885,36 @@ int main(int argc, char** argv)
             if (dirDiff > 180.0) {
               dirDiff = 360.0 - dirDiff;
             }
-            float rotDirW;
-            if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
-            else rotDirW = fabs(fabs(rotDir - 27) + 1);
+            // float rotDirW;
+            // if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
+            // else rotDirW = fabs(fabs(rotDir - 27) + 1);
+            float rotDiff = fabs(endDirPathList[i % pathNum] + (10.0 * rotDir - 180.0));
+            if (rotDiff > 360.0)
+              rotDiff -= 360.0;
+            if (rotDiff > 180.0)
+              rotDiff = 360.0 - rotDiff;
+
             // rotDirW=1.0;//zbh
-            penaltyScore=1.0;//zbh
-            float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
+            // penaltyScore=1.0;//zbh
+            // float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) * rotDirW * rotDirW * rotDirW * rotDirW * penaltyScore;
             // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
             // float score = (1000 - sqrt(dirWeight * dirDiff)) - rotDirW / 100.0;
             
+            float slopeDiff = 0.0;
+            if (useSlope)
+            {
+              float slopeDiff = fabs(slopeAngle - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
+              if (slopeDiff > 360.0)
+                slopeDiff -= 360.0;
+              if (slopeDiff > 180.0)
+                slopeDiff = 360.0 - slopeDiff;
+              if (slopeDiff > 90.0)
+                slopeDiff = 180.0 - slopeDiff;
+            }
+            float score = sqrt(dirWeight * (180.0 - dirDiff)) * 
+                          sqrt(rotWeight * (180.0 - rotDiff)) * 
+                          sqrt(slopeWeight * (90.0 - slopeDiff));
+
             if (score > 0) {
               clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
             }

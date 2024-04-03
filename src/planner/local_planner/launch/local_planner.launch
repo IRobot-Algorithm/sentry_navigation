@@ -35,6 +35,7 @@
     <param name="maxRelZ" type="double" value="0.35" />
     <param name="maxSpeed" value="$(arg maxSpeed)" />
     <param name="dirWeight" type="double" value="0.1" /><!--0.02-->
+    <param name="dirWeight" type="double" value="0.3" /><!--0.02-->
     <param name="dirThre" type="double" value="90.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
     <param name="dirToVehicle" type="bool" value="false" /><!--一定是false-->
     <param name="pathScale" type="double" value="0.35" />
