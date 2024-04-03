@@ -79,6 +79,8 @@ float vehicleYaw = 0;
 float velocityX = 0;
 float velocityY = 0;
 float velocityYaw = 0;
+float vehicleSlopeAngle = 0;
+float vehicleSlopeYaw = 0;
 
 float vehicleYawRate = 0;
 float vehicleSpeed = 0;
@@ -91,6 +93,7 @@ int pathPointID = 0;
 bool pathInit = false;
 bool odomInit = false;
 bool navFwd = true;
+bool slopeCase = false;
 double switchTime = 0;
 
 double goalX = 0.0;
@@ -131,6 +134,25 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleX = odomIn->pose.pose.position.x;
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
+
+  Eigen::Matrix3d eigen_mat;
+  eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
+               tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
+               tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
+              
+  // 定义原始坐标系的Z轴向量
+  Eigen::Vector3d original_z_axis(0, 0, 1);
+
+  // 计算刚体Z轴在原始坐标系下的方向
+  Eigen::Vector3d body_z_axis = eigen_mat.col(2);
+
+  // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
+  double angle = std::acos(original_z_axis.dot(body_z_axis));
+  vehicleSlopeAngle = angle;
+
+  // 计算刚体Z轴的朝向
+  double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
+  vehicleSlopeYaw = yaw_angle;
 
   odomInit = true;
 
@@ -213,23 +235,33 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
 
   float endMaxSpeed = maxSpeed;
   float endMaxAccel = maxAccel;
-  if (vehiclePitch < -0.0872 && adjustByPitch) // 5度上坡
+  // if (vehiclePitch < -0.0872 && adjustByPitch) // 5度上坡
+  // {
+  //   std::cout << "up" << std::endl;
+  //   endMaxSpeed *= 2;
+  //   endMaxAccel *= 1.5;
+  //   vel.twist.linear.x *= 2;
+  //   vel.twist.linear.y *= 2;
+  //   // vel.twist.angular.x = 3.0;
+  // }
+  // else if (vehiclePitch > 0.0872 && adjustByPitch) // 5度下坡
+  // {
+  //   std::cout << "down" << std::endl;
+  //   endMaxSpeed *= 0.6;
+  //   endMaxAccel *= 0.4;
+  //   vel.twist.linear.x *= 0.6;
+  //   vel.twist.linear.y *= 0.6;
+  //   // vel.twist.angular.x = 3.0;
+  // }
+  if (fabs(vehicleSlopeAngle) > 0.0872 && adjustByPitch) // 5度
   {
-    std::cout << "up" << std::endl;
+    std::cout << "up or down" << std::endl;
     endMaxSpeed *= 2;
-    endMaxAccel *= 1.5;
+    endMaxAccel *= 0.5;
     vel.twist.linear.x *= 2;
     vel.twist.linear.y *= 2;
-    // vel.twist.angular.x = 3.0;
-  }
-  else if (vehiclePitch > 0.0872 && adjustByPitch) // 5度下坡
-  {
-    std::cout << "down" << std::endl;
-    endMaxSpeed *= 0.6;
-    endMaxAccel *= 0.4;
-    vel.twist.linear.x *= 0.6;
-    vel.twist.linear.y *= 0.6;
-    // vel.twist.angular.x = 3.0;
+    slopeCase = true;
+    switchTime = ros::Time::now().toSec();
   }
   else
   {
@@ -237,6 +269,15 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     if (dis < 0.8)
     {
       endMaxSpeed *= dis + 0.2;
+      slopeCase = false;
+    }
+    else if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
+    {
+      endMaxAccel *= 0.5;
+    }
+    else
+    {
+      slopeCase = false;
     }
   }
 
