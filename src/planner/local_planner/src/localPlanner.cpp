@@ -720,7 +720,7 @@ int main(int argc, char** argv)
       for (int i = 0; i < boundaryCloudSize; i++) {
         point.x = ((boundaryCloud->points[i].x - vehicleX) * cosVehicleYaw 
                 + (boundaryCloud->points[i].y - vehicleY) * sinVehicleYaw);
-        point.y = (-(boundaryCloud->points[i].x - vehicleX) * sinVehicleYaw 
+        point.y = (-(boundaryCloud->points[i].x - vehicleX) * sinVehicleYaw
                 + (boundaryCloud->points[i].y - vehicleY) * cosVehicleYaw);
         point.z = boundaryCloud->points[i].z;
         point.intensity = boundaryCloud->points[i].intensity;
@@ -791,7 +791,7 @@ int main(int argc, char** argv)
           float dis = sqrt(x * x + y * y);
 
           // std::cout << "h:" << h << " thre:" << obstacleHeightThre << std::endl;
-          if (dis < pathRange / pathScale + vehicleRadio && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
+          if (dis < (pathRange + vehicleRadio) / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal) && checkObstacle) {
             // 36个方向的路径组
             for (int rotDir = 0; rotDir < 36; rotDir++) {
               float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
