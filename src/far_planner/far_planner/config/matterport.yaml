@@ -1,5 +1,5 @@
 # Dynamic Planner Default Params
-main_run_freq                           : 2.5
+main_run_freq                           : 5.0
 voxel_dim                               : 0.1   # Unit: meter
 robot_dim                               : 0.6   # Unit: meter
 vehicle_height                          : 0.5   # Unit: meter
@@ -49,7 +49,7 @@ CDetector/is_save_img                   : false
 CDetector/img_folder_path               : /path
 
 # Graph Planner Params
-GPlanner/converge_distance              : 0.4  # Unit: meter # 下一个目标点的最小距离
+GPlanner/converge_distance              : 0.6  # Unit: meter # 下一个目标点的最小距离
 GPlanner/goal_adjust_radius             : 0.5   # Unit: meter
 GPlanner/free_counter_thred             : 4
 GPlanner/reach_goal_vote_size           : 2

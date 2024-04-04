@@ -112,6 +112,7 @@ float last_err_y = 0;
 
 float last_speed_x = 0;
 float last_speed_y = 0;
+float path_range = 0;
 
 ros::Time sendTime;
 
@@ -175,6 +176,7 @@ void pathHandler(const nav_msgs::Path::ConstPtr& pathIn)
     path.poses[i].pose.position.y = pathIn->poses[i].pose.position.y;
     path.poses[i].pose.position.z = pathIn->poses[i].pose.position.z;
   }
+  path_range = path.poses[0].pose.position.z * 10.0;
 
   pathPointID = 0;
   pathInit = true;
@@ -267,24 +269,34 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     if (slopeDir <= PI / 2.0)
     {
       // std::cout << "down" << std::endl;
+      endMaxSpeed *= 0.5;
       endMaxAccel *= 0.5;
       vel.twist.linear.z = 3.0;
+      slopeCase = true;
+      switchTime = ros::Time::now().toSec();
     }
     else
     {
       // std::cout << "up" << std::endl;
       endMaxSpeed *= 1.5;
-      vel.twist.linear.x *= 2.0;
-      vel.twist.linear.y *= 2.0;
+      vel.twist.linear.x *= 100.0;
+      vel.twist.linear.y *= 100.0;
       vel.twist.linear.z = 3.0;
+      if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
+      {
+        endMaxAccel *= 0.5;
+      }
+      // else if (slopeDir > 11.0 * PI / 12.0)
+      // {
+      //   vel.twist.linear.x *= 100.0; // max
+      //   vel.twist.linear.y *= 100.0;
+      // }
     }
-    slopeCase = true;
-    switchTime = ros::Time::now().toSec();
   }
   else
   {
     // std::cout << "none" << std::endl;
-    if (dis < 0.8)
+    if (dis < 1.0)
     {
       endMaxSpeed = dis + 0.2;
       slopeCase = false;
@@ -423,6 +435,9 @@ int main(int argc, char** argv)
       float endDisX = goalX - vehicleX;
       float endDisY = goalY - vehicleY;
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
+      float startDisX = path.poses[0].pose.position.x - vehicleX;
+      float startDisY = path.poses[0].pose.position.y - vehicleY;
+      float pathDis = path_range - sqrt(startDisX * startDisX + startDisY * startDisY);
 
       // normal
       cmd_vel.twist.angular.x = 0.0;
@@ -451,7 +466,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+        publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         continue; 
       }
 
@@ -479,7 +494,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+        publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         continue;
       }
       if (endDis < 0.1) // navigating
@@ -488,7 +503,8 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        publishVel(cmd_vel, pubSpeed, endDis, -5.0);
+        // publishVel(cmd_vel, pubSpeed, endDis, -5.0);
+        publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         continue;
       }
       if (endDis > 0.1 && pathSize <= 5)
@@ -517,7 +533,8 @@ int main(int argc, char** argv)
             else // right
               cmd_vel.twist.angular.x = 2.0;
           }
-          publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+          // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+          publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         }
         else
         {
@@ -525,7 +542,7 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 1.0;
           cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
-          publishVel(cmd_vel, pubSpeed, endDis, -5.0);
+          publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         }
         continue;
       }
@@ -616,7 +633,8 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 0.0;
           cmd_vel.twist.angular.z = yawDiff;
-          publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+          // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+          publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
           continue;
         }        
       }
@@ -628,7 +646,8 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
         cmd_vel.twist.angular.z = yawDiff;
-        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+        // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+        publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
 
         pubSkipCount = pubSkipNum;
       }

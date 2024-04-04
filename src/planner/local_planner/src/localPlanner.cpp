@@ -939,24 +939,26 @@ int main(int argc, char** argv)
 
         // 找到最佳路径
         if (selectedGroupID >= 0) {
+          // std::cout << "pathRange:" << pathRange << std::endl;
           int rotDir = int(selectedGroupID / groupNum);
           float rotAng = (10.0 * rotDir - 180.0) * PI / 180;
 
           selectedGroupID = selectedGroupID % groupNum;
           int selectedPathLength = startPaths[selectedGroupID]->points.size();
           path.poses.resize(selectedPathLength);
+          float minDis = std::min(pathRange, relativeGoalDis);
           for (int i = 0; i < selectedPathLength; i++) {
             float x = startPaths[selectedGroupID]->points[i].x;
             float y = startPaths[selectedGroupID]->points[i].y;
             float z = startPaths[selectedGroupID]->points[i].z;
             float dis = sqrt(x * x + y * y);
 
-            if (dis <= pathRange / pathScale && dis <= relativeGoalDis / pathScale) {
+            if (dis <= minDis / pathScale) {
               float vehicle_x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
               float vehicle_y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
               path.poses[i].pose.position.x = (cosVehicleYaw * vehicle_x - sinVehicleYaw * vehicle_y) + vehicleX;
               path.poses[i].pose.position.y = (sinVehicleYaw * vehicle_x + cosVehicleYaw * vehicle_y) + vehicleY;
-              path.poses[i].pose.position.z = pathScale * z + vehicleZ;
+              path.poses[i].pose.position.z = minDis / 10.0; // for speed init
             } else {
               path.poses.resize(i);
               break;
