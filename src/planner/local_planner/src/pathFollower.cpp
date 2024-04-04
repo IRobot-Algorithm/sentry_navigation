@@ -581,13 +581,13 @@ int main(int argc, char** argv)
 
       // float target_vx = 0.95 * v_kp * dis_x + 0.05 * v_kp * next_dis_x;
       // float target_vy = 0.95 * v_kp * dis_y + 0.05 * v_kp * next_dis_y;
-      I_x += dis_x;
-      I_y += dis_y;
-      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
-      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
+      // I_x += dis_x;
+      // I_y += dis_y;
+      // float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
+      // float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
 
-      // float speed_x = v_kp * target_vx;
-      // float speed_y = v_kp * target_vy;
+      float speed_x = v_kp * dis_x;
+      float speed_y = v_kp * dis_y;
 
       float yawDiff, pathDir;
       if (goalZ < -0.05)
