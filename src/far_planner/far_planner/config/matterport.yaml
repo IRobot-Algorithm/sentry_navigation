@@ -29,7 +29,7 @@ MapHandler/map_grad_max_height          : 5.0   # Unit: meter
 Util/angle_noise                        : 15.0  # Unit: degree
 Util/accept_max_align_angle             : 4.0   # Unit: degree
 Util/obs_inflate_size                   : 1.0
-Util/new_intensity_thred                : 1.0
+Util/new_intensity_thred                : 1.0   # 新点云强度阈值
 Util/terrain_free_Z                     : 0.13
 Util/dyosb_update_thred                 : 4
 Util/new_point_counter                  : 1
@@ -39,17 +39,17 @@ Util/new_points_decay_time              : 1.0   # Unit: second
 # Dynamic Graph Params
 Graph/connect_votes_size                : 10        
 Graph/clear_dumper_thred                : 1
-Graph/node_finalize_thred               : 6
+Graph/node_finalize_thred               : 6     # 节点完成阈值 调小
 Graph/filter_pool_size                  : 12
 
 # Corner Detector Params
-CDetector/resize_ratio                  : 3.0
-CDetector/filter_count_value            : 3
+CDetector/resize_ratio                  : 3.0   # 障碍物图像的缩放系数
+CDetector/filter_count_value            : 3     # 动态障碍物检测时 更新的阈值 越小对障碍物越敏感
 CDetector/is_save_img                   : false
 CDetector/img_folder_path               : /path
 
 # Graph Planner Params
-GPlanner/converge_distance              : 0.1  # Unit: meter
+GPlanner/converge_distance              : 0.3  # Unit: meter # 下一个目标点的最小距离
 GPlanner/goal_adjust_radius             : 0.4   # Unit: meter
 GPlanner/free_counter_thred             : 4
 GPlanner/reach_goal_vote_size           : 2
