@@ -22,7 +22,6 @@ enum NAV_EXEC_STATE {
 	INIT, 
 	TRACK,
 	NAVIGATE,
-	RESET,
 };
 
 class StateProcess {
