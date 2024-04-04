@@ -230,7 +230,7 @@ void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
   goalZ = goal->point.z;
 }
 
-void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const float& dis)
+void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const float& dis, const float& velAngle)
 {
 
   float endMaxSpeed = maxSpeed;
@@ -242,7 +242,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   //   endMaxAccel *= 1.5;
   //   vel.twist.linear.x *= 2;
   //   vel.twist.linear.y *= 2;
-  //   // vel.twist.angular.x = 3.0;
+  // 
   // }
   // else if (vehiclePitch > 0.0872 && adjustByPitch) // 5度下坡
   // {
@@ -251,29 +251,48 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   //   endMaxAccel *= 0.4;
   //   vel.twist.linear.x *= 0.6;
   //   vel.twist.linear.y *= 0.6;
-  //   // vel.twist.angular.x = 3.0;
+  // 
   // }
   if (fabs(vehicleSlopeAngle) > 0.0872 && adjustByPitch) // 5度
   {
-    std::cout << "up or down" << std::endl;
-    endMaxSpeed *= 2;
-    endMaxAccel *= 0.5;
-    vel.twist.linear.x *= 2;
-    vel.twist.linear.y *= 2;
+    float slopeDir = 0.0;
+    if (velAngle > -4.0);
+    {
+      slopeDir = fabs(velAngle - vehicleSlopeYaw);
+      // std::cout << "slopeDir:" << slopeDir << std::endl;
+      if (slopeDir > PI)
+        slopeDir = 2 * PI - slopeDir;
+    }
+
+    if (slopeDir <= PI / 2.0)
+    {
+      // std::cout << "down" << std::endl;
+      endMaxAccel *= 0.5;
+      vel.twist.linear.z = 3.0;
+    }
+    else
+    {
+      // std::cout << "up" << std::endl;
+      endMaxSpeed *= 1.5;
+      vel.twist.linear.x *= 2.0;
+      vel.twist.linear.y *= 2.0;
+      vel.twist.linear.z = 3.0;
+    }
     slopeCase = true;
     switchTime = ros::Time::now().toSec();
   }
   else
   {
-    std::cout << "none" << std::endl;
+    // std::cout << "none" << std::endl;
     if (dis < 0.8)
     {
-      endMaxSpeed *= dis + 0.2;
+      endMaxSpeed = dis + 0.2;
       slopeCase = false;
     }
     else if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
     {
       endMaxAccel *= 0.5;
+      vel.twist.linear.z = 3.0;
     }
     else
     {
@@ -432,7 +451,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        publishVel(cmd_vel, pubSpeed, endDis);
+        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
         continue; 
       }
 
@@ -460,7 +479,7 @@ int main(int argc, char** argv)
           else // right
             cmd_vel.twist.angular.x = 2.0;
         }
-        publishVel(cmd_vel, pubSpeed, endDis);
+        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
         continue;
       }
       if (endDis < 0.1) // navigating
@@ -469,7 +488,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
         cmd_vel.twist.angular.z = vehicleYaw - worldYaw;
-        publishVel(cmd_vel, pubSpeed, endDis);
+        publishVel(cmd_vel, pubSpeed, endDis, -5.0);
         continue;
       }
       if (endDis > 0.1 && pathSize <= 5)
@@ -498,7 +517,7 @@ int main(int argc, char** argv)
             else // right
               cmd_vel.twist.angular.x = 2.0;
           }
-          publishVel(cmd_vel, pubSpeed, endDis);
+          publishVel(cmd_vel, pubSpeed, endDis, pathDir);
         }
         else
         {
@@ -506,7 +525,7 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 1.0;
           cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.1;
-          publishVel(cmd_vel, pubSpeed, endDis);
+          publishVel(cmd_vel, pubSpeed, endDis, -5.0);
         }
         continue;
       }
@@ -553,10 +572,10 @@ int main(int argc, char** argv)
       // float speed_x = v_kp * target_vx;
       // float speed_y = v_kp * target_vy;
 
-      float yawDiff;
+      float yawDiff, pathDir;
       if (goalZ < -0.05)
       {
-        float pathDir = atan2(endDisY, endDisX);
+        pathDir = atan2(endDisY, endDisX);
         yawDiff = pathDir - worldYaw;
         if (yawDiff > PI) 
           yawDiff -= 2 * PI;
@@ -579,7 +598,7 @@ int main(int argc, char** argv)
       else
       {
         // angle
-        float pathDir = atan2(speed_y, speed_x);
+        pathDir = atan2(speed_y, speed_x);
         yawDiff = pathDir - worldYaw;
 
         if (yawDiff > PI) 
@@ -591,13 +610,13 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        if (fabs(pathDir - vehicleYaw) > PI / 5)
+        if (fabs(pathDir - vehicleYaw) > PI / 5 &&(!adjustByPitch || fabs(vehicleSlopeAngle) < 0.0872))
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 0.0;
           cmd_vel.twist.angular.z = yawDiff;
-          publishVel(cmd_vel, pubSpeed, endDis);
+          publishVel(cmd_vel, pubSpeed, endDis, pathDir);
           continue;
         }        
       }
@@ -609,7 +628,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
         cmd_vel.twist.angular.z = yawDiff;
-        publishVel(cmd_vel, pubSpeed, endDis);
+        publishVel(cmd_vel, pubSpeed, endDis, pathDir);
 
         pubSkipCount = pubSkipNum;
       }
@@ -619,7 +638,7 @@ int main(int argc, char** argv)
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;
       cmd_vel.twist.linear.z = 1.0;
-      publishVel(cmd_vel, pubSpeed, 0.0);
+      publishVel(cmd_vel, pubSpeed, 0.0, -5.0);
     }
 
     status = ros::ok();

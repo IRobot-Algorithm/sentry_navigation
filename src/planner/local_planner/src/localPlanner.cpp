@@ -860,6 +860,7 @@ int main(int argc, char** argv)
           else if (slopeAngle < - PI)
             slopeAngle += 2.0 * PI;
           slopeAngle = slopeAngle * 180.0 / PI;
+          // std::cout << "slopeAngle:" << slopeAngle << std::endl;
         }
 
         // 筛选路径
@@ -900,10 +901,10 @@ int main(int argc, char** argv)
             // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
             // float score = (1000 - sqrt(dirWeight * dirDiff)) - rotDirW / 100.0;
             
-            float slopeDiff = 0.0;
+            float slopeDiff = 90.0;
             if (useSlope)
             {
-              float slopeDiff = fabs(slopeAngle - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
+              slopeDiff = fabs(slopeAngle - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
               if (slopeDiff > 360.0)
                 slopeDiff -= 360.0;
               if (slopeDiff > 180.0)
@@ -911,8 +912,9 @@ int main(int argc, char** argv)
               if (slopeDiff > 90.0)
                 slopeDiff = 180.0 - slopeDiff;
             }
-            float score = sqrt(dirWeight * (180.0 - dirDiff)) * 
-                          sqrt(rotWeight * (180.0 - rotDiff)) * 
+            // std::cout << "slopeDiff:" << slopeDiff << std::endl;
+            float score = sqrt(dirWeight * (180.0 - dirDiff)) + 
+                          sqrt(rotWeight * (180.0 - rotDiff)) + 
                           sqrt(slopeWeight * (90.0 - slopeDiff));
 
             if (score > 0) {

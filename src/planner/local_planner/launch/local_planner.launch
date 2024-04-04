@@ -1,7 +1,7 @@
 <launch>
 
   <arg name="twoWayDrive" default="true"/><!--false-->
-  <arg name="maxSpeed" default="1.0"/><!--2.0-->
+  <arg name="maxSpeed" default="1.2"/><!--2.0-->
   <arg name="maxAccel" default="5.0"/>
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>
@@ -10,7 +10,7 @@
   <arg name="goalX" default="0"/>
   <arg name="goalY" default="0"/>
   <arg name="goalZ" default="0"/>
-  <arg name="v_kp" default="5"/>
+  <arg name="v_kp" default="8"/>
   <arg name="v_ki" default="0"/>
   <arg name="v_kd" default="0.5"/>
 
@@ -34,8 +34,9 @@
     <param name="minRelZ" type="double" value="-2.0" />
     <param name="maxRelZ" type="double" value="0.35" />
     <param name="maxSpeed" value="$(arg maxSpeed)" />
-    <param name="dirWeight" type="double" value="0.1" /><!--0.02-->
-    <param name="dirWeight" type="double" value="0.3" /><!--0.02-->
+    <param name="dirWeight" type="double" value="1.0" /><!--0.02-->
+    <param name="rotWeight" type="double" value="0.3" /><!--0.02-->
+    <param name="slopeWeight" type="double" value="100.0" /><!--0.02-->
     <param name="dirThre" type="double" value="90.0" /><!--xz:90.0 xy:180 不能太大，会出问题，90正好-->
     <param name="dirToVehicle" type="bool" value="false" /><!--一定是false-->
     <param name="pathScale" type="double" value="0.35" />
@@ -59,13 +60,13 @@
   <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
     <param name="pubSkipNum" type="int" value="1" /><!--1-->
     <param name="twoWayDrive" value="false" />
-    <param name="lookAheadDis" type="double" value="0.2" /><!--xz:0.5 xy:0.5-->
+    <param name="lookAheadDis" type="double" value="0.35" /><!--xz:0.5 xy:0.5-->
     <param name="yawRateGain" type="double" value="5.5" /><!--7.5-->
     <param name="stopYawRateGain" type="double" value="2.0" /><!--7.5-->
     <param name="maxYawRate" type="double" value="360.0" /><!--360  120.0-->
     <param name="maxSpeed" value="$(arg maxSpeed)" />
     <param name="maxAccel" value="$(arg maxAccel)" /><!--5.0-->
-    <param name="switchTimeThre" type="double" value="1.0" />
+    <param name="switchTimeThre" type="double" value="0.3" />
     <param name="dirDiffThre" type="double" value="0.2" /><!--0.3-->
     <param name="stopDisThre" type="double" value="0.02" /><!--xz:0.2  xy:0.1-->
     <param name="slowDwnDisThre" type="double" value="2.0" /><!--0.3-->
