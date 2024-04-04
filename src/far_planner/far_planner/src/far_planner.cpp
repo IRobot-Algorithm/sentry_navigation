@@ -22,6 +22,7 @@ void FARMaster::Init() {
   update_command_sub_ = nh.subscribe("/update_visibility_graph", 5, &FARMaster::UpdateCommandCallBack, this);
   goal_pub_           = nh.advertise<geometry_msgs::PointStamped>("/far_way_point",5);
   boundary_pub_       = nh.advertise<geometry_msgs::PolygonStamped>("/navigation_boundary",5);
+  map_result_pub_     = nh.advertise<std_msgs::Bool>("/map_result", 5);
   // Timers
   runtime_pub_        = nh.advertise<std_msgs::Float32>("/runtime",1);
   planning_time_pub_  = nh.advertise<std_msgs::Float32>("/planning_time",1);
@@ -31,6 +32,7 @@ void FARMaster::Init() {
   // Terminal formatting subscriber
   read_command_sub_   = nh.subscribe("/read_file_dir", 1, &FARMaster::ReadFileCommand, this);
   save_command_sub_   = nh.subscribe("/save_file_dir", 1, &FARMaster::SaveFileCommand, this);
+  reset_command_sub_   = nh.subscribe("/reset_far_map", 1, &FARMaster::ResetMapCommand, this);
   // DEBUG Publisher
   dynamic_obs_pub_     = nh.advertise<sensor_msgs::PointCloud2>("/FAR_dynamic_obs_debug",1);
   surround_free_debug_ = nh.advertise<sensor_msgs::PointCloud2>("/FAR_free_debug",1);
@@ -137,6 +139,9 @@ void FARMaster::Loop() {
     if (is_reset_env_) {
       this->ResetEnvironmentAndGraph(); 
       is_reset_env_ = false;
+      std_msgs::Bool res;
+      res.data = true;
+      map_result_pub_.publish(res);
       if (FARUtil::IsDebug) ROS_WARN("****************** Graph and Env Reset ******************");
       loop_rate.sleep(); // skip this iteration
       continue;
@@ -294,6 +299,7 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
       nav_heading_ = Point3D(0,0,0);
       if (is_planning_fails) { // stops the robot
         goal_waypoint_stamped_.point = FARUtil::Point3DToGeoMsgPoint(robot_pos_);
+        goal_waypoint_stamped_.point.z = -10.0; // 规划失败 z为-10
         goal_pub_.publish(goal_waypoint_stamped_);
       }
     }

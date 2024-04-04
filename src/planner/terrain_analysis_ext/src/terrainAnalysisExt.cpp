@@ -209,7 +209,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subJoystick = nh.subscribe<sensor_msgs::Joy>("/joy", 5, joystickHandler);
 
-  ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32>("/cloud_clearing", 5, clearingHandler);
+  ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32>("/map_clearing", 5, clearingHandler);
 
   ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
 

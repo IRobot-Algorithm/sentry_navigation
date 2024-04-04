@@ -22,6 +22,7 @@ enum NAV_EXEC_STATE {
 	INIT, 
 	TRACK,
 	NAVIGATE,
+	RESET,
 };
 
 class StateProcess {
@@ -81,8 +82,10 @@ class StateProcess {
 		ros::Publisher pub_goal_;
 		ros::Publisher pub_map_;
 		ros::Publisher pub_waypoint_;
+		ros::Publisher pub_map_reset_;
 
-		bool use_map_;
+		bool use_map_ = false;
+		bool reset_map_ = false;
 		std::string map_path_;
 		nav_msgs::Path global_path_;
 		geometry_msgs::PoseStamped goal_;

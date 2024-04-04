@@ -63,6 +63,8 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     ROS_ERROR("Use map but not use far planner!!!");
     use_map_ = false;
   }
+  if (use_map_)
+    reset_map_ = true;
 
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &StateProcess::odometryHandler, this);
@@ -80,6 +82,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   {
     this->pub_map_ = nh.advertise<std_msgs::String>("/read_file_dir", 1);
     this->pub_goal_ = nh.advertise<geometry_msgs::PointStamped>("/goal_point", 5);
+    this->pub_map_reset_ = nh.advertise<std_msgs::Bool>("/reset_far_map", 1);
   }
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
@@ -100,12 +103,16 @@ void StateProcess::globalPathHandler(const nav_msgs::Path::ConstPtr& path)
 void StateProcess::farWaypointHandler(const geometry_msgs::PointStamped::ConstPtr& point)
 {
   far_way_point_ = *point;
+  if (far_way_point_.point.z < -9.0) // 规划失败
+  {
+    reset_map_ = true; // 清空地图
+  }
   far_way_point_.point.z = 0;
 }
 
 void StateProcess::mapResultHandler(const std_msgs::Bool::ConstPtr& res)
 {
-  use_map_ = false;
+  reset_map_ = false;
 }
 
 bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res)
@@ -289,11 +296,20 @@ void StateProcess::loop(const ros::TimerEvent& event)
       ROS_WARN("no odom.");
     else
     {
-      if (use_map_)
+      if (reset_map_ && !use_pose_goal_)
       {
-        std_msgs::String msg;
-        msg.data = map_path_;
-        pub_map_.publish(msg);
+        if (use_map_)
+        {
+          std_msgs::String msg;
+          msg.data = map_path_;
+          pub_map_.publish(msg);
+        }
+        else
+        {
+          std_msgs::Bool msg;
+          msg.data = true;
+          pub_map_reset_.publish(msg);
+        }
       }
     }
     nav_num = 0;
