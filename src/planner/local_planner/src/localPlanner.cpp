@@ -899,9 +899,9 @@ int main(int argc, char** argv)
                 slopeDiff = 180.0 - slopeDiff;
             }
             // std::cout << "slopeDiff:" << slopeDiff << std::endl;
-            float score = sqrt(dirWeight * (180.0 - dirDiff)) + 
-                          sqrt(rotWeight * (180.0 - rotDiff)) + 
-                          sqrt(slopeWeight * (90.0 - slopeDiff));
+            float score = sqrt(dirWeight * (180.0 - dirDiff));
+                          // sqrt(rotWeight * (180.0 - rotDiff)) + 
+                          // sqrt(slopeWeight * (90.0 - slopeDiff));
 
             if (score > 0) {
               clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
