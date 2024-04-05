@@ -59,6 +59,8 @@ bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
 
 bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out)
 {
+  out.points.resize(in.point_num);
+  unsigned int n = 0;
   for (unsigned int i = 0; i < in.point_num; ++i)
   {
     Eigen::Vector3d pt(in.points[i].x, in.points[i].y, in.points[i].z);
@@ -93,13 +95,20 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
         continue;
     }
 
-    // if (!(fabs(res(0)) < 0.35 && fabs(res(1)) < 0.35 && res(2) < 1.0))
-    // if (!(d < 0.43 * 0.43))
+    // if (d < 0.6 && res(2) < 0)
     // {
-      out.points.push_back(std::move(in.points[i]));
+    //   livox_ros_driver2::CustomPoint p = std::move(in.points[i]);
+    //   p.x += 0.05;
+    //   p.z -= 0.05;
+    //   out.points[n] = p;
     // }
+    // else
+    {
+      out.points[n] = std::move(in.points[i]);
+    }
+    n++;
   }
-
+  out.points.resize(n);
   out.header.frame_id = in.header.frame_id;
   out.header.stamp = in.header.stamp;
   out.point_num = out.points.size();

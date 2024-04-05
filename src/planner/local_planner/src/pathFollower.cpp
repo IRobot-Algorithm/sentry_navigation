@@ -279,8 +279,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     {
       // std::cout << "up" << std::endl;
       endMaxSpeed *= 1.5;
-      vel.twist.linear.x *= 100.0;
-      vel.twist.linear.y *= 100.0;
+      vel.twist.linear.x *= 1.5;
+      vel.twist.linear.y *= 1.5;
       vel.twist.linear.z = 3.0;
       if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
       {
@@ -324,6 +324,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   if (limitByAcc)
   {
     double dt = ros::Time::now().toSec() - sendTime.toSec();
+
+    // std::cout << "dt : " << dt << std::endl;
 
     // 根据最大加速度修正速度
     float delta_speed_x = vel.twist.linear.x - last_speed_x;
@@ -438,6 +440,24 @@ int main(int argc, char** argv)
       float startDisX = path.poses[0].pose.position.x - vehicleX;
       float startDisY = path.poses[0].pose.position.y - vehicleY;
       float pathDis = path_range - sqrt(startDisX * startDisX + startDisY * startDisY);
+
+      // test
+      // static int n;
+      // if (n % 2 == 0)
+      // {
+      //   cmd_vel.twist.linear.x = cos(worldYaw) * 1.2 + sin(worldYaw) * 0;
+      //   cmd_vel.twist.linear.y = -sin(worldYaw) * 1.2 + cos(worldYaw) * 0;
+      // }
+      // else
+      // {
+      //   cmd_vel.twist.linear.x = cos(worldYaw) * 0.7 + sin(worldYaw) * 0;
+      //   cmd_vel.twist.linear.y = -sin(worldYaw) * 0.7 + cos(worldYaw) * 0;
+      // }
+      // cmd_vel.twist.linear.z = 3.0;
+      // cmd_vel.twist.angular.z = -worldYaw;
+      // // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+      // pubSpeed.publish(cmd_vel);
+      // continue;
 
       // normal
       cmd_vel.twist.angular.x = 0.0;
@@ -581,13 +601,15 @@ int main(int argc, char** argv)
 
       // float target_vx = 0.95 * v_kp * dis_x + 0.05 * v_kp * next_dis_x;
       // float target_vy = 0.95 * v_kp * dis_y + 0.05 * v_kp * next_dis_y;
-      // I_x += dis_x;
-      // I_y += dis_y;
-      // float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
-      // float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
+      I_x += dis_x;
+      I_y += dis_y;
+      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
+      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
+      last_err_x = dis_x;
+      last_err_y = dis_y;
 
-      float speed_x = v_kp * dis_x;
-      float speed_y = v_kp * dis_y;
+      // float speed_x = v_kp * dis_x;
+      // float speed_y = v_kp * dis_y;
 
       float yawDiff, pathDir;
       if (goalZ < -0.05)

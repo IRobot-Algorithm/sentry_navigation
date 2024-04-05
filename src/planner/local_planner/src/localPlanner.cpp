@@ -984,8 +984,8 @@ int main(int argc, char** argv)
                 if (dis <= pathRange / pathScale && (dis <= (relativeGoalDis + goalClearRange) / pathScale || !pathCropByGoal)) {
                   float vehicle_x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
                   float vehicle_y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
-                  point.x = (cosVehicleYaw * vehicle_x - sinVehicleYaw * vehicle_y) + vehicleX;
-                  point.y = (sinVehicleYaw * vehicle_x + cosVehicleYaw * vehicle_y) + vehicleY;
+                  point.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y) + vehicleX;
+                  point.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y) + vehicleY;
                   point.z = pathScale * z + vehicleZ;
                   point.intensity = 1.0;
 
