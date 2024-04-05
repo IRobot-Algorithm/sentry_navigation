@@ -707,8 +707,8 @@ int main(int argc, char** argv)
         float pointY1 = plannerCloud->points[i].y - vehicleY;
         float pointZ1 = plannerCloud->points[i].z - vehicleZ;
 
-        point.x = pointX1 * cosVehicleYaw + pointY1 * sinVehicleYaw;
-        point.y = -pointX1 * sinVehicleYaw + pointY1 * cosVehicleYaw;
+        point.x = pointX1;
+        point.y = pointY1;
         point.z = pointZ1;
         point.intensity = plannerCloud->points[i].intensity;
 
@@ -722,10 +722,8 @@ int main(int argc, char** argv)
 
       int boundaryCloudSize = boundaryCloud->points.size();
       for (int i = 0; i < boundaryCloudSize; i++) {
-        point.x = ((boundaryCloud->points[i].x - vehicleX) * cosVehicleYaw 
-                + (boundaryCloud->points[i].y - vehicleY) * sinVehicleYaw);
-        point.y = (-(boundaryCloud->points[i].x - vehicleX) * sinVehicleYaw
-                + (boundaryCloud->points[i].y - vehicleY) * cosVehicleYaw);
+        point.x = (boundaryCloud->points[i].x - vehicleX);
+        point.y = (boundaryCloud->points[i].y - vehicleY);
         point.z = boundaryCloud->points[i].z;
         point.intensity = boundaryCloud->points[i].intensity;
 
@@ -737,10 +735,8 @@ int main(int argc, char** argv)
 
       int addedObstaclesSize = addedObstacles->points.size();
       for (int i = 0; i < addedObstaclesSize; i++) {
-        point.x = ((addedObstacles->points[i].x - vehicleX) * cosVehicleYaw 
-                + (addedObstacles->points[i].y - vehicleY) * sinVehicleYaw);
-        point.y = (-(addedObstacles->points[i].x - vehicleX) * sinVehicleYaw 
-                + (addedObstacles->points[i].y - vehicleY) * cosVehicleYaw);
+        point.x = (addedObstacles->points[i].x - vehicleX);
+        point.y = (addedObstacles->points[i].y - vehicleY);
         point.z = addedObstacles->points[i].z;
         point.intensity = addedObstacles->points[i].intensity;
 
@@ -756,16 +752,11 @@ int main(int argc, char** argv)
       float relativeGoalDis = adjacentRange;
 
       if (autonomyMode) {
-        float relativeGoalX = ((goalX - vehicleX) * cosVehicleYaw + (goalY - vehicleY) * sinVehicleYaw);
-        float relativeGoalY = (-(goalX - vehicleX) * sinVehicleYaw + (goalY - vehicleY) * cosVehicleYaw);
+        float relativeGoalX = (goalX - vehicleX);
+        float relativeGoalY = (goalY - vehicleY);
 
         relativeGoalDis = sqrt(relativeGoalX * relativeGoalX + relativeGoalY * relativeGoalY);
         joyDir = atan2(relativeGoalY, relativeGoalX) * 180 / PI;
-
-        if (!twoWayDrive) {
-          if (joyDir > 90.0) joyDir = 90.0;
-          else if (joyDir < -90.0) joyDir = -90.0;
-        }
       }
 
       bool pathFound = false;
@@ -854,12 +845,7 @@ int main(int argc, char** argv)
         if (fabs(vehicleSlopeAngle) > 0.0873) // 5度
         {
           useSlope = true;
-          slopeAngle = vehicleSlopeYaw - vehicleYaw;
-          if (slopeAngle > PI)
-            slopeAngle -= 2.0 * PI;
-          else if (slopeAngle < - PI)
-            slopeAngle += 2.0 * PI;
-          slopeAngle = slopeAngle * 180.0 / PI;
+          slopeAngle = vehicleSlopeYaw * 180.0 / PI;
           // std::cout << "slopeAngle:" << slopeAngle << std::endl;
         }
 
@@ -889,7 +875,7 @@ int main(int argc, char** argv)
             // float rotDirW;
             // if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
             // else rotDirW = fabs(fabs(rotDir - 27) + 1);
-            float rotDiff = fabs(endDirPathList[i % pathNum] + (10.0 * rotDir - 180.0));
+            float rotDiff = fabs((vehicleYaw * 180.0 / PI) - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
             if (rotDiff > 360.0)
               rotDiff -= 360.0;
             if (rotDiff > 180.0)
@@ -954,10 +940,8 @@ int main(int argc, char** argv)
             float dis = sqrt(x * x + y * y);
 
             if (dis <= minDis / pathScale) {
-              float vehicle_x = pathScale * (cos(rotAng) * x - sin(rotAng) * y);
-              float vehicle_y = pathScale * (sin(rotAng) * x + cos(rotAng) * y);
-              path.poses[i].pose.position.x = (cosVehicleYaw * vehicle_x - sinVehicleYaw * vehicle_y) + vehicleX;
-              path.poses[i].pose.position.y = (sinVehicleYaw * vehicle_x + cosVehicleYaw * vehicle_y) + vehicleY;
+              path.poses[i].pose.position.x = pathScale * (cos(rotAng) * x - sin(rotAng) * y) + vehicleX;
+              path.poses[i].pose.position.y = pathScale * (sin(rotAng) * x + cos(rotAng) * y) + vehicleY;
               path.poses[i].pose.position.z = minDis / 10.0; // for speed init
             } else {
               path.poses.resize(i);
