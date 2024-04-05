@@ -296,12 +296,12 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   else
   {
     // std::cout << "none" << std::endl;
-    if (dis < 1.0)
+    if (dis < 0.75)
     {
-      endMaxSpeed = dis + 0.2;
+      endMaxSpeed *= sqrt(dis + 0.25);
       slopeCase = false;
     }
-    else if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
+    if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
     {
       endMaxAccel *= 0.5;
       vel.twist.linear.z = 3.0;
