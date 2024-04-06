@@ -269,8 +269,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     if (slopeDir <= PI / 2.0)
     {
       // std::cout << "down" << std::endl;
-      endMaxSpeed *= 0.5;
-      endMaxAccel *= 0.5;
+      endMaxSpeed *= 0.3;
+      endMaxAccel *= 0.3;
       vel.twist.linear.z = 3.0;
       slopeCase = true;
       switchTime = ros::Time::now().toSec();
@@ -282,10 +282,10 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       vel.twist.linear.x *= 1.5;
       vel.twist.linear.y *= 1.5;
       vel.twist.linear.z = 3.0;
-      if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
-      {
-        endMaxAccel *= 0.5;
-      }
+      endMaxAccel *= 0.3;
+      slopeCase = true;
+      switchTime = ros::Time::now().toSec();
+
       // else if (slopeDir > 11.0 * PI / 12.0)
       // {
       //   vel.twist.linear.x *= 100.0; // max
@@ -298,8 +298,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     // std::cout << "none" << std::endl;
     if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
     {
-      endMaxSpeed *= 0.5;
-      endMaxAccel *= 0.2;
+      endMaxSpeed *= 0.3;
+      endMaxAccel *= 0.3;
       vel.twist.linear.z = 3.0;
     }
     else if (dis < 1.6)

@@ -7,6 +7,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
+#include <std_msgs/Bool.h>
 
 #include "usb.hpp"
 #include "sentry_msgs/RefereeInformation.h"
@@ -40,6 +41,7 @@ class UsbCommNode {
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
 		ros::Publisher pub_referee_info_;
+		ros::Publisher pub_color_info_;
 
 		ros::Timer send_vel_timer_;
 

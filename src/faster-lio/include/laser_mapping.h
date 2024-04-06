@@ -6,6 +6,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <std_msgs/Bool.h>
 #include <tf/transform_datatypes.h>
 #include <condition_variable>
 #include <thread>
@@ -48,6 +49,7 @@ class LaserMapping {
     void StandardPCLCallBack(const sensor_msgs::PointCloud2::ConstPtr &msg);
     void LivoxPCLCallBack(const livox_ros_driver::CustomMsg::ConstPtr &msg);
     void IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in);
+    void ColorInfoCallBack(const std_msgs::Bool::ConstPtr &msg_in);
 
     // sync lidar with imu
     bool SyncPackages();
@@ -87,6 +89,9 @@ class LaserMapping {
 
     void PrintState(const state_ikfom &s);
 
+    // node
+    ros::NodeHandle nh_;
+    
    private:
     /// modules
     IVoxType::Options ivox_options_;
@@ -121,6 +126,7 @@ class LaserMapping {
     /// ros pub and sub stuffs
     ros::Subscriber sub_pcl_;
     ros::Subscriber sub_imu_;
+    ros::Subscriber sub_color_info_;
     ros::Publisher pub_laser_cloud_world_;
     ros::Publisher pub_laser_cloud_body_;
     ros::Publisher pub_laser_cloud_effect_world_;
@@ -206,6 +212,10 @@ class LaserMapping {
     common::V3D T_wrt_;
     common::M3D R_wrt_;
     common::M3D R_wrt_inv_;
+
+    // contest
+    bool color_init_ = false;
+    bool color_info_;
 
 };
 

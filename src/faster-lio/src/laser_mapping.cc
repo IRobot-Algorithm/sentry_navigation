@@ -130,7 +130,6 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
 
     if (use_icp_)
     {
-        relocalization_.InitParams(nh);
         init_localization_ = true;
     }
 
@@ -258,6 +257,8 @@ bool LaserMapping::LoadParamsFromYAML(const std::string &yaml_file) {
 }
 
 void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
+    nh_ = nh;
+
     // ROS subscribe initialization
     std::string lidar_topic, imu_topic;
     nh.param<std::string>("common/lid_topic", lidar_topic, "/livox/lidar");
@@ -273,6 +274,9 @@ void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
 
     sub_imu_ = nh.subscribe<sensor_msgs::Imu>(imu_topic, 200000,
                                               [this](const sensor_msgs::Imu::ConstPtr &msg) { IMUCallBack(msg); });
+
+    sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 200000,
+                                              [this](const std_msgs::Bool::ConstPtr &msg) { ColorInfoCallBack(msg); });
 
     // ROS publisher init
     path_.header.stamp = ros::Time::now();
@@ -375,8 +379,23 @@ bool LaserMapping::IMUUpdate()
 }
 
 void LaserMapping::Run() {
+    if (!color_init_)
+    {
+        static int color_n = 0;
+        color_n++;
+        if (color_n > 100)
+        {
+            LOG(WARNING) << "----> Init Color Failed!";
+            color_n = 0;
+        }
+        return;
+    }
+
     if (use_icp_ && init_localization_)
     {
+        if (!relocalization_.IsInit())
+            relocalization_.InitParams(nh_, color_info_);
+
         if (lidar_buffer_.size() < 10)
         // if (lidar_buffer_.empty())
             return;
@@ -604,6 +623,15 @@ void LaserMapping::IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in) {
     imu_buffer_.emplace_back(msg);
     imu_buf_.emplace_back(msg);
     mtx_buffer_.unlock();
+}
+
+void LaserMapping::ColorInfoCallBack(const std_msgs::Bool::ConstPtr &msg_in)
+{
+    if (color_init_)
+        return;
+
+    color_info_ = msg_in->data;
+    color_init_ = true;
 }
 
 void LaserMapping::PrintState(const state_ikfom &s) {

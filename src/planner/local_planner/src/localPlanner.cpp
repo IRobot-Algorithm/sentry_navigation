@@ -183,14 +183,14 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
 
   tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
 
-  // tf::Quaternion q;
-  // q.setRPY(0, vehicleSlopeAngle, vehicleSlopeYaw);
+  tf::Quaternion q;
+  q.setRPY(0, vehicleSlopeAngle, vehicleSlopeYaw);
 
-  // odomTrans_maplink.frame_id_ = "map";
-  // odomTrans_maplink.child_frame_id_ = "po";
-  // odomTrans_maplink.setRotation(q);
+  odomTrans_maplink.frame_id_ = "map";
+  odomTrans_maplink.child_frame_id_ = "po";
+  odomTrans_maplink.setRotation(q);
 
-  // tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
+  tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
 
   newOdom = true;
 }
@@ -875,11 +875,11 @@ int main(int argc, char** argv)
             // float rotDirW;
             // if (rotDir < 18) rotDirW = fabs(fabs(rotDir - 9) + 1);
             // else rotDirW = fabs(fabs(rotDir - 27) + 1);
-            float rotDiff = fabs((vehicleYaw * 180.0 / PI) - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
-            if (rotDiff > 360.0)
-              rotDiff -= 360.0;
-            if (rotDiff > 180.0)
-              rotDiff = 360.0 - rotDiff;
+            // float rotDiff = fabs((vehicleYaw * 180.0 / PI) - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
+            // if (rotDiff > 360.0)
+            //   rotDiff -= 360.0;
+            // if (rotDiff > 180.0)
+            //   rotDiff = 360.0 - rotDiff;
 
             // rotDirW=1.0;//zbh
             // penaltyScore=1.0;//zbh
@@ -887,22 +887,28 @@ int main(int argc, char** argv)
             // float score = (1000 - sqrt(dirWeight * dirDiff))+(7-abs(pathList[i % pathNum]-3))/100.0;// - 0.00005*maplink_diff;
             // float score = (1000 - sqrt(dirWeight * dirDiff)) - rotDirW / 100.0;
             
-            float slopeDiff = 90.0;
+            float slopeDiff = 0.0;
             if (useSlope)
             {
               slopeDiff = fabs(slopeAngle - endDirPathList[i % pathNum] - (10.0 * rotDir - 180.0));
+          // std::cout << "slopeDiff1:" << slopeDiff << std::endl;
               if (slopeDiff > 360.0)
                 slopeDiff -= 360.0;
+          // std::cout << "slopeDiff2:" << slopeDiff << std::endl;
               if (slopeDiff > 180.0)
-                slopeDiff = 360.0 - slopeDiff;
+                slopeDiff -= 180.0;
+          // std::cout << "slopeDiff3:" << slopeDiff << std::endl;
               if (slopeDiff > 90.0)
                 slopeDiff = 180.0 - slopeDiff;
             }
-            // std::cout << "slopeDiff:" << slopeDiff << std::endl;
-            float score = sqrt(dirWeight * (180.0 - dirDiff));
-                          // sqrt(rotWeight * (180.0 - rotDiff)) + 
-                          // sqrt(slopeWeight * (90.0 - slopeDiff));
-
+            // std::cout << "-----slopeDiff:" << slopeDiff << std::endl;
+            float groupDiff = 4 - fabs(pathList[i % pathNum] - 3);
+            float score = (1 - sqrt(sqrt(dirWeight * dirDiff))) *
+                          groupDiff * groupDiff *
+                          (1 - sqrt(sqrt(slopeWeight * slopeDiff)));
+            // std::cout << "(1 - sqrt(sqrt(slopeWeight * slopeDiff))):" << (1 - sqrt(sqrt(slopeWeight * slopeDiff))) << std::endl;
+            // std::cout << "score:" << score << std::endl;
+            
             if (score > 0) {
               clearPathPerGroupScore[groupNum * rotDir + pathList[i % pathNum]] += score;
             }

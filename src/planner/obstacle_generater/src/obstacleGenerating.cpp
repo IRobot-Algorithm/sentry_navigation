@@ -7,6 +7,9 @@
 #include <nav_msgs/GetMap.h>
 #include <pcl/point_types.h>
 
+bool color_init = false;
+bool color_info;
+
 /**
  * 将占据栅格数据转为pointcloud点云格式数据
  */
@@ -50,6 +53,15 @@ void OccupancyGridToPointCloud(const nav_msgs::OccupancyGrid &map_msg, pcl::Poin
         }
     }
 }
+
+// void ColorInfoCallBack(const std_msgs::Bool::ConstPtr &msg_in)
+// {
+//     if (color_init_)
+//         return;
+
+//     color_info_ = msg_in->data;
+//     color_init_ = true;
+// }
 
 int main(int argc,char **argv)
 {

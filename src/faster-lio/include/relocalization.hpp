@@ -37,9 +37,14 @@ public:
 
   void clear();
 
-  void InitParams(ros::NodeHandle &nh);
+  void InitParams(ros::NodeHandle &nh, bool &color);
 
   bool InitExtrinsic(Eigen::Isometry3d &match_result , PointCloudT::Ptr &scan);
+
+  inline bool IsInit()
+  {
+    return is_init_;
+  }
 
 private:
 
@@ -80,6 +85,7 @@ private:
   bool first_icp_ = true;
   bool save_result_ = false;
   bool pub_result_ = false;
+  bool is_init_ = false;
   int location_loss_num_ = 0;
 
 };

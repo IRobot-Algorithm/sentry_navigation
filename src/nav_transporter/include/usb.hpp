@@ -43,15 +43,21 @@ typedef struct
   uint8_t game_type_progress;
   uint16_t game_stage_remain_time;
   // enemy information and outpose base HP
-  uint16_t hero_remain_HP;
-  uint16_t engineer_remain_HP;
-  uint16_t infantry3_remain_HP;
-  uint16_t infantry4_remain_HP;
-  uint16_t infantry5_remain_HP;
-  uint16_t sentry_remain_HP;
+  uint16_t red_hero_remain_HP;
+  uint16_t red_engineer_remain_HP;
+  uint16_t red_infantry3_remain_HP;
+  uint16_t red_infantry4_remain_HP;
+  uint16_t red_infantry5_remain_HP;
+  uint16_t red_sentry_remain_HP;
   uint16_t red_outpose_HP;
-  uint16_t blue_outpose_HP;
   uint16_t red_base_HP;
+  uint16_t blue_hero_remain_HP;
+  uint16_t blue_engineer_remain_HP;
+  uint16_t blue_infantry3_remain_HP;
+  uint16_t blue_infantry4_remain_HP;
+  uint16_t blue_infantry5_remain_HP;
+  uint16_t blue_sentry_remain_HP;
+  uint16_t blue_outpose_HP;
   uint16_t blue_base_HP;
   // 基地护甲
   uint8_t base_state;

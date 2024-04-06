@@ -35,6 +35,7 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   // this->sub_vel_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
         
   this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 1);
+  this->pub_color_info_ = nh.advertise<std_msgs::Bool>("/color_info", 10);
 
   // ROS timer initialization
   // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
@@ -234,6 +235,7 @@ void UsbCommNode::receiveCallback()
       }
       case DESICION_REFEREE_RECEIVE_ID:
       {
+        static std_msgs::Bool color_info;
         transporter::DesicionRefereeReceivePackage package;
         memcpy(&package, receive_package, 
                   sizeof(transporter::DesicionRefereeReceivePackage));
@@ -253,30 +255,38 @@ void UsbCommNode::receiveCallback()
         {
           referee_info_.our_outpost_hp = package.red_outpose_HP;
           referee_info_.our_base_hp = package.red_base_HP;
-          referee_info_.enemy_hp[7] = package.blue_outpose_HP;
           referee_info_.enemy_hp[0] = package.blue_base_HP;
+          referee_info_.enemy_hp[1] = package.blue_hero_remain_HP;
+          referee_info_.enemy_hp[2] = package.blue_engineer_remain_HP;
+          referee_info_.enemy_hp[3] = package.blue_infantry3_remain_HP;
+          referee_info_.enemy_hp[4] = package.blue_infantry4_remain_HP;
+          referee_info_.enemy_hp[5] = package.blue_infantry5_remain_HP;
+          referee_info_.enemy_hp[6] = package.blue_sentry_remain_HP;
+          referee_info_.enemy_hp[7] = package.blue_outpose_HP;
+          color_info.data = false;
         }
         else // blue
         {
           referee_info_.our_outpost_hp = package.blue_outpose_HP;
           referee_info_.our_base_hp = package.blue_base_HP;
-          referee_info_.enemy_hp[7] = package.red_outpose_HP;
           referee_info_.enemy_hp[0] = package.red_base_HP;
+          referee_info_.enemy_hp[1] = package.red_hero_remain_HP;
+          referee_info_.enemy_hp[2] = package.red_engineer_remain_HP;
+          referee_info_.enemy_hp[3] = package.red_infantry3_remain_HP;
+          referee_info_.enemy_hp[4] = package.red_infantry4_remain_HP;
+          referee_info_.enemy_hp[5] = package.red_infantry5_remain_HP;
+          referee_info_.enemy_hp[6] = package.red_sentry_remain_HP;
+          referee_info_.enemy_hp[7] = package.red_outpose_HP;
+          color_info.data = true;
         }
         referee_info_.base_shield = package.base_state;
         referee_info_.gold_coins = package.remaining_gold_coin;
 
         referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
 
-        referee_info_.enemy_hp[1] =  package.hero_remain_HP;
-        referee_info_.enemy_hp[2] =  package.engineer_remain_HP;
-        referee_info_.enemy_hp[3] =  package.infantry3_remain_HP;
-        referee_info_.enemy_hp[4] =  package.infantry4_remain_HP;
-        referee_info_.enemy_hp[5] =  package.infantry5_remain_HP;
-        referee_info_.enemy_hp[6] =  package.sentry_remain_HP;
-
         // TODO: keyward force back
         pub_referee_info_.publish(referee_info_);
+        pub_color_info_.publish(color_info);
         break;
       }
     }

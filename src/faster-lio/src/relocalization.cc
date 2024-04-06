@@ -28,7 +28,7 @@ void Relocalization::clear()
 /*
  * 的参数初始化
  */
-void Relocalization::InitParams(ros::NodeHandle &nh)
+void Relocalization::InitParams(ros::NodeHandle &nh, bool &color)
 {
     // \033[1;32m，\033[0m 终端显示成绿色
     ROS_INFO_STREAM("\033[1;32m----> ICP location started.\033[0m");
@@ -36,7 +36,11 @@ void Relocalization::InitParams(ros::NodeHandle &nh)
     nh.param<bool>("icp/save_result", save_result_, false);
     nh.param<bool>("icp/pub_result", pub_result_, false);
 
-    nh.param<std::string>("icp/map_pcd_path", map_pcd_path_, "");
+    if (color) // blue
+        nh.param<std::string>("icp/blue_map_pcd_path", map_pcd_path_, "");
+    else // red
+        nh.param<std::string>("icp/red_map_pcd_path", map_pcd_path_, "");
+
     nh.param<std::string>("icp/ori_pcd_path", ori_pcd_path_, "");
     nh.param<std::string>("icp/res_pcd_path", res_pcd_path_, "");
 
@@ -73,6 +77,8 @@ void Relocalization::InitParams(ros::NodeHandle &nh)
         PCL_ERROR("Couldn't read PCD file\n");
         return;
     }
+
+    is_init_ = true;
 
 }
 
