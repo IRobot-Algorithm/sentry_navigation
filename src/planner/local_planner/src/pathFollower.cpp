@@ -237,24 +237,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
 
   float endMaxSpeed = maxSpeed;
   float endMaxAccel = maxAccel;
-  // if (vehiclePitch < -0.0872 && adjustByPitch) // 5度上坡
-  // {
-  //   std::cout << "up" << std::endl;
-  //   endMaxSpeed *= 2;
-  //   endMaxAccel *= 1.5;
-  //   vel.twist.linear.x *= 2;
-  //   vel.twist.linear.y *= 2;
-  // 
-  // }
-  // else if (vehiclePitch > 0.0872 && adjustByPitch) // 5度下坡
-  // {
-  //   std::cout << "down" << std::endl;
-  //   endMaxSpeed *= 0.6;
-  //   endMaxAccel *= 0.4;
-  //   vel.twist.linear.x *= 0.6;
-  //   vel.twist.linear.y *= 0.6;
-  // 
-  // }
+
   if (fabs(vehicleSlopeAngle) > 0.0872 && adjustByPitch) // 5度
   {
     float slopeDir = 0.0;
@@ -270,10 +253,6 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     {
       // std::cout << "down" << std::endl;
       endMaxSpeed *= 0.3;
-      endMaxAccel *= 0.3;
-      vel.twist.linear.z = 3.0;
-      slopeCase = true;
-      switchTime = ros::Time::now().toSec();
     }
     else
     {
@@ -281,17 +260,12 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       endMaxSpeed *= 1.5;
       vel.twist.linear.x *= 1.5;
       vel.twist.linear.y *= 1.5;
-      vel.twist.linear.z = 3.0;
-      endMaxAccel *= 0.3;
-      slopeCase = true;
-      switchTime = ros::Time::now().toSec();
-
-      // else if (slopeDir > 11.0 * PI / 12.0)
-      // {
-      //   vel.twist.linear.x *= 100.0; // max
-      //   vel.twist.linear.y *= 100.0;
-      // }
     }
+
+    endMaxAccel *= 0.3;
+    vel.twist.linear.z = 3.0;
+    slopeCase = true;
+    switchTime = ros::Time::now().toSec();
   }
   else
   {
