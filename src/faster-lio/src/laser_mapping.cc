@@ -275,7 +275,7 @@ void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
     sub_imu_ = nh.subscribe<sensor_msgs::Imu>(imu_topic, 200000,
                                               [this](const sensor_msgs::Imu::ConstPtr &msg) { IMUCallBack(msg); });
 
-    sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 200000,
+    sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 1,
                                               [this](const std_msgs::Bool::ConstPtr &msg) { ColorInfoCallBack(msg); });
 
     // ROS publisher init
