@@ -262,12 +262,12 @@ void UsbCommNode::receiveCallback()
           referee_info_.game_start = false;
 
         referee_info_.gameover_time = package.game_stage_remain_time;
-        referee_info_.robot_hp = package.remain_HP;
         referee_info_.max_hp = package.max_HP;
         referee_info_.bullets = package.projectile_allowance_17mm;
         
         if (package.robot_id < 10) // red
         {
+          referee_info_.robot_hp = package.red_sentry_remain_HP;
           referee_info_.our_outpost_hp = package.red_outpose_HP;
           referee_info_.our_base_hp = package.red_base_HP;
           referee_info_.enemy_hp[0] = package.blue_base_HP;
@@ -282,6 +282,7 @@ void UsbCommNode::receiveCallback()
         }
         else // blue
         {
+          referee_info_.robot_hp = package.blue_sentry_remain_HP;
           referee_info_.our_outpost_hp = package.blue_outpose_HP;
           referee_info_.our_base_hp = package.blue_base_HP;
           referee_info_.enemy_hp[0] = package.red_base_HP;

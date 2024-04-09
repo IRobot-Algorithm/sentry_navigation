@@ -63,7 +63,6 @@ typedef struct
   uint8_t base_state;
   // 机器人自身信息
   uint8_t robot_id;
-  uint16_t remain_HP;
   uint16_t max_HP;
   // 剩余弹量与金币
   uint16_t projectile_allowance_17mm;
