@@ -93,7 +93,6 @@ int pathPointID = 0;
 bool pathInit = false;
 bool odomInit = false;
 bool navFwd = true;
-bool slopeCase = false;
 double switchTime = 0;
 
 double goalX = 0.0;
@@ -238,7 +237,24 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   float endMaxSpeed = maxSpeed;
   float endMaxAccel = maxAccel;
 
+  static double slopeTrust = switchTimeThre; // 倾斜置信度
+  double dt = ros::Time::now().toSec() - sendTime.toSec();
+  sendTime = ros::Time::now();
   if (fabs(vehicleSlopeAngle) > 0.0872 && adjustByPitch) // 5度
+  {
+    slopeTrust -= dt;
+    if (fabs(vehicleSlopeAngle) > 0.17) // must be sloped
+      slopeTrust = 0.0;
+  }
+  else
+    slopeTrust += dt;
+
+  if (slopeTrust < 0.0)
+    slopeTrust = 0.0;
+  else if (slopeTrust > 2.0 * switchTimeThre)
+    slopeTrust = 2.0 * switchTimeThre;
+
+  if (slopeTrust < switchTimeThre)
   {
     float slopeDir = 0.0;
     if (velAngle > -4.0);
@@ -264,27 +280,13 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
 
     endMaxAccel *= 0.3;
     vel.twist.linear.z = 3.0;
-    slopeCase = true;
-    switchTime = ros::Time::now().toSec();
+
   }
   else
   {
     // std::cout << "none" << std::endl;
-    if (slopeCase && ros::Time::now().toSec() - switchTime < switchTimeThre)
-    {
-      endMaxSpeed *= 0.3;
-      endMaxAccel *= 0.3;
-      vel.twist.linear.z = 3.0;
-    }
-    else if (dis < 1.6)
-    {
+    if (dis < 1.6)
       endMaxSpeed *= dis / 2.0 + 0.2;
-      slopeCase = false;
-    }
-    else
-    {
-      slopeCase = false;
-    }
   }
 
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
@@ -296,11 +298,9 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  if (slopeCase)
+  if (slopeTrust < switchTimeThre)
   {
-    double dt = ros::Time::now().toSec() - sendTime.toSec();
-
-    // std::cout << "dt : " << dt << std::endl;
+    std::cout << "dt : " << dt << std::endl;
 
     // 根据最大加速度修正速度
     float delta_speed_x = vel.twist.linear.x - last_speed_x;
@@ -312,10 +312,13 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
     }
   }
+  // else
+  // {
+  //   std::cout << "none" << std::endl;
+  // }
 
   last_speed_x = vel.twist.linear.x;
   last_speed_y = vel.twist.linear.y;
-  sendTime = ros::Time::now();
   pub.publish(vel);
 
 }

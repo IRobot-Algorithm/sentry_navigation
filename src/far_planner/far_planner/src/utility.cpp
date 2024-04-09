@@ -56,16 +56,23 @@ void FARUtil::ExtractNewObsPointCloud(const PointCloudPtr& cloudIn,
                                       const PointCloudPtr& cloudNew)
 {
   PointCloudPtr temp_new_cloud(new pcl::PointCloud<PCLPoint>());
+  // /*
   FARUtil::ResetCloudIntensity(cloudIn, false);
   FARUtil::ResetCloudIntensity(cloudRefer, true);
   cloudNew->clear(), temp_new_cloud->clear();
   *temp_new_cloud = *cloudIn + *cloudRefer;
   FARUtil::FilterCloud(temp_new_cloud, FARUtil::kLeafSize * 2.0);
+  // */
+  // *temp_new_cloud = *cloudIn;
+  // FARUtil::FilterCloud(temp_new_cloud, FARUtil::kLeafSize / 2.0);
+  // /*
   for (const auto& p : temp_new_cloud->points) {
     if (p.intensity < FARUtil::kNewPIThred) {
       cloudNew->points.push_back(p);
     } 
   }
+  // */
+  // *cloudNew = *temp_new_cloud;
 }
 
 void FARUtil::ResetCloudIntensity(const PointCloudPtr& cloudIn, const bool isHigh) {
