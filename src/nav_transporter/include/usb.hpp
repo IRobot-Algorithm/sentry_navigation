@@ -120,6 +120,7 @@ typedef struct
     float vy;
     float yaw_imu;
     uint8_t direction; // 0 正常 / 1 逆时针 / 2 顺时针
+    uint32_t sentry_cmd;
     // 包尾
     uint8_t _EOF;
 } NavVelocitySendPackage;

@@ -1,4 +1,5 @@
 geometry_msgs/PoseStamped pose
+bool is_dynamic
 bool is_lost
 bool gimbal
 ---

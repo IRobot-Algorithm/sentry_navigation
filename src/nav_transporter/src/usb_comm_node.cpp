@@ -90,6 +90,21 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
                                     left_gimbal_T[1],
                                     left_gimbal_T[2]));
 
+  // package init
+  send_package_._SOF = 0x55;
+  send_package_._EOF = 0xFF;
+  send_package_.ID = NAV_VELOCITY_SEND_ID;
+  send_package_.chassis_mode = 3; // KEEP
+  send_package_.vx = 0.0;
+  send_package_.vy = 0.0;
+  send_package_.yaw_imu = 0.0;
+  send_package_.direction = 0; // normal
+  setBit(send_package_.sentry_cmd, 0);    // 0位1 确认复活
+  clearBit(send_package_.sentry_cmd, 1);  // 1位0 不兑换复活
+  setBitsRange(send_package_.sentry_cmd, 2, 12, 0);     // 2-12位0 兑换发弹量
+  setBitsRange(send_package_.sentry_cmd, 13, 16, 0);    // 13-16位0 远程兑换发弹量
+  setBitsRange(send_package_.sentry_cmd, 17, 20, 0);    // 17-20位0 远程兑换血量
+  
 }
 
 void UsbCommNode::odomHandler(const nav_msgs::Odometry::ConstPtr& odom)
@@ -282,7 +297,7 @@ void UsbCommNode::receiveCallback()
         referee_info_.base_shield = package.base_state;
         referee_info_.gold_coins = package.remaining_gold_coin;
 
-        referee_info_.in_supply = (package.rfid_status & 0x2000) == 0x2000;
+        referee_info_.rfid_status = package.rfid_status;
 
         // TODO: keyward force back
         pub_referee_info_.publish(referee_info_);
@@ -297,6 +312,31 @@ void UsbCommNode::receiveCallback()
 
   }
 }
+
+  inline void UsbCommNode::setBit(uint32_t& data, int pos)
+  {
+    data |= (static_cast<uint32_t>(1) << pos);
+  }
+
+  inline void UsbCommNode::clearBit(uint32_t& data, int pos)
+  {
+    data &= (static_cast<uint32_t>(0) << pos);
+  }
+
+  inline bool UsbCommNode::getBit(const uint32_t& data, int pos)
+  {
+    return (data >> pos) & static_cast<uint32_t>(1);
+  }
+
+  void UsbCommNode::setBitsRange(uint32_t &data, int start, int end, uint32_t value)
+  {
+    uint32_t mask = (~static_cast<uint32_t>(0) << start) | ((static_cast<uint32_t>(1) << (end + 1)) - 1);
+    data &= mask;
+    
+    value <<= start;
+    data |= value;
+  }
+
 
 } // namespace nav_transporter
 

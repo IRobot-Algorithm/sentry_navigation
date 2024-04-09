@@ -11,7 +11,7 @@ uint16 our_base_hp
 uint8 base_shield
 uint16 gold_coins
 # urdf
-bool in_supply
+uint32 rfid_status
 
 #enemy hp
 uint16[] enemy_hp

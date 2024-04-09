@@ -38,6 +38,26 @@ class UsbCommNode {
 
     void receiveCallback();
 
+		/*
+		* @brief uint32 pos位赋值1
+		*/
+    inline void setBit(uint32_t& data, int pos);
+
+		/*
+		* @brief uint32 pos位赋值0
+		*/
+    inline void clearBit(uint32_t& data, int pos);
+
+		/*
+		* @brief 获得 uint32 pos位
+		*/
+    inline bool getBit(const uint32_t& data, int pos);
+
+		/*
+		* @brief uint32 start到end位赋值为value
+		*/
+    void setBitsRange(uint32_t &data, int start, int end, uint32_t value);
+
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
 		ros::Publisher pub_referee_info_;
