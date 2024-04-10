@@ -76,7 +76,8 @@ class UsbCommNode {
     sentry_msgs::RefereeInformation referee_info_;
     geometry_msgs::Quaternion odom_quat_;
     double odom_time_;
-    bool new_odom_;
+    bool new_odom_ = false;
+		bool in_supply_ = false;
 
     std::deque<geometry_msgs::QuaternionStamped::ConstPtr> quat_buffer_;
     double last_timestamp_quat;

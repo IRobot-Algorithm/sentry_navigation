@@ -154,6 +154,11 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   {
     send_package_.chassis_mode = 3; // KEEP
   }
+  if (in_supply_)
+  {
+    send_package_.chassis_mode = 3; // KEEP
+  }
+
   send_package_.vx = static_cast<float>(vel->twist.linear.x);
   send_package_.vy = static_cast<float>(vel->twist.linear.y);
   send_package_.yaw_imu = static_cast<float>(vel->twist.angular.z);
@@ -326,6 +331,7 @@ void UsbCommNode::receiveCallback()
         referee_info_.gold_coins = package.remaining_gold_coin;
 
         referee_info_.rfid_status = package.rfid_status;
+        in_supply_ = getBit(referee_info_.rfid_status, 13);
         referee_info_.force_back = false;
         referee_info_.keep_patrol = false;
         referee_info_.normal_mode = package.mode;
