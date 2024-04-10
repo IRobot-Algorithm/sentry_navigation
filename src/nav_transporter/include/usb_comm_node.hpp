@@ -11,6 +11,7 @@
 
 #include "usb.hpp"
 #include "sentry_msgs/RefereeInformation.h"
+#include "sentry_srvs/BuyBullets.h"
 
 namespace nav_transporter {
 
@@ -28,6 +29,12 @@ class UsbCommNode {
 
 		void velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel);
 		// void velHandler(const geometry_msgs::Twist::ConstPtr& vel);
+
+		/*
+		* @brief 决策购买弹丸服务器
+		* @auther wyq
+		*/
+		bool buyBulletsHandler(sentry_srvs::BuyBullets::Request &req, sentry_srvs::BuyBullets::Response &res);
 
 		void sendVelCallback(const ros::TimerEvent& event);
 		
@@ -58,6 +65,7 @@ class UsbCommNode {
 		*/
     void setBitsRange(uint32_t &data, int start, int end, uint32_t value);
 
+		ros::ServiceServer buy_bullets_server;
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
 		ros::Publisher pub_referee_info_;

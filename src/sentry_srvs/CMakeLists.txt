@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
   FILES
+  BuyBullets.srv
   NavGoal.srv
   NavTarget.srv
 )

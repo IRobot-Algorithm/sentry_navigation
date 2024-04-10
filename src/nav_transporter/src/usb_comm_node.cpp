@@ -16,6 +16,16 @@ using namespace std::chrono;
 
 namespace nav_transporter
 {
+
+void printBinary(uint32_t num) {
+  int numBits = sizeof(uint32_t) * 8; // 获取整数的位数
+  for (int i = numBits - 1; i >= 0; --i) {
+    // 通过位操作符获取每一位的值并输出
+    std::cout << ((num >> i) & 1);
+  }
+  std::cout << std::endl;
+}
+
 UsbCommNode::UsbCommNode()
 {
   referee_info_.enemy_hp.resize(8);
@@ -30,6 +40,8 @@ UsbCommNode::~UsbCommNode()
 void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
 {
   // ROS subscribe initialization
+  this->buy_bullets_server = nh.advertiseService("/buy_bullets", &UsbCommNode::buyBulletsHandler, this);
+
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 1, &UsbCommNode::odomHandler, this);
   this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 1, &UsbCommNode::velHandler, this);
   // this->sub_vel_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
@@ -154,6 +166,15 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
 
   transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
   
+}
+
+bool UsbCommNode::buyBulletsHandler(sentry_srvs::BuyBullets::Request &req, sentry_srvs::BuyBullets::Response &res)
+{
+  setBitsRange(send_package_.sentry_cmd, 2, 12, req.bullets);     // 2-12位 兑换发弹量
+  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+
+  res.success = true;
+  return true;
 }
 
 void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)
@@ -340,11 +361,12 @@ void UsbCommNode::receiveCallback()
 
   void UsbCommNode::setBitsRange(uint32_t &data, int start, int end, uint32_t value)
   {
-    uint32_t mask = (~static_cast<uint32_t>(0) << start) | ((static_cast<uint32_t>(1) << (end + 1)) - 1);
+    uint32_t mask = ~((~static_cast<uint32_t>(0) << start) & ((static_cast<uint32_t>(1) << (end + 1)) - 1));
     data &= mask;
     
     value <<= start;
     data |= value;
+    // printBinary(data);
   }
 
 
