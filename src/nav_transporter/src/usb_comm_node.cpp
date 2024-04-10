@@ -171,7 +171,7 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
 bool UsbCommNode::buyBulletsHandler(sentry_srvs::BuyBullets::Request &req, sentry_srvs::BuyBullets::Response &res)
 {
   setBitsRange(send_package_.sentry_cmd, 2, 12, req.bullets);     // 2-12位 兑换发弹量
-  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+  // transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
 
   res.success = true;
   return true;

@@ -416,7 +416,8 @@ int main(int argc, char** argv)
   nav_transporter::StateProcess StateProcessObj;
   StateProcessObj.SubAndPubToROS(nh);
 
-  ros::spin();
+  ros::MultiThreadedSpinner spinner(2);
+  spinner.spin();
 
   return 0;
 }
