@@ -629,9 +629,9 @@ void FARMaster::TerrainCallBack(const sensor_msgs::PointCloud2ConstPtr& pc) {
                                                                master_params_.terrain_range,
                                                                FARUtil::kTolerZ));
     FARUtil::ExtractFreeAndObsCloud(temp_cloud_ptr_, temp_free_ptr_, temp_obs_ptr_);
-    if (!master_params_.is_static_env) {
-      FARUtil::RemoveOverlapCloud(temp_obs_ptr_, FARUtil::stack_dyobs_cloud_, true);
-    }
+    // if (!master_params_.is_static_env) {
+    //   FARUtil::RemoveOverlapCloud(temp_obs_ptr_, FARUtil::stack_dyobs_cloud_, true);
+    // }
     map_handler_.UpdateObsCloudGrid(temp_obs_ptr_);
     map_handler_.UpdateFreeCloudGrid(temp_free_ptr_);
     // extract new points
@@ -658,7 +658,7 @@ void FARMaster::TerrainCallBack(const sensor_msgs::PointCloud2ConstPtr& pc) {
       if (FARUtil::IsDebug) ROS_WARN("FARMaster: dynamic obstacle detected, size: %ld", FARUtil::cur_dyobs_cloud_->size());
       FARUtil::InflateCloud(FARUtil::cur_dyobs_cloud_, master_params_.voxel_dim, 1, true);
       map_handler_.RemoveObsCloudFromGrid(FARUtil::cur_dyobs_cloud_);
-      FARUtil::RemoveOverlapCloud(FARUtil::surround_obs_cloud_, FARUtil::cur_dyobs_cloud_);
+      // FARUtil::RemoveOverlapCloud(FARUtil::surround_obs_cloud_, FARUtil::cur_dyobs_cloud_);
       FARUtil::FilterCloud(FARUtil::cur_dyobs_cloud_, master_params_.voxel_dim);
       // update new cloud
       *FARUtil::cur_new_cloud_ += *FARUtil::cur_dyobs_cloud_;
