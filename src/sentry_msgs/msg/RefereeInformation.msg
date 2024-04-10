@@ -18,3 +18,5 @@ uint16[] enemy_hp
 
 bool air_force
 bool force_back
+bool keep_patrol
+uint8 normal_mode

@@ -2,5 +2,7 @@ geometry_msgs/PoseStamped pose
 bool is_dynamic
 bool is_lost
 bool gimbal
+float32 distance
+uint8 restricted_area
 ---
 bool success
