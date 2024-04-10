@@ -99,6 +99,7 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   send_package_.vy = 0.0;
   send_package_.yaw_imu = 0.0;
   send_package_.direction = 0; // normal
+  send_package_.capacitance = 0; // closed
   setBit(send_package_.sentry_cmd, 0);    // 0位1 确认复活
   clearBit(send_package_.sentry_cmd, 1);  // 1位0 不兑换复活
   setBitsRange(send_package_.sentry_cmd, 2, 12, 0);     // 2-12位0 兑换发弹量
