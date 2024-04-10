@@ -69,6 +69,8 @@ typedef struct
   uint16_t remaining_gold_coin;
   // rfid
   uint32_t rfid_status;
+  // 遥控器模式
+  uint8_t mode;
   // 小地图
   float x;
 	float y;

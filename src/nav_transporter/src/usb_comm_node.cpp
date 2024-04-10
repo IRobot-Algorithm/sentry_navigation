@@ -105,7 +105,12 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   setBitsRange(send_package_.sentry_cmd, 2, 12, 0);     // 2-12位0 兑换发弹量
   setBitsRange(send_package_.sentry_cmd, 13, 16, 0);    // 13-16位0 远程兑换发弹量
   setBitsRange(send_package_.sentry_cmd, 17, 20, 0);    // 17-20位0 远程兑换血量
-  
+
+  // referee infomation
+  referee_info_.force_back = false;
+  referee_info_.keep_patrol = false;
+  referee_info_.normal_mode = 0; // 反前哨站
+
 }
 
 void UsbCommNode::odomHandler(const nav_msgs::Odometry::ConstPtr& odom)
@@ -300,6 +305,9 @@ void UsbCommNode::receiveCallback()
         referee_info_.gold_coins = package.remaining_gold_coin;
 
         referee_info_.rfid_status = package.rfid_status;
+        referee_info_.force_back = false;
+        referee_info_.keep_patrol = false;
+        referee_info_.normal_mode = package.mode;
 
         // TODO: keyward force back
         pub_referee_info_.publish(referee_info_);
