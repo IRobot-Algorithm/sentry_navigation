@@ -5,6 +5,7 @@
 
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Float32.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/Point.h>
@@ -82,10 +83,12 @@ class StateProcess {
 		ros::Publisher pub_map_;
 		ros::Publisher pub_waypoint_;
 		ros::Publisher pub_map_reset_;
+		ros::Publisher pub_track_dis_;
 
 		bool use_map_ = false;
 		bool reset_map_ = false;
 		std::string map_path_;
+		std_msgs::Float32 track_dis_;
 		nav_msgs::Path global_path_;
 		geometry_msgs::PoseStamped goal_;
 		geometry_msgs::PointStamped point_goal_;

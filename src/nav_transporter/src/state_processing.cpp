@@ -85,6 +85,12 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     this->pub_map_reset_ = nh.advertise<std_msgs::Bool>("/reset_far_map", 1);
   }
 
+  if (track_target_)
+  {
+    this->pub_track_dis_ = nh.advertise<std_msgs::Float32>("/track_distance", 1);
+    track_dis_.data = 3.0;
+  }
+
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
 
@@ -275,9 +281,11 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       way_point_.point.z -= 0.2;
     }
 
+    track_dis_.data = req.distance;
+    pub_track_dis_.publish(track_dis_);
+
   }
-
-
+  
   changeNavExecState(TRACK, "desicion");
 
   res.success = true;

@@ -112,6 +112,7 @@ float last_err_y = 0;
 float last_speed_x = 0;
 float last_speed_y = 0;
 float path_range = 0;
+float trackDis = 3.0;
 
 ros::Time sendTime;
 
@@ -221,6 +222,11 @@ void speedHandler(const std_msgs::Float32::ConstPtr& speed)
 void stopHandler(const std_msgs::Bool::ConstPtr& stop)
 {
   safetyStop = stop->data;
+}
+
+void trackDisHandler(const std_msgs::Float32::ConstPtr& dis)
+{
+  trackDis = dis->data;
 }
 
 //zbh接收航点信息
@@ -374,6 +380,8 @@ int main(int argc, char** argv)
 
   ros::Subscriber subStop = nh.subscribe<std_msgs::Bool> ("/stop", 5, stopHandler);
 
+  ros::Subscriber subTrackDis = nh.subscribe<std_msgs::Float32> ("/track_distance", 1, trackDisHandler);
+
   //订阅航点（位姿）
   ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
 
@@ -467,7 +475,7 @@ int main(int argc, char** argv)
         continue; 
       }
 
-      if (endDis < 3.0 && goalZ < -0.05) // tracking
+      if (endDis < trackDis && goalZ < -0.05) // tracking
       {
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
