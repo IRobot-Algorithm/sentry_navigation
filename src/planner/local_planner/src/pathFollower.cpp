@@ -282,7 +282,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       endMaxSpeed *= 1.5;
       vel.twist.linear.x *= 1.5;
       vel.twist.linear.y *= 1.5;
-      cmd_vel.twist.angular.y = 1.0; // open
+      vel.twist.angular.y = 1.0; // open
     }
 
     endMaxAccel *= 0.3;
