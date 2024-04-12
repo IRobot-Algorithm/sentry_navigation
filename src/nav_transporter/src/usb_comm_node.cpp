@@ -334,6 +334,7 @@ void UsbCommNode::receiveCallback()
         }
         referee_info_.base_shield = package.base_state;
         referee_info_.gold_coins = package.remaining_gold_coin;
+        referee_info_.bought_bullets = package.bought_bullets;
 
         referee_info_.rfid_status = package.rfid_status;
         in_supply_ = getBit(referee_info_.rfid_status, 13);

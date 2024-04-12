@@ -67,7 +67,7 @@ typedef struct
   // 剩余弹量与金币
   uint16_t projectile_allowance_17mm;
   uint16_t remaining_gold_coin;
-  uint16_t bought_17mm;
+  uint16_t bought_bullets;
   // rfid
   uint32_t rfid_status;
   // 遥控器模式

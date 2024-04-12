@@ -10,6 +10,7 @@ uint16 our_outpost_hp
 uint16 our_base_hp
 uint8 base_shield
 uint16 gold_coins
+uint16 bought_bullets
 # urdf
 uint32 rfid_status
 
