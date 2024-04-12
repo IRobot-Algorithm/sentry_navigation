@@ -169,6 +169,11 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   else // 顺时针
     send_package_.direction = 2;
 
+  if (cmd_vel.twist.angular.y > 0.5) // open
+    send_package_.capacitance = 1;
+  else // closed
+    send_package_.capacitance = 0;
+
   transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
   
 }

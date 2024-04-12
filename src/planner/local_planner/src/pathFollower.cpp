@@ -246,10 +246,10 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   static double slopeTrust = switchTimeThre; // 倾斜置信度
   double dt = ros::Time::now().toSec() - sendTime.toSec();
   sendTime = ros::Time::now();
-  if (fabs(vehicleSlopeAngle) > 0.0872 && adjustByPitch) // 5度
+  if (fabs(vehicleSlopeAngle) > 0.1 && adjustByPitch)
   {
     slopeTrust -= dt;
-    if (fabs(vehicleSlopeAngle) > 0.17) // must be sloped
+    if (fabs(vehicleSlopeAngle) > 0.2) // must be sloped
       slopeTrust = 0.0;
   }
   else
@@ -282,6 +282,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       endMaxSpeed *= 1.5;
       vel.twist.linear.x *= 1.5;
       vel.twist.linear.y *= 1.5;
+      cmd_vel.twist.angular.y = 1.0; // open
     }
 
     endMaxAccel *= 0.3;
@@ -446,6 +447,8 @@ int main(int argc, char** argv)
 
       // normal
       cmd_vel.twist.angular.x = 0.0;
+      // closed
+      cmd_vel.twist.angular.y = 0.0;
       
       if (goalZ < -0.25) // static
       {
