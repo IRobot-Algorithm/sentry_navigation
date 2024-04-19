@@ -25,6 +25,11 @@ enum NAV_EXEC_STATE {
 	NAVIGATE,
 };
 
+struct Point {
+  double x;
+  double y;
+};
+
 class StateProcess {
 	public:
 
@@ -57,6 +62,12 @@ class StateProcess {
 		* @auther wyq
 		*/
 		bool navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res);
+
+		/*
+		* @brief 判断点是否在多边形内
+		* @auther wyq
+		*/
+		bool isPointInsidePolygon(const geometry_msgs::PointStamped& point, const std::vector<Point>& polygon);
 
 		/*
 		* @brief 状态机主循环
@@ -98,6 +109,7 @@ class StateProcess {
 		geometry_msgs::PointStamped way_point_;
 		geometry_msgs::PointStamped far_way_point_;
 		nav_msgs::Odometry odom_;
+		std::vector<Point> polygon_;
 
 		ros::Timer loop_timer_;
 

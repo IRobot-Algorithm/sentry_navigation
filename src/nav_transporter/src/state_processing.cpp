@@ -94,6 +94,46 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     track_dis_.data = 3.0;
   }
 
+  struct Point point;
+  point.x = 5.75;
+  point.y = 6.7;
+  polygon_.push_back(point);
+  point.x = 2.75;
+  point.y = 2.3;
+  polygon_.push_back(point);
+  point.x = 2.75;
+  point.y = -0.9;
+  polygon_.push_back(point);
+  point.x = 4.6;
+  point.y = -3.4;
+  point.x = 4.07;
+  point.y = -4.62;
+  polygon_.push_back(point);
+  point.x = 2.53;
+  point.y = -4.5;
+  polygon_.push_back(point);
+  point.x = 1.4;
+  point.y = -3.0;
+  polygon_.push_back(point);
+  point.x = -1.35;
+  point.y = -3.05;
+  polygon_.push_back(point);
+  point.x = -3.95;
+  point.y = -4.0;
+  polygon_.push_back(point);
+  point.x = -5.8;
+  point.y = -4.6;
+  polygon_.push_back(point);
+  point.x = -5.6;
+  point.y = -2.66;
+  polygon_.push_back(point);
+  point.x = -0.7;
+  point.y = 2.8;
+  polygon_.push_back(point);
+  point.x = 2.3;
+  point.y = 7.0;
+  polygon_.push_back(point);
+
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
 
@@ -161,71 +201,6 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
 
 bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res)
 {
-  // if (track_target_)
-  // {
-  //   static tf::TransformListener ls;
-  //   tf::StampedTransform map2gimbal_transform, base2gimbal_transform, map2base_transform;
-  //   if (req.gimbal) // 0 for right, 1 for left
-  //   {
-  //     try {
-  //       ls.lookupTransform("/map", "/left_gimbal",  
-  //                           req.pose.header.stamp, map2gimbal_transform);
-  //     }
-  //     catch (tf::TransformException &ex) {
-  //       ROS_WARN("TargetTrans : %s",ex.what());
-  //       return true;
-  //     }
-  //     try {
-  //       ls.lookupTransform("/base_link", "/left_gimbal",  
-  //                           req.pose.header.stamp, base2gimbal_transform);
-  //     }
-  //     catch (tf::TransformException &ex) {
-  //       ROS_WARN("TargetTrans : %s",ex.what());
-  //       return true;
-  //     }
-  //   }
-  //   else
-  //   {
-  //     try {
-  //       ls.lookupTransform("/map", "/right_gimbal",  
-  //                           req.pose.header.stamp, map2gimbal_transform);
-  //     }
-  //     catch (tf::TransformException &ex) {
-  //       ROS_WARN("TargetTrans : %s",ex.what());
-  //     }
-  //     try {
-  //       ls.lookupTransform("/base_link", "/right_gimbal",  
-  //                           req.pose.header.stamp, base2gimbal_transform);
-  //     }
-  //     catch (tf::TransformException &ex) {
-  //       ROS_WARN("TargetTrans : %s",ex.what());
-  //       return true;
-  //     }
-  //   }
-  //   try {
-  //     ls.lookupTransform("/map", "/base_link",  
-  //                         req.pose.header.stamp, map2base_transform);
-  //   }
-  //   catch (tf::TransformException &ex) {
-  //     ROS_WARN("TargetTrans : %s",ex.what());
-  //     return true;
-  //   }
-  //   double yaw = tf::getYaw(map2base_transform.getRotation()) + tf::getYaw(base2gimbal_transform.getRotation());
-  //   double cos_yaw = cos(yaw);
-  //   double sin_yaw = sin(yaw);
-  //   way_point_.point.x = map2gimbal_transform.getOrigin().x() +
-  //                       req.pose.pose.position.x * cos_yaw -
-  //                       req.pose.pose.position.y * sin_yaw;
-  //   way_point_.point.y = map2gimbal_transform.getOrigin().y() +
-  //                       req.pose.pose.position.x * sin_yaw +
-  //                       req.pose.pose.position.y * cos_yaw;
-
-  //   if(req.is_lost)
-  //     way_point_.point.z = 0;
-  //   else
-  //     way_point_.point.z = -0.1;
-  // }
-
   if (track_target_)
   {
     static tf::TransformListener ls;
@@ -282,6 +257,14 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     //   return true;
     // }
 
+    // rmuc 在对面补给区
+    // if (way_point_.point.x > 7.55 && way_point_.point.x < 9.35 &&
+    //     way_point_.point.y > -3.9 && way_point_.point.y < -1.1)
+    // {
+    //   res.success = false;
+    //   return true;
+    // }
+
     if (req.gimbal) // 0 for right, 1 for left
       way_point_.point.z = -0.1;
     else
@@ -290,6 +273,19 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     if (!req.is_dynamic) // static
     {
       way_point_.point.z -= 0.2;
+    }
+    else // dynamic
+    {
+      if (req.pose.pose.position.z > -0.05 || req.pose.pose.position.z < -0.7) // 高度不一致
+      {
+        res.success = false;
+        return true;
+      }
+      if (!isPointInsidePolygon(way_point_, polygon_)) // 不在区域内 不跟随
+      {
+        res.success = false;
+        return true;
+      }
     }
 
     track_dis_.data = req.distance;
@@ -301,6 +297,25 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
 
   res.success = true;
   return true;
+}
+
+bool StateProcess::isPointInsidePolygon(const geometry_msgs::PointStamped& point, const std::vector<Point>& polygon)
+{
+  int crossings = 0;
+  const Point& p = {point.point.x, point.point.y};
+
+  for (size_t i = 0, j = polygon.size() - 1; i < polygon.size(); j = i++)
+  {
+      const Point& p1 = polygon[i];
+      const Point& p2 = polygon[j];
+      if (((p1.y > p.y) != (p2.y > p.y)) &&
+          (p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x))
+      {
+          crossings++;
+      }
+  }
+
+  return (crossings % 2 == 1);
 }
 
 void StateProcess::loop(const ros::TimerEvent& event)
