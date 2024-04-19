@@ -77,7 +77,10 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   // ROS publisher initialization
   this->pub_waypoint_ = nh.advertise<geometry_msgs::PointStamped>("/way_point", 5);
   if (use_pose_goal_)
+  {
+    this->sub_A_star_goal_ = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 5, &StateProcess::AstarGoalHandler, this);
     this->pub_goal_ = nh.advertise<geometry_msgs::PoseStamped>("/rviz_goal", 5);
+  }
   else
   {
     this->pub_map_ = nh.advertise<std_msgs::String>("/read_file_dir", 1);
@@ -121,12 +124,17 @@ void StateProcess::mapResultHandler(const std_msgs::Bool::ConstPtr& res)
   reset_map_ = false;
 }
 
+void StateProcess::AstarGoalHandler(const geometry_msgs::PoseStamped::ConstPtr& goal)
+{
+  goal_.header.stamp = ros::Time::now();
+  goal_.header.frame_id = "map";
+  goal_ = *goal;
+}
+
 bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res)
 {
   goal_.header.stamp = ros::Time::now();
   goal_ = req.pose;
-
-  changeNavExecState(NAVIGATE, "desicion");
 
   if (sqrt((odom_.pose.pose.position.x - goal_.pose.position.x) * 
            (odom_.pose.pose.position.x - goal_.pose.position.x) + 
@@ -145,6 +153,9 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
     point_goal_.point.y = goal_.pose.position.y;
   }
   
+  if (!res.is_arrive)
+    changeNavExecState(NAVIGATE, "desicion");
+
   return true;
 }
 
@@ -223,10 +234,10 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
-        // ls.lookupTransform("/map", "/left_gimbal",  
-        //                     ros::Time(0), map2gimbal_transform);
         ls.lookupTransform("/map", "/left_gimbal",  
-                            t, map2gimbal_transform);
+                            ros::Time(0), map2gimbal_transform);
+        // ls.lookupTransform("/map", "/left_gimbal",  
+        //                     t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
@@ -236,10 +247,10 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     else
     {
       try {
-        // ls.lookupTransform("/map", "/right_gimbal",  
-        //                     ros::Time(0), map2gimbal_transform);
         ls.lookupTransform("/map", "/right_gimbal",  
-                            t, map2gimbal_transform);
+                            ros::Time(0), map2gimbal_transform);
+        // ls.lookupTransform("/map", "/right_gimbal",  
+        //                     t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
@@ -264,12 +275,12 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     // else
 
     // rmul 在对面补给区
-    if (way_point_.point.x > 7.55 && way_point_.point.x < 9.35 &&
-        way_point_.point.y > -3.9 && way_point_.point.y < -1.1)
-    {
-      res.success = false;
-      return true;
-    }
+    // if (way_point_.point.x > 7.55 && way_point_.point.x < 9.35 &&
+    //     way_point_.point.y > -3.9 && way_point_.point.y < -1.1)
+    // {
+    //   res.success = false;
+    //   return true;
+    // }
 
     if (req.gimbal) // 0 for right, 1 for left
       way_point_.point.z = -0.1;
@@ -348,8 +359,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
     {
       if (use_pose_goal_)
       {
-        if (!is_test_)
-          pub_goal_.publish(goal_);
+        pub_goal_.publish(goal_);
         if (path_init_)
         {
           cutWaypointFromPath();
@@ -396,9 +406,9 @@ void StateProcess::cutWaypointFromPath()
 	{
     std::vector<geometry_msgs::PoseStamped>::const_iterator it = global_path_.poses.begin();
 
-    if (PathLength > 51)//81
+    if (PathLength > 31)//81
     {
-      it = global_path_.poses.begin() + 49;//79
+      it = global_path_.poses.begin() + 29;//79
     }
     else
     {

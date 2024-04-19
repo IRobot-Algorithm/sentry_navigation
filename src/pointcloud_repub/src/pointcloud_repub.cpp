@@ -95,11 +95,11 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
         continue;
     }
 
-    // if (d < 0.6 && res(2) < 0)
+    // if (d < 0.6 && res(2) < 0.15)
     // {
     //   livox_ros_driver2::CustomPoint p = std::move(in.points[i]);
-    //   p.x += 0.05;
-    //   p.z -= 0.05;
+    //   p.x += 0.07;
+    //   p.z -= 0.07;
     //   out.points[n] = p;
     // }
     // else

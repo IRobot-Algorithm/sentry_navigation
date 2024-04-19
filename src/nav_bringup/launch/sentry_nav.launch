@@ -15,7 +15,7 @@
 
     <include file="$(find far_planner)/launch/far_planner.launch" />
 
-    <!-- <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" /> -->
+    <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" />
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
     <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
 
@@ -31,7 +31,7 @@
         <arg name="track_target" value="true"/>
         <arg name="use_map" value="false"/>
         <arg name="is_test" value="true"/>
-        <arg name="map_path" value="$(find far_planner)/data/3floor.vgh"/>
+        <arg name="map_path" value="$(find far_planner)/data/xigongda.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 

@@ -441,8 +441,12 @@ void LaserMapping::Run() {
             T_wrt_ = result.rotation() * T_wrt_ + result.translation();
             R_wrt_inv_ = R_wrt_.inverse();
             init_localization_ = false;
-            // relocalization_.clear();
+            relocalization_.clear();
             LOG(INFO) << "\033[1;32m----> Init Localization Finished.\033[0m";
+            lidar_buffer_.clear();
+            time_buffer_.clear();
+            imu_buffer_.clear();
+            imu_buf_.clear();
         }
         else
         {

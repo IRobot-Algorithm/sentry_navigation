@@ -81,6 +81,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloud[terrainVoxelNum];
 int terrainVoxelUpdateNum[terrainVoxelNum] = {0};
 float terrainVoxelUpdateTime[terrainVoxelNum] = {0};
 float terrainVoxelYaw[terrainVoxelNum] = {0};
+float terrainVoxelDis[terrainVoxelNum] = {0};
 float planarVoxelElev[planarVoxelNum] = {0};
 int planarVoxelEdge[planarVoxelNum] = {0};
 int planarVoxelDyObs[planarVoxelNum] = {0};
@@ -263,7 +264,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32> ("/map_clearing", 5, clearingHandler);
 
-  ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
+  // ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
 
   ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/terrain_map", 2);
 
@@ -278,6 +279,9 @@ int main(int argc, char** argv)
 
     float voxelYaw = atan2(indY - terrainVoxelHalfWidth, indX - terrainVoxelHalfWidth); 
     terrainVoxelYaw[ind] = voxelYaw;
+    float voxelDis = sqrt((indY - terrainVoxelHalfWidth) * (indY - terrainVoxelHalfWidth) + 
+                          (indX - terrainVoxelHalfWidth) * (indX - terrainVoxelHalfWidth)) * terrainVoxelSize; 
+    terrainVoxelDis[ind] = voxelDis;
   }
 
   downSizeFilter.setLeafSize(scanVoxelSize, scanVoxelSize, scanVoxelSize);
@@ -382,7 +386,18 @@ int main(int argc, char** argv)
            (laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre &&
             fabs(yawDiff) < PI / 5.0))
         {
-
+          // if (terrainVoxelDis[ind] <= 0.4)
+          // {
+            
+          //   if (fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
+          //     continue;
+          // }
+          if (terrainVoxelDis[ind] <= 1.0)
+          { 
+            if (fabs(cos(yawDiff) * terrainVoxelDis[ind]) <= 0.4 &&
+                fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
+              continue;
+          }
           pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloudPtr = terrainVoxelCloud[ind];
 
           laserCloudDwz->clear();

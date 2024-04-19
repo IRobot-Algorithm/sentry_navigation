@@ -13,7 +13,7 @@ is_opencv_visual                        : false # Obstalce Image Display
 is_static_env                           : false
 is_pub_boundary                         : false
 is_debug_output                         : false
-is_attempt_autoswitch                   : false  # Auto switch to attemptable navigation
+is_attempt_autoswitch                   : true  # Auto switch to attemptable navigation
 world_frame                             : map
 
 # Graph Messager
@@ -30,7 +30,7 @@ Util/angle_noise                        : 15.0  # Unit: degree
 Util/accept_max_align_angle             : 4.0   # Unit: degree
 Util/obs_inflate_size                   : 0.5
 Util/new_intensity_thred                : 1.0   # 新点云强度阈值
-Util/terrain_free_Z                     : 0.13
+Util/terrain_free_Z                     : 0.15
 Util/dyosb_update_thred                 : 4
 Util/new_point_counter                  : 1
 Util/dynamic_obs_dacay_time             : 5.0  # Unit: second

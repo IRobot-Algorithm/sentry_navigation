@@ -246,50 +246,54 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   static double slopeTrust = switchTimeThre; // 倾斜置信度
   double dt = ros::Time::now().toSec() - sendTime.toSec();
   sendTime = ros::Time::now();
-  if (fabs(vehicleSlopeAngle) > 0.1 && adjustByPitch)
-  {
-    slopeTrust -= dt;
-    if (fabs(vehicleSlopeAngle) > 0.2) // must be sloped
-      slopeTrust = 0.0;
-  }
-  else
-    slopeTrust += dt;
+  // if (fabs(vehicleSlopeAngle) > 0.17 && adjustByPitch)
+  // {
+  //   slopeTrust -= dt;
+  //   if (fabs(vehicleSlopeAngle) > 0.2) // must be sloped
+  //     slopeTrust = 0.0;
+  // }
+  // else
+  //   slopeTrust += dt;
 
-  if (slopeTrust < 0.0)
-    slopeTrust = 0.0;
-  else if (slopeTrust > 2.0 * switchTimeThre)
-    slopeTrust = 2.0 * switchTimeThre;
+  // if (slopeTrust < 0.0)
+  //   slopeTrust = 0.0;
+  // else if (slopeTrust > 2.0 * switchTimeThre)
+  //   slopeTrust = 2.0 * switchTimeThre;
 
-  if (slopeTrust < switchTimeThre)
-  {
-    float slopeDir = 0.0;
-    if (velAngle > -4.0);
-    {
-      slopeDir = fabs(velAngle - vehicleSlopeYaw);
-      // std::cout << "slopeDir:" << slopeDir << std::endl;
-      if (slopeDir > PI)
-        slopeDir = 2 * PI - slopeDir;
-    }
+  // if (slopeTrust < switchTimeThre) // 上下坡 | 正常
+  // {
+  //   float slopeDir = 0.0;
+  //   if (velAngle > -4.0 && fabs(vehicleSlopeAngle) > 0.0873) // 朝向
+  //   {
+  //     slopeDir = fabs(velAngle - vehicleSlopeYaw);
+  //     // std::cout << "slopeDir:" << slopeDir << std::endl;
+  //     if (slopeDir > PI)
+  //       slopeDir = 2 * PI - slopeDir;
 
-    if (slopeDir <= PI / 2.0)
-    {
-      // std::cout << "down" << std::endl;
-      endMaxSpeed *= 0.3;
-    }
-    else
-    {
-      // std::cout << "up" << std::endl;
-      endMaxSpeed *= 1.5;
-      vel.twist.linear.x *= 1.5;
-      vel.twist.linear.y *= 1.5;
-      vel.twist.angular.y = 1.0; // open
-    }
+  //     if (slopeDir <= PI / 2.0)
+  //     {
+  //       // std::cout << "down" << std::endl;
+  //       endMaxSpeed *= 0.5;
+  //     }
+  //     else
+  //     {
+  //       // std::cout << "up" << std::endl;
+  //       endMaxSpeed *= 1.2;
+  //       vel.twist.linear.x *= 1.2;
+  //       vel.twist.linear.y *= 1.2;
+  //       vel.twist.angular.y = 1.0; // open
+  //     }
+  //   }
+  //   else
+  //   {
+  //     endMaxSpeed *= 0.5;
+  //   }
 
-    endMaxAccel *= 0.3;
-    vel.twist.linear.z = 3.0;
+  //   endMaxAccel *= 0.3;
+  //   vel.twist.linear.z = 3.0;
 
-  }
-  else
+  // }
+  // else
   {
     // std::cout << "none" << std::endl;
     if (dis < 1.6)
@@ -305,20 +309,20 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  if (slopeTrust < switchTimeThre)
-  {
-    std::cout << "dt : " << dt << std::endl;
+  // if (slopeTrust < switchTimeThre)
+  // {
+  //   std::cout << "dt : " << dt << std::endl;
 
-    // 根据最大加速度修正速度
-    float delta_speed_x = vel.twist.linear.x - last_speed_x;
-    float delta_speed_y = vel.twist.linear.y - last_speed_y;
-    float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
-    if (delta_speed > endMaxAccel * dt)
-    {
-      vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
-      vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
-    }
-  }
+  //   // 根据最大加速度修正速度
+  //   float delta_speed_x = vel.twist.linear.x - last_speed_x;
+  //   float delta_speed_y = vel.twist.linear.y - last_speed_y;
+  //   float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
+  //   if (delta_speed > endMaxAccel * dt)
+  //   {
+  //     vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
+  //     vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
+  //   }
+  // }
   // else
   // {
   //   std::cout << "none" << std::endl;
@@ -326,6 +330,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
 
   last_speed_x = vel.twist.linear.x;
   last_speed_y = vel.twist.linear.y;
+  // vel.twist.angular.z = 0.0;
   pub.publish(vel);
 
 }
@@ -510,7 +515,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.2;
+        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.05;
         // publishVel(cmd_vel, pubSpeed, endDis, -5.0);
         publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         continue;
@@ -637,7 +642,7 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        if (fabs(pathDir - vehicleYaw) > PI / 5 &&(!adjustByPitch || fabs(vehicleSlopeAngle) < 0.0872))
+        if (fabs(pathDir - vehicleYaw) > PI / 3 &&(!adjustByPitch || fabs(vehicleSlopeAngle) < 0.0872))
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
@@ -662,7 +667,7 @@ int main(int argc, char** argv)
         pubSkipCount = pubSkipNum;
       }
     }
-    else
+    else if (odomInit)
     {
       cmd_vel.twist.linear.x = 0.0;
       cmd_vel.twist.linear.y = 0.0;

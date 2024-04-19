@@ -44,6 +44,8 @@ class StateProcess {
 
 		void mapResultHandler(const std_msgs::Bool::ConstPtr& res);
 
+		void AstarGoalHandler(const geometry_msgs::PoseStamped::ConstPtr& goal);
+
 		/*
 		* @brief 决策导航信息服务器
 		* @auther wyq
@@ -76,6 +78,7 @@ class StateProcess {
 		ros::Subscriber sub_global_path_;
 		ros::Subscriber sub_far_waypoint_;
 		ros::Subscriber sub_map_result_;
+		ros::Subscriber sub_A_star_goal_;
 		ros::ServiceServer nav_goal_server;
 		ros::ServiceServer nav_target_server;
 

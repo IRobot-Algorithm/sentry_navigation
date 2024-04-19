@@ -45,8 +45,8 @@ irobot:
 
 icp:
     use_icp: false
-    save_result: true
-    pub_result: true
+    save_result: false
+    pub_result: false
 
     # ICP定位参数
     SCORE_THRESHOLD_MAX: 0.03     # 达到最大迭代次数后，代价仍高于此值，认为无法收敛

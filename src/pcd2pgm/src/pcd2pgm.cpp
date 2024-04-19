@@ -104,6 +104,41 @@ int main(int argc, char **argv) {
   SetMapTopicMsg(cloud_after_Radius, map_topic_msg);
   // SetMapTopicMsg(cloud_after_PassThrough, map_topic_msg);
 
+
+  if (save_map_pcd)
+  {
+    Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
+    Eigen::Vector3d T = Eigen::Vector3d::Zero();
+    R << 1, 0, 0,
+         0, 1, 0,
+         0, 0, 1;
+    T << 0,
+         0,
+         0;
+
+    // 对 pcd_cloud 中的每个点进行平移和旋转操作
+    for (size_t i = 0; i < pcd_cloud->points.size(); ++i)
+    {
+        pcl::PointXYZ& point = pcd_cloud->points[i];
+
+        // 应用平移向量
+        point.x += T(0);
+        point.y += T(1);
+        point.z += T(2);
+
+        // 应用旋转矩阵
+        Eigen::Vector3d point_vec(point.x, point.y, point.z);
+        Eigen::Vector3d rotated_point = R * point_vec;
+        point.x = rotated_point(0);
+        point.y = rotated_point(1);
+        point.z = rotated_point(2);
+    }
+
+
+  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "blue_map.pcd",
+                                      *pcd_cloud);
+  }
+
   while (ros::ok()) {
     map_topic_pub.publish(map_topic_msg);
 
@@ -169,8 +204,12 @@ void MapRadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud
   radiusoutlier.setMinNeighborsInRadius(thre_count);
   radiusoutlier.filter(*cloud_after_Radius);
   // test 保存滤波后的点云到文件
-  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map.pcd",
-                                      *cloud_after_Radius);
+  // pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map.pcd",
+  //                                     *cloud_after_Radius);
+  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "red_map.pcd",
+                                      *pcd_cloud0);
+
+
   std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()
             << std::endl;
 }

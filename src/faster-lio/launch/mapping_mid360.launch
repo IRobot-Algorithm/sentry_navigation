@@ -5,8 +5,8 @@
 
 	<rosparam command="load" file="$(find faster_lio)/config/mid360.yaml" />
 
-	<param name="icp/red_map_pcd_path" type="string" value="$(find faster_lio)/PCD/scans.pcd"/>
-	<param name="icp/blue_map_pcd_path" type="string" value="$(find faster_lio)/PCD/scans.pcd"/>
+	<param name="icp/red_map_pcd_path" type="string" value="$(find faster_lio)/PCD/red_map.pcd"/>
+	<param name="icp/blue_map_pcd_path" type="string" value="$(find faster_lio)/PCD/red_map.pcd"/>
 	<param name="icp/ori_pcd_path" type="string" value="$(find faster_lio)/PCD/origin.pcd"/>
 	<param name="icp/res_pcd_path" type="string" value="$(find faster_lio)/PCD/result.pcd"/>
 	<param name="feature_extract_enable" type="bool" value="0"/>

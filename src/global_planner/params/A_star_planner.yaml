@@ -48,7 +48,7 @@ costmap:
         scan_matched:
            # sensor_frame: laser
            data_type: PointCloud2
-           topic: /terrain_map
+           topic: /terrain_map_ext
            marking: true
            clearing: true
            observation_persistence: 0.0
