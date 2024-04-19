@@ -234,10 +234,10 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
-        ls.lookupTransform("/map", "/left_gimbal",  
-                            ros::Time(0), map2gimbal_transform);
         // ls.lookupTransform("/map", "/left_gimbal",  
-        //                     t, map2gimbal_transform);
+        //                     ros::Time(0), map2gimbal_transform);
+        ls.lookupTransform("/map", "/left_gimbal",  
+                            t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
@@ -247,10 +247,10 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     else
     {
       try {
-        ls.lookupTransform("/map", "/right_gimbal",  
-                            ros::Time(0), map2gimbal_transform);
         // ls.lookupTransform("/map", "/right_gimbal",  
-        //                     t, map2gimbal_transform);
+        //                     ros::Time(0), map2gimbal_transform);
+        ls.lookupTransform("/map", "/right_gimbal",  
+                            t, map2gimbal_transform);
       }
       catch (tf::TransformException &ex) {
         ROS_WARN("TargetTrans : %s",ex.what());
