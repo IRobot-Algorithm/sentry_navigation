@@ -154,7 +154,7 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   {
     send_package_.chassis_mode = 3; // KEEP
   }
-  if (in_supply_)
+  if (in_supply_ || referee_info_.our_outpost_hp > 0)
   {
     send_package_.chassis_mode = 3; // KEEP
   }
