@@ -4,8 +4,8 @@
     <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
 
     <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" >
-        <arg name="undecay_dis" value="0.5"/>
-        <arg name="undecay_angle" value="0.15"/> <!-- rad -->
+        <arg name="undecay_dis" value="1.0"/>
+        <arg name="undecay_angle" value="0.2"/> <!-- rad -->
     </include>
     <!-- <include file="$(find Point-LIO)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
