@@ -30,7 +30,7 @@
         <arg name="use_pose_goal" value="false"/>
         <arg name="track_target" value="true"/>
         <arg name="use_map" value="false"/>
-        <arg name="is_test" value="true"/>
+        <arg name="is_test" value="false"/>
         <arg name="map_path" value="$(find far_planner)/data/xigongda.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
