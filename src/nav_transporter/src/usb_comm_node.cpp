@@ -338,7 +338,13 @@ void UsbCommNode::receiveCallback()
 
         referee_info_.rfid_status = package.rfid_status;
         in_supply_ = getBit(referee_info_.rfid_status, 13);
-        referee_info_.force_back = false;
+
+        // std::cout << "key: " << package.key << std::endl;
+        if (package.key == 's' || package.key == 'S')
+          referee_info_.force_back = true;
+        else
+          referee_info_.force_back = false;
+        
         referee_info_.keep_patrol = false;
         referee_info_.normal_mode = package.mode;
 
