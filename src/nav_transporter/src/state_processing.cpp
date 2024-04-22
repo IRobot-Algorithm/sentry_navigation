@@ -180,6 +180,18 @@ void StateProcess::AstarGoalHandler(const geometry_msgs::PoseStamped::ConstPtr& 
 
 bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srvs::NavGoal::Response &res)
 {
+  if (req.pose.pose.position.x < -20.0) // judge save
+  {
+    geometry_msgs::PointStamped p;
+    p.point.x = odom_.pose.pose.position.x;
+    p.point.y = odom_.pose.pose.position.y;
+    if (p.point.x < 5.0 || isPointInsidePolygon(p, polygon_))
+      res.is_arrive = true;
+    else
+      res.is_arrive = false;
+    return true;
+  }
+
   goal_.header.stamp = ros::Time::now();
   goal_ = req.pose;
 
