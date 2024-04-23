@@ -317,7 +317,7 @@ void UsbCommNode::receiveCallback()
           referee_info_.enemy_hp[7] = package.blue_outpose_HP;
           color_info.data = false;
         }
-        else // blumodee
+        else // blue
         {
           referee_info_.robot_hp = package.blue_sentry_remain_HP;
           referee_info_.our_outpost_hp = package.blue_outpose_HP;
