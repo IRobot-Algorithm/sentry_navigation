@@ -212,7 +212,7 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
     point_goal_.point.y = goal_.pose.position.y;
   }
   
-  if (!res.is_arrive)
+  if (!res.is_arrive || exec_state_ == INIT)
     changeNavExecState(NAVIGATE, "desicion");
 
   return true;
