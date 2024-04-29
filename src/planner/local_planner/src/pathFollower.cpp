@@ -515,7 +515,7 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.05;
+        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.15;
         // publishVel(cmd_vel, pubSpeed, endDis, -5.0);
         publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         continue;
