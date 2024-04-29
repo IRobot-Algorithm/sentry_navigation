@@ -14,7 +14,7 @@
     <!-- 半径滤波的半径-->
     <param name="thre_radius" value= "0.1" />
     <!-- 半径滤波的要求点数个数-->
-    <param name="thres_point_count" value= "1" />
+    <param name="thres_point_count" value= "30" />
     <!-- 存储的栅格map的分辨率-->
     <param name="map_resolution" value= "0.1" />
     <!-- 转换后发布的二维地图的topic，默认使用map即可，可使用map_server保存-->

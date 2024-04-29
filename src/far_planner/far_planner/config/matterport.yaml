@@ -1,8 +1,8 @@
 # Dynamic Planner Default Params
 main_run_freq                           : 5.0
 voxel_dim                               : 0.1   # Unit: meter
-robot_dim                               : 0.6   # Unit: meter
-vehicle_height                          : 0.5   # Unit: meter
+robot_dim                               : 0.65   # Unit: meter
+vehicle_height                          : 0.3   # Unit: meter
 sensor_range                            : 12.0  # Unit: meter
 terrain_range                           : 12.0   # Unit: meter
 local_planner_range                     : 5.0   # Unit: meter

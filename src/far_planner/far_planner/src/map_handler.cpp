@@ -377,7 +377,7 @@ void MapHandler::ObsNeighborCloudWithTerrain(std::unordered_set<int>& neighbor_o
         }
     }
     extend_terrain_obs.clear(); // assign extended terrain obs indices
-    const std::vector<int> inflate_vec{-1, 0};
+    const std::vector<int> inflate_vec{-1, 0, 1};
     for (const int& idx : neighbor_obs) {
         const Eigen::Vector3i csub = world_obs_cloud_grid_->Ind2Sub(idx);
         for (const int& plus : inflate_vec) {

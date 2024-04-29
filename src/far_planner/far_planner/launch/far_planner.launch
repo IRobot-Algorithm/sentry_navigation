@@ -1,7 +1,7 @@
 <launch>
     <arg name="odom_topic" default="/Odometry"/>
     <arg name="terrain_cloud_topic" default="/terrain_map_ext"/>
-    <arg name="terrain_local_topic" default="/terrain_map"/>
+    <arg name="terrain_local_topic" default="/terrain_map_ext"/>
     <arg name="scan_cloud_topic" default="/registered_scan"/>
     <arg name="config" default="matterport"/>
     <node pkg="far_planner" type="far_planner" name="far_planner" output="screen">
