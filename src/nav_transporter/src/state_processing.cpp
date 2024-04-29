@@ -161,7 +161,12 @@ void StateProcess::farWaypointHandler(const geometry_msgs::PointStamped::ConstPt
   far_way_point_ = *point;
   if (far_way_point_.point.z < -9.0) // 规划失败
   {
+    reset_cnt_++;
     reset_map_ = true; // 清空地图
+  }
+  else
+  {
+    reset_cnt_ = 0;
   }
   far_way_point_.point.z = 0;
 }
@@ -351,7 +356,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
     {
       if (reset_map_ && !use_pose_goal_)
       {
-        if (use_map_)
+        if (use_map_ && reset_cnt_ < 50)
         {
           std_msgs::String msg;
           msg.data = map_path_;
