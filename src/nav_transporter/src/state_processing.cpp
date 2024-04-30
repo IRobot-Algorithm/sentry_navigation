@@ -190,7 +190,7 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
     geometry_msgs::PointStamped p;
     p.point.x = odom_.pose.pose.position.x;
     p.point.y = odom_.pose.pose.position.y;
-    if (p.point.x < 5.0 || isPointInsidePolygon(p, polygon_))
+    if (p.point.x < 4.5 /* || isPointInsidePolygon(p, polygon_) */ )
       res.is_arrive = true;
     else
       res.is_arrive = false;
@@ -282,8 +282,8 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     // }
 
     // rmuc 在对面补给区
-    if (way_point_.point.x > 19.0 && way_point_.point.x < 22.3 &&
-        way_point_.point.y > 4.0 && way_point_.point.y < 8.4)
+    if (way_point_.point.x > 18.8 && way_point_.point.x < 21.3 &&
+        way_point_.point.y > 3.8 && way_point_.point.y < 8.0)
     {
       res.success = false;
       return true;
@@ -305,7 +305,9 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
         res.success = false;
         return true;
       }
-      if (!isPointInsidePolygon(way_point_, polygon_)) // 不在区域内 不跟随
+      // if (!isPointInsidePolygon(way_point_, polygon_)) // 不在区域内 不跟随
+      if (way_point_.point.x > 2.6 || way_point_.point.x < -7.0 ||
+          way_point_.point.y > 3.0 || way_point_.point.y < -3.0) // 不在区域内 不跟随
       {
         res.success = false;
         return true;
