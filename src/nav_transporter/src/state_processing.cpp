@@ -358,7 +358,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
     {
       if (reset_map_ && !use_pose_goal_)
       {
-        if (use_map_ && reset_cnt_ < 50)
+        if (use_map_ && reset_cnt_ < 25)
         {
           std_msgs::String msg;
           msg.data = map_path_;
