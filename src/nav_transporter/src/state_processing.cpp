@@ -229,7 +229,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
   {
     static tf::TransformListener ls;
     tf::StampedTransform map2gimbal_transform;
-    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.01);
+    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.1);
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
@@ -358,13 +358,13 @@ void StateProcess::loop(const ros::TimerEvent& event)
     {
       if (reset_map_ && !use_pose_goal_)
       {
-        if (use_map_ && reset_cnt_ < 25)
-        {
-          std_msgs::String msg;
-          msg.data = map_path_;
-          pub_map_.publish(msg);
-        }
-        else
+        // if (use_map_ && reset_cnt_ < 25)
+        // {
+        //   std_msgs::String msg;
+        //   msg.data = map_path_;
+        //   pub_map_.publish(msg);
+        // }
+        // else
         {
           std_msgs::Bool msg;
           msg.data = true;
