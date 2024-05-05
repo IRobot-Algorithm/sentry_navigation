@@ -113,7 +113,7 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   send_package_.direction = 0; // normal
   send_package_.capacitance = 0; // closed
   setBit(send_package_.sentry_cmd, 0);    // 0位1 确认复活
-  // clearBit(send_package_.sentry_cmd, 1);  // 1位0 不兑换复活 有问题
+  clearBit(send_package_.sentry_cmd, 1);  // 1位0 不兑换复活
   setBitsRange(send_package_.sentry_cmd, 2, 12, 0);     // 2-12位0 兑换发弹量
   setBitsRange(send_package_.sentry_cmd, 13, 16, 0);    // 13-16位0 远程兑换发弹量
   setBitsRange(send_package_.sentry_cmd, 17, 20, 0);    // 17-20位0 远程兑换血量
@@ -174,6 +174,13 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   else // closed
     send_package_.capacitance = 0;
 
+  if (referee_info_.robot_hp <= 0)
+    setBit(send_package_.sentry_cmd, 0);    // 0位1 确认复活
+  else
+    clearBit(send_package_.sentry_cmd, 0);  // 0位0 不确认复活
+
+  printBinary(send_package_.sentry_cmd);
+
   transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
   
 }
@@ -181,7 +188,7 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
 bool UsbCommNode::buyBulletsHandler(sentry_srvs::BuyBullets::Request &req, sentry_srvs::BuyBullets::Response &res)
 {
   setBitsRange(send_package_.sentry_cmd, 2, 12, static_cast<uint32_t>(req.bullets));     // 2-12位 兑换发弹量
-  // transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
+  transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
 
   res.success = true;
   return true;
@@ -369,7 +376,7 @@ void UsbCommNode::receiveCallback()
 
   inline void UsbCommNode::clearBit(uint32_t& data, int pos)
   {
-    data &= (static_cast<uint32_t>(0) << pos);
+    data &= ~(static_cast<uint32_t>(1) << pos);
   }
 
   inline bool UsbCommNode::getBit(const uint32_t& data, int pos)
