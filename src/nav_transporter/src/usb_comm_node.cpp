@@ -179,7 +179,7 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   else
     clearBit(send_package_.sentry_cmd, 0);  // 0位0 不确认复活
 
-  printBinary(send_package_.sentry_cmd);
+  // printBinary(send_package_.sentry_cmd);
 
   transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
   
