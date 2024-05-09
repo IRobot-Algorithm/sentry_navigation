@@ -135,7 +135,12 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud2)
     {
       point.x = pointX;
       point.y = pointY;
-      point.z = pointZ;
+
+      if (pointX > 3.2 && pointX < 4.5 && pointY > -0.5 && pointY < 1.6 && pointZ < 0.23)
+        point.z = 0.23;
+      else
+        point.z = pointZ;
+
       point.intensity = laserCloudTime - systemInitTime;
       laserCloudCrop->push_back(point);
     }

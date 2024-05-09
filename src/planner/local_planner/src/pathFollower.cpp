@@ -30,6 +30,9 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
 using namespace std;
 
 const double PI = 3.1415926;
@@ -118,6 +121,33 @@ ros::Time sendTime;
 
 nav_msgs::Path path;
 
+std::vector<std::vector<cv::Point>> polygons =
+{
+  // 环高1
+  {
+    cv::Point(2.7, -0.6),
+    cv::Point(4.5, -0.1),
+    cv::Point(6.0, -2.2),
+    cv::Point(4.1, -2.7)
+  },
+  // 环高2
+  {
+    cv::Point(6.2, 3.2),
+    cv::Point(4.9, 4.6),
+    cv::Point(6.4, 6.7),
+    cv::Point(8.0, 5.5)
+  },
+  // 梯高
+  {
+    cv::Point(-3.0, 5.0),
+    cv::Point(-3.0, 2.3),
+    cv::Point(-0.7, 2.3),
+    cv::Point(0.8, 5.0)
+  }
+};
+
+bool is_on_slope = false;
+
 void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
 {
   odomTime = odomIn->header.stamp.toSec();
@@ -136,6 +166,18 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
 
+  is_on_slope = false;
+
+  for (const auto& polygon : polygons)
+  {
+      if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) <= 0)
+      {
+          is_on_slope = true;
+          break;
+      }
+  }
+
+  /*
   Eigen::Matrix3d eigen_mat;
   eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
                tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
@@ -154,6 +196,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   // 计算刚体Z轴的朝向
   double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
   vehicleSlopeYaw = yaw_angle;
+  */
 
   odomInit = true;
 
@@ -293,7 +336,13 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   //   vel.twist.linear.z = 3.0;
 
   // }
-  // else
+  if (is_on_slope)
+  {
+    endMaxSpeed *= 0.5;
+    endMaxAccel *= 0.3;
+    vel.twist.linear.z = 3.0;
+  }
+  else
   {
     // std::cout << "none" << std::endl;
     if (dis < 1.6)
@@ -309,20 +358,18 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  // if (slopeTrust < switchTimeThre)
-  // {
-  //   std::cout << "dt : " << dt << std::endl;
-
-  //   // 根据最大加速度修正速度
-  //   float delta_speed_x = vel.twist.linear.x - last_speed_x;
-  //   float delta_speed_y = vel.twist.linear.y - last_speed_y;
-  //   float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
-  //   if (delta_speed > endMaxAccel * dt)
-  //   {
-  //     vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
-  //     vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
-  //   }
-  // }
+  if (is_on_slope)
+  {
+    // 根据最大加速度修正速度
+    float delta_speed_x = vel.twist.linear.x - last_speed_x;
+    float delta_speed_y = vel.twist.linear.y - last_speed_y;
+    float delta_speed = sqrt(delta_speed_x * delta_speed_x + delta_speed_y * delta_speed_y);
+    if (delta_speed > endMaxAccel * dt)
+    {
+      vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
+      vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
+    }
+  }
   // else
   // {
   //   std::cout << "none" << std::endl;
