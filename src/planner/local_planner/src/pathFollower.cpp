@@ -135,7 +135,7 @@ std::vector<std::vector<cv::Point>> polygons =
     cv::Point(6.2, 3.2),
     cv::Point(4.9, 4.6),
     cv::Point(6.4, 6.7),
-    cv::Point(7.6, 5.2)
+    cv::Point(7.5, 5.1)
   },
   // // 梯高
   // {
