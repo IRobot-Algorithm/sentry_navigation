@@ -94,16 +94,16 @@ void GraphMsger::PublishGlobalGraph(const NodePtrStack& graphIn) {
     graph_pub_.publish(graph_msg);
 }
 
-void GraphMsger::GraphCallBack(const visibility_graph_msg::GraphConstPtr& msg) {
-    if (msg->nodes.empty()) return;
-    NodePtrStack decoded_nodes;
-    const std::size_t robot_id = msg->robot_id;
-    const visibility_graph_msg::Graph graph_msg = *msg;
+void GraphMsger::ResetGraphMsg()
+{
+    if (graph_msg_.nodes.empty()) 
+        return;
     IdxMap nodeIdx_idx_map;
     // Create nav nodes for decoded graph
+    NodePtrStack decoded_nodes;
     decoded_nodes.clear();
-    for (std::size_t i=0; i<graph_msg.nodes.size(); i++) {
-        const auto node = graph_msg.nodes[i];
+    for (std::size_t i=0; i<graph_msg_.nodes.size(); i++) {
+        const auto node = graph_msg_.nodes[i];
         const Point3D node_p = Point3D(node.position.x, node.position.y, node.position.z);
         NavNodePtr nearest_node_ptr = NearestNodePtrOnGraph(node_p, gm_params_.dist_margin);
         if (nearest_node_ptr == NULL || IsMismatchFreeNode(nearest_node_ptr, node)) {
@@ -115,8 +115,65 @@ void GraphMsger::GraphCallBack(const visibility_graph_msg::GraphConstPtr& msg) {
     }
     // Assign connections with fully connection votes
     std::vector<std::size_t> connect_idxs, poly_idxs, contour_idxs, traj_idxs;
-    for (std::size_t i=0; i<graph_msg.nodes.size(); i++) {
-        const auto node = graph_msg.nodes[i];
+    for (std::size_t i=0; i<graph_msg_.nodes.size(); i++) {
+        const auto node = graph_msg_.nodes[i];
+        const NavNodePtr node_ptr = decoded_nodes[i];
+        ExtractConnectIdxs(node, connect_idxs, poly_idxs, contour_idxs, traj_idxs);
+        // graph connections
+        NavNodePtr cnode_ptr = NULL;
+        for (const auto& cid : connect_idxs) {
+            cnode_ptr = IdToNodePtr(cid, nodeIdx_idx_map, decoded_nodes);
+            if (cnode_ptr != NULL && (!node_ptr->is_active || !cnode_ptr->is_active || (node_ptr->is_boundary && cnode_ptr->is_boundary))) {
+                DynamicGraph::AddEdge(node_ptr, cnode_ptr);
+            }
+        }
+        // poly connections
+        for (const auto& cid : poly_idxs) {
+            cnode_ptr = IdToNodePtr(cid, nodeIdx_idx_map, decoded_nodes);
+            if (cnode_ptr != NULL && (!node_ptr->is_active || !cnode_ptr->is_active || (node_ptr->is_boundary && cnode_ptr->is_boundary))) {
+                DynamicGraph::FillPolygonEdgeConnect(node_ptr, cnode_ptr, gm_params_.votes_size);
+            }
+        }
+        // contour connections
+        for (const auto& cid : contour_idxs) {
+            cnode_ptr = IdToNodePtr(cid, nodeIdx_idx_map, decoded_nodes);
+            if (cnode_ptr != NULL && (!node_ptr->is_active || !cnode_ptr->is_active || (node_ptr->is_boundary && cnode_ptr->is_boundary))) {
+                DynamicGraph::FillContourConnect(node_ptr, cnode_ptr, gm_params_.votes_size);
+            }
+        }
+        // trajectory connection
+        for (const auto& cid : traj_idxs) {
+            cnode_ptr = IdToNodePtr(cid, nodeIdx_idx_map, decoded_nodes);
+            if (cnode_ptr != NULL && (!node_ptr->is_active || !cnode_ptr->is_active || (node_ptr->is_boundary && cnode_ptr->is_boundary))) {
+                DynamicGraph::FillTrajConnect(node_ptr, cnode_ptr);
+            }
+        }
+    }
+}
+
+void GraphMsger::GraphCallBack(const visibility_graph_msg::GraphConstPtr& msg) {
+    if (msg->nodes.empty()) return;
+    NodePtrStack decoded_nodes;
+    const std::size_t robot_id = msg->robot_id;
+    graph_msg_ = *msg;
+    IdxMap nodeIdx_idx_map;
+    // Create nav nodes for decoded graph
+    decoded_nodes.clear();
+    for (std::size_t i=0; i<graph_msg_.nodes.size(); i++) {
+        const auto node = graph_msg_.nodes[i];
+        const Point3D node_p = Point3D(node.position.x, node.position.y, node.position.z);
+        NavNodePtr nearest_node_ptr = NearestNodePtrOnGraph(node_p, gm_params_.dist_margin);
+        if (nearest_node_ptr == NULL || IsMismatchFreeNode(nearest_node_ptr, node)) {
+            CreateDecodedNavNode(node, nearest_node_ptr);
+            DynamicGraph::AddNodeToGraph(nearest_node_ptr);
+        }
+        decoded_nodes.push_back(nearest_node_ptr);
+        nodeIdx_idx_map.insert({node.id, i});
+    }
+    // Assign connections with fully connection votes
+    std::vector<std::size_t> connect_idxs, poly_idxs, contour_idxs, traj_idxs;
+    for (std::size_t i=0; i<graph_msg_.nodes.size(); i++) {
+        const auto node = graph_msg_.nodes[i];
         const NavNodePtr node_ptr = decoded_nodes[i];
         ExtractConnectIdxs(node, connect_idxs, poly_idxs, contour_idxs, traj_idxs);
         // graph connections

@@ -101,7 +101,7 @@ class StateProcess {
 
 		bool use_map_ = false;
 		bool reset_map_ = false;
-		int reset_cnt_ = 0;
+		bool init_map_ = false;
 		std::string map_path_;
 		std_msgs::Float32 track_dis_;
 		nav_msgs::Path global_path_;

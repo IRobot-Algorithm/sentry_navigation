@@ -30,8 +30,8 @@
         <arg name="use_pose_goal" value="false"/>
         <arg name="track_target" value="true"/>
         <arg name="use_map" value="false"/>
-        <arg name="is_test" value="false"/>
-        <arg name="map_path" value="$(find far_planner)/data/xigongda.vgh"/>
+        <arg name="is_test" value="true"/>
+        <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
@@ -39,5 +39,5 @@
     <!-- <include file="$(find ego_planner)/launch/rviz.launch"/> -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
     <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" /> -->
-    <!-- <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/> -->
+    <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/>
 </launch>

@@ -131,6 +131,7 @@ void FARMaster::ResetEnvironmentAndGraph() {
   goal_pub_.publish(goal_waypoint_stamped_);
   NodePtrStack empty_path;
   planner_viz_.VizPath(empty_path);
+  graph_msger_.ResetGraphMsg();
 }
 
 void FARMaster::Loop() {
@@ -139,9 +140,6 @@ void FARMaster::Loop() {
     if (is_reset_env_) {
       this->ResetEnvironmentAndGraph(); 
       is_reset_env_ = false;
-      std_msgs::Bool res;
-      res.data = true;
-      map_result_pub_.publish(res);
       if (FARUtil::IsDebug) ROS_WARN("****************** Graph and Env Reset ******************");
       loop_rate.sleep(); // skip this iteration
       continue;
@@ -161,7 +159,7 @@ void FARMaster::Loop() {
       continue;
     }
     /* Extract Vertices and new nodes */
-    FARUtil::Timer.start_time("Total V-Graph Update");
+    // FARUtil::Timer.start_time("Total V-Graph Update");
     contour_detector_.BuildTerrainImgAndExtractContour(odom_node_ptr_, FARUtil::surround_obs_cloud_, realworld_contour_);
     contour_graph_.UpdateContourGraph(odom_node_ptr_, realworld_contour_);
     if (is_graph_init_) {
@@ -192,9 +190,9 @@ void FARMaster::Loop() {
     }
     /* Graph Updating */
     graph_manager_.UpdateNavGraph(new_nodes_, is_stop_update_, clear_nodes_);
-    runtimer_.data = FARUtil::Timer.end_time("Total V-Graph Update", is_graph_init_) / 1000.f; // Unit: second
+    // runtimer_.data = FARUtil::Timer.end_time("Total V-Graph Update", is_graph_init_) / 1000.f; // Unit: second
     // runtimer_.data = FARUtil::Timer.end_time("Total V-Graph Update", is_graph_init_); // Unit: ms
-    runtime_pub_.publish(runtimer_);
+    // runtime_pub_.publish(runtimer_);
     /* Update v-graph in other modules */
     nav_graph_ = graph_manager_.GetNavGraph();
     if (is_graph_init_) {
@@ -260,14 +258,14 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
     graph_planner_.ReEvaluateGoalPosition(goal_ptr, !master_params_.is_multi_layer);
 
     // Adding goal into v-graph
-    FARUtil::Timer.start_time("Adding Goal to V-Graph");
+    // FARUtil::Timer.start_time("Adding Goal to V-Graph");
     graph_planner_.UpdateGoalNavNodeConnects(goal_ptr); 
     graph_planner_.UpdaetVGraph(graph_manager_.GetNavGraph());
     // if (!FARUtil::IsDebug) printf("\033[2K");
-    FARUtil::Timer.end_time("Adding Goal to V-Graph");
+    // FARUtil::Timer.end_time("Adding Goal to V-Graph");
 
     // Update v-graph traversibility 
-    FARUtil::Timer.start_time("Path Search");
+    // FARUtil::Timer.start_time("Path Search");
     graph_planner_.UpdateGraphTraverability(odom_node_ptr_, goal_ptr);
 
     // Construct path to gaol and publish waypoint
@@ -309,14 +307,14 @@ void FARMaster::PlanningCallBack(const ros::TimerEvent& event) {
     std_msgs::Bool reach_goal_msg;
     reach_goal_msg.data = is_reach_goal;
     reach_goal_pub_.publish(reach_goal_msg);
-    std_msgs::Float32 traverse_timer;
-    traverse_timer.data = FARUtil::Timer.record_time("Overall_executing");
-    traverse_time_pub_.publish(traverse_timer);
-    if (is_reach_goal) {
-      FARUtil::Timer.end_time("Overall_executing", false);
-    }
-    plan_timer_.data = FARUtil::Timer.end_time("Path Search");
-    planning_time_pub_.publish(plan_timer_);
+    // std_msgs::Float32 traverse_timer;
+    // traverse_timer.data = FARUtil::Timer.record_time("Overall_executing");
+    // traverse_time_pub_.publish(traverse_timer);
+    // if (is_reach_goal) {
+      // FARUtil::Timer.end_time("Overall_executing", false);
+    // }
+    // plan_timer_.data = FARUtil::Timer.end_time("Path Search");
+    // planning_time_pub_.publish(plan_timer_);
   }
 }
 
@@ -728,7 +726,7 @@ void FARMaster::WaypointCallBack(const geometry_msgs::PointStamped& route_goal) 
     FARUtil::TransformPoint3DFrame(goal_frame, master_params_.world_frame, tf_listener_, goal_p); 
   }
   graph_planner_.UpdateGoal(goal_p);
-  FARUtil::Timer.start_time("Overall_executing", true);
+  // FARUtil::Timer.start_time("Overall_executing", true);
   // visualize original goal
   planner_viz_.VizPoint3D(goal_p, "original_goal", VizColor::RED, 1.5);
 }

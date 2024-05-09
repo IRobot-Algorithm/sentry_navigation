@@ -64,7 +64,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     use_map_ = false;
   }
   if (use_map_)
-    reset_map_ = true;
+    init_map_ = true;
 
   // ROS subscribe initialization
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5, &StateProcess::odometryHandler, this);
@@ -160,20 +160,15 @@ void StateProcess::farWaypointHandler(const geometry_msgs::PointStamped::ConstPt
 {
   far_way_point_ = *point;
   if (far_way_point_.point.z < -9.0) // 规划失败
-  {
-    reset_cnt_++;
     reset_map_ = true; // 清空地图
-  }
   else
-  {
-    reset_cnt_ = 0;
-  }
+    reset_map_ = false;
   far_way_point_.point.z = 0;
 }
 
 void StateProcess::mapResultHandler(const std_msgs::Bool::ConstPtr& res)
 {
-  reset_map_ = false;
+  init_map_ = false;
 }
 
 void StateProcess::AstarGoalHandler(const geometry_msgs::PoseStamped::ConstPtr& goal)
@@ -356,20 +351,17 @@ void StateProcess::loop(const ros::TimerEvent& event)
       ROS_WARN("no odom.");
     else
     {
+      if (init_map_ && !use_pose_goal_ && use_map_)
+      {
+        std_msgs::String msg;
+        msg.data = map_path_;
+        pub_map_.publish(msg);
+      }
       if (reset_map_ && !use_pose_goal_)
       {
-        // if (use_map_ && reset_cnt_ < 25)
-        // {
-        //   std_msgs::String msg;
-        //   msg.data = map_path_;
-        //   pub_map_.publish(msg);
-        // }
-        // else
-        {
-          std_msgs::Bool msg;
-          msg.data = true;
-          pub_map_reset_.publish(msg);
-        }
+        std_msgs::Bool msg;
+        msg.data = true;
+        pub_map_reset_.publish(msg);
       }
     }
     nav_num = 0;

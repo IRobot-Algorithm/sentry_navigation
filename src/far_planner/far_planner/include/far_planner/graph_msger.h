@@ -23,6 +23,8 @@ public:
 
     void UpdateGlobalGraph(const NodePtrStack& graph);
 
+    void ResetGraphMsg();
+
 private:
     ros::NodeHandle nh_;
     GraphMsgerParams gm_params_;
@@ -33,7 +35,8 @@ private:
     NodePtrStack   global_graph_;
     PointCloudPtr  nodes_cloud_ptr_;
     PointKdTreePtr kdtree_graph_cloud_;
-    
+    visibility_graph_msg::Graph graph_msg_;
+
     void CreateDecodedNavNode(const visibility_graph_msg::Node& vnode, NavNodePtr& node_ptr);
 
     inline bool IsEncodeType(const NavNodePtr& node_ptr) {
