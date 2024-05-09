@@ -185,7 +185,7 @@ bool StateProcess::navGoalHandler(sentry_srvs::NavGoal::Request &req, sentry_srv
     geometry_msgs::PointStamped p;
     p.point.x = odom_.pose.pose.position.x;
     p.point.y = odom_.pose.pose.position.y;
-    if (p.point.x < 4.5 /* || isPointInsidePolygon(p, polygon_) */ )
+    if (p.point.x < 4.5 || (p.point.x < 7.8 && p.point.y < -2.5)/* || isPointInsidePolygon(p, polygon_) */ )
       res.is_arrive = true;
     else
       res.is_arrive = false;
