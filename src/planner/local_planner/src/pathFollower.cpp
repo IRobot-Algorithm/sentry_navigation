@@ -135,15 +135,15 @@ std::vector<std::vector<cv::Point>> polygons =
     cv::Point(6.2, 3.2),
     cv::Point(4.9, 4.6),
     cv::Point(6.4, 6.7),
-    cv::Point(8.0, 5.5)
+    cv::Point(7.6, 5.2)
   },
-  // 梯高
-  {
-    cv::Point(-3.0, 5.0),
-    cv::Point(-3.0, 2.3),
-    cv::Point(-0.7, 2.3),
-    cv::Point(0.8, 5.0)
-  }
+  // // 梯高
+  // {
+  //   cv::Point(-3.0, 3.8),
+  //   cv::Point(-3.0, 2.3),
+  //   cv::Point(-0.7, 2.3),
+  //   cv::Point(0.8, 3.8)
+  // }
 };
 
 bool is_on_slope = false;
@@ -170,14 +170,14 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
 
   for (const auto& polygon : polygons)
   {
-      if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) <= 0)
+      if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) >= 0)
       {
           is_on_slope = true;
           break;
       }
   }
 
-  /*
+  
   Eigen::Matrix3d eigen_mat;
   eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
                tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
@@ -196,7 +196,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   // 计算刚体Z轴的朝向
   double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
   vehicleSlopeYaw = yaw_angle;
-  */
+  
 
   odomInit = true;
 
@@ -286,7 +286,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   float endMaxSpeed = maxSpeed;
   float endMaxAccel = maxAccel;
 
-  static double slopeTrust = switchTimeThre; // 倾斜置信度
+  // static double slopeTrust = switchTimeThre; // 倾斜置信度
   double dt = ros::Time::now().toSec() - sendTime.toSec();
   sendTime = ros::Time::now();
   // if (fabs(vehicleSlopeAngle) > 0.17 && adjustByPitch)
@@ -338,7 +338,25 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   // }
   if (is_on_slope)
   {
-    endMaxSpeed *= 0.5;
+    float slopeDir = 0.0;
+    if (velAngle > -4.0) // 朝向
+    {
+      slopeDir = fabs(velAngle - vehicleSlopeYaw);
+      // std::cout << "slopeDir:" << slopeDir << std::endl;
+      if (slopeDir > PI)
+        slopeDir = 2 * PI - slopeDir;
+
+      if (slopeDir <= PI / 2.0)
+      {
+        // std::cout << "down" << std::endl;
+        endMaxSpeed *= 0.5;
+      }
+      else
+      {
+        // std::cout << "up" << std::endl;
+        endMaxSpeed *= 0.7;
+      }
+    }
     endMaxAccel *= 0.3;
     vel.twist.linear.z = 3.0;
   }
@@ -374,6 +392,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   // {
   //   std::cout << "none" << std::endl;
   // }
+
+  std::cout << is_on_slope << std::endl;
 
   last_speed_x = vel.twist.linear.x;
   last_speed_y = vel.twist.linear.y;
