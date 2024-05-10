@@ -128,14 +128,14 @@ std::vector<std::vector<cv::Point>> polygons =
     cv::Point(2.7, -0.6),
     cv::Point(4.5, -0.1),
     cv::Point(6.0, -2.2),
-    cv::Point(4.1, -2.7)
+    cv::Point(4.7, -3.2)
   },
   // 环高2
   {
     cv::Point(6.2, 3.2),
-    cv::Point(4.9, 4.6),
-    cv::Point(6.4, 6.7),
-    cv::Point(7.5, 5.1)
+    cv::Point(4.8, 4.5),
+    cv::Point(6.4, 6.4),
+    cv::Point(7.5, 5.2)
   },
   // // 梯高
   // {
@@ -173,30 +173,29 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
       if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) >= 0)
       {
           is_on_slope = true;
+          
+          Eigen::Matrix3d eigen_mat;
+          eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
+                      tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
+                      tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
+                      
+          // 定义原始坐标系的Z轴向量
+          Eigen::Vector3d original_z_axis(0, 0, 1);
+
+          // 计算刚体Z轴在原始坐标系下的方向
+          Eigen::Vector3d body_z_axis = eigen_mat.col(2);
+
+          // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
+          double angle = std::acos(original_z_axis.dot(body_z_axis));
+          vehicleSlopeAngle = angle;
+
+          // 计算刚体Z轴的朝向
+          double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
+          vehicleSlopeYaw = yaw_angle;
+
           break;
       }
   }
-
-  
-  Eigen::Matrix3d eigen_mat;
-  eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
-               tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
-               tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
-              
-  // 定义原始坐标系的Z轴向量
-  Eigen::Vector3d original_z_axis(0, 0, 1);
-
-  // 计算刚体Z轴在原始坐标系下的方向
-  Eigen::Vector3d body_z_axis = eigen_mat.col(2);
-
-  // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
-  double angle = std::acos(original_z_axis.dot(body_z_axis));
-  vehicleSlopeAngle = angle;
-
-  // 计算刚体Z轴的朝向
-  double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
-  vehicleSlopeYaw = yaw_angle;
-  
 
   odomInit = true;
 
@@ -336,8 +335,14 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   //   vel.twist.linear.z = 3.0;
 
   // }
+  static double slopeTrust = 0; // 倾斜置信度
   if (is_on_slope)
   {
+    if (fabs(vehicleSlopeAngle) > 0.1)
+      slopeTrust = 0; // 倾斜置信度
+    else
+      slopeTrust += dt;
+    
     float slopeDir = 0.0;
     if (velAngle > -4.0) // 朝向
     {
@@ -358,7 +363,6 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       }
     }
     endMaxAccel *= 0.3;
-    vel.twist.linear.z = 3.0;
   }
   else
   {
@@ -376,7 +380,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  if (is_on_slope)
+  if (is_on_slope && slopeTrust < switchTimeThre)
   {
     // 根据最大加速度修正速度
     float delta_speed_x = vel.twist.linear.x - last_speed_x;
@@ -387,13 +391,14 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
       vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
     }
+    vel.twist.linear.z = 3.0;
   }
   // else
   // {
   //   std::cout << "none" << std::endl;
   // }
 
-  std::cout << is_on_slope << std::endl;
+  // std::cout << is_on_slope << std::endl;
 
   last_speed_x = vel.twist.linear.x;
   last_speed_y = vel.twist.linear.y;
@@ -709,7 +714,7 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        if (fabs(pathDir - vehicleYaw) > PI / 3 &&(!adjustByPitch || fabs(vehicleSlopeAngle) < 0.0872))
+        if (fabs(pathDir - vehicleYaw) > PI / 3 && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872)))
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
