@@ -224,7 +224,8 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
   {
     static tf::TransformListener ls;
     tf::StampedTransform map2gimbal_transform;
-    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.1);
+    // ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
+    ros::Time t = ros::Time::now() - ros::Duration(0.15);
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
