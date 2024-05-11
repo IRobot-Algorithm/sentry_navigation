@@ -46,8 +46,7 @@ bool useTerrainAnalysis = false;
 bool checkObstacle = true;
 bool checkRotObstacle = false;
 double adjacentRange = 3.5;
-double obstacleHeightThre = 0.2;
-double obstacleHeightAdjustThre = 0.15;
+double obstacleHeightThre = 0.15;
 double groundHeightThre = 0.1;
 double costHeightThre = 0.1;
 double costScore = 0.02;
@@ -193,16 +192,6 @@ void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
 
   tfBroadcasterPointer_maplink->sendTransform(odomTrans_maplink);
 
-  // if ((vehicleX > -5.71 && vehicleX < 9.58 && vehicleY > -7.88 && vehicleY > 1.07) || 
-  //     (vehicleX > 7.4 && vehicleX < 22.52 && vehicleY > -0.67 && vehicleY > 8.19))
-  // {
-  //   obstacleHeightAdjustThre = obstacleHeightThre * 0.66;
-  // }
-  // else
-  // {
-  //   obstacleHeightAdjustThre = obstacleHeightThre;
-  // }
-
   newOdom = true;
 }
 
@@ -256,7 +245,7 @@ void terrainCloudHandler(const sensor_msgs::PointCloud2ConstPtr& terrainCloud2)
       float pointZ = point.z;
 
       float dis = sqrt((pointX - vehicleX) * (pointX - vehicleX) + (pointY - vehicleY) * (pointY - vehicleY));
-      if (dis < adjacentRange && (point.intensity > 0.15 || useCost)) {
+      if (dis < adjacentRange && (point.intensity > obstacleHeightThre || useCost)) {
         point.x = pointX;
         point.y = pointY;
         point.z = pointZ;
@@ -822,7 +811,7 @@ int main(int argc, char** argv)
                 int ind = gridVoxelNumY * indX + indY;
                 int blockedPathByVoxelNum = correspondences[ind].size();
                 for (int j = 0; j < blockedPathByVoxelNum; j++) {
-                  if (h > 0.15 || !useTerrainAnalysis) {
+                  if (h > obstacleHeightThre || !useTerrainAnalysis) {
                     clearPathList[pathNum * rotDir + correspondences[ind][j]]++;
                   } else {
                     if (pathPenaltyList[pathNum * rotDir + correspondences[ind][j]] < h && h > groundHeightThre) {
@@ -835,7 +824,7 @@ int main(int argc, char** argv)
           }
           // 非圆形底盘 不用管
           if (dis < diameter / pathScale && (fabs(x) > vehicleLength / pathScale / 2.0 || fabs(y) > vehicleWidth / pathScale / 2.0) && 
-              (h > 0.15 || !useTerrainAnalysis) && checkRotObstacle) {
+              (h > obstacleHeightThre || !useTerrainAnalysis) && checkRotObstacle) {
             float angObs = atan2(y, x) * 180.0 / PI;
             if (angObs > 0) {
               if (minObsAngCCW > angObs - angOffset) minObsAngCCW = angObs - angOffset;

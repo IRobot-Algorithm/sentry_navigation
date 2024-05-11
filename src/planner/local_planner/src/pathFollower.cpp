@@ -168,33 +168,36 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
 
   is_on_slope = false;
 
-  for (const auto& polygon : polygons)
+  if (adjustByPitch)
   {
-      if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) >= 0)
-      {
-          is_on_slope = true;
-          
-          Eigen::Matrix3d eigen_mat;
-          eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
-                      tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
-                      tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
-                      
-          // 定义原始坐标系的Z轴向量
-          Eigen::Vector3d original_z_axis(0, 0, 1);
+    for (const auto& polygon : polygons)
+    {
+        if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) >= 0)
+        {
+            is_on_slope = true;
+            
+            Eigen::Matrix3d eigen_mat;
+            eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
+                        tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
+                        tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
+                        
+            // 定义原始坐标系的Z轴向量
+            Eigen::Vector3d original_z_axis(0, 0, 1);
 
-          // 计算刚体Z轴在原始坐标系下的方向
-          Eigen::Vector3d body_z_axis = eigen_mat.col(2);
+            // 计算刚体Z轴在原始坐标系下的方向
+            Eigen::Vector3d body_z_axis = eigen_mat.col(2);
 
-          // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
-          double angle = std::acos(original_z_axis.dot(body_z_axis));
-          vehicleSlopeAngle = angle;
+            // 计算原始坐标系的Z轴与刚体Z轴之间的夹角
+            double angle = std::acos(original_z_axis.dot(body_z_axis));
+            vehicleSlopeAngle = angle;
 
-          // 计算刚体Z轴的朝向
-          double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
-          vehicleSlopeYaw = yaw_angle;
+            // 计算刚体Z轴的朝向
+            double yaw_angle = atan2(body_z_axis[1], body_z_axis[0]);
+            vehicleSlopeYaw = yaw_angle;
 
-          break;
-      }
+            break;
+        }
+    }
   }
 
   odomInit = true;

@@ -85,7 +85,7 @@
     <param name="autonomySpeed" value="$(arg autonomySpeed)" />
     <param name="joyToSpeedDelay" value="$(arg joyToSpeedDelay)" />
     <param name="limitByAcc" value="false" />
-    <param name="adjustByPitch" value="true" />
+    <param name="adjustByPitch" value="false" />
     <param name="goalX" type="double" value="$(arg goalX)" />
     <param name="goalY" type="double" value="$(arg goalY)" />
     <param name="goalZ" type="double" value="$(arg goalZ)" />
