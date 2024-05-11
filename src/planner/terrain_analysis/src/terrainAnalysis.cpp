@@ -216,14 +216,14 @@ void clearingHandler(const std_msgs::Float32::ConstPtr& dis)
 
 void staticObstaclesHandler(const sensor_msgs::PointCloud2ConstPtr& staticObstacles2)
 {
-  staticObstacles->clear();
-  pcl::fromROSMsg(*staticObstacles2, *staticObstacles);
+  // staticObstacles->clear();
+  // pcl::fromROSMsg(*staticObstacles2, *staticObstacles);
 
-  int staticObstaclesSize = staticObstacles->points.size();
-  for (int i = 0; i < staticObstaclesSize; i++)
-  {
-    staticObstacles->points[i].intensity = vehicleHeight;
-  }
+  // int staticObstaclesSize = staticObstacles->points.size();
+  // for (int i = 0; i < staticObstaclesSize; i++)
+  // {
+  //   staticObstacles->points[i].intensity = vehicleHeight;
+  // }
 }
 
 int main(int argc, char** argv)
@@ -272,6 +272,28 @@ int main(int argc, char** argv)
   // ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
 
   ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/terrain_map", 2);
+
+  pcl::PointXYZI point;
+  point.x = 7.25;
+  point.y = 5.2;
+  point.intensity = vehicleHeight;
+  staticObstacles->points.push_back(std::move(point));
+  point.x = 7.45;
+  point.y = 5.5;
+  point.intensity = vehicleHeight;
+  staticObstacles->points.push_back(std::move(point));
+  point.x = 7.65;
+  point.y = 5.8;
+  point.intensity = vehicleHeight;
+  staticObstacles->points.push_back(std::move(point));
+  point.x = 7.85;
+  point.y = 6.1;
+  point.intensity = vehicleHeight;
+  staticObstacles->points.push_back(std::move(point));
+  point.x = 8.05;
+  point.y = 6.4;
+  point.intensity = vehicleHeight;
+  staticObstacles->points.push_back(std::move(point));
 
   for (int i = 0; i < terrainVoxelNum; i++) {
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());
