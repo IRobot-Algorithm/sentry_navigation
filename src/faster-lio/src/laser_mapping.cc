@@ -385,8 +385,16 @@ void LaserMapping::Run() {
         color_n++;
         if (color_n > 100)
         {
-            LOG(WARNING) << "----> Init Color Failed!";
             color_n = 0;
+            
+            mtx_buffer_.lock();
+            lidar_buffer_.clear();
+            time_buffer_.clear();
+            imu_buffer_.clear();
+            imu_buf_.clear();
+            mtx_buffer_.unlock();
+            
+            LOG(WARNING) << "----> Init Color Failed!";
         }
         return;
     }

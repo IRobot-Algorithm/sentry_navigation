@@ -166,6 +166,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
 
+  /*
   is_on_slope = false;
 
   if (adjustByPitch)
@@ -199,6 +200,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
         }
     }
   }
+  */
 
   odomInit = true;
 
@@ -338,6 +340,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   //   vel.twist.linear.z = 3.0;
 
   // }
+  /*
   static double slopeTrust = 0; // 倾斜置信度
   if (is_on_slope)
   {
@@ -368,11 +371,12 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     endMaxAccel *= 0.3;
   }
   else
-  {
+  */
+  // {
     // std::cout << "none" << std::endl;
     if (dis < 1.6)
       endMaxSpeed *= dis / 2.0 + 0.2;
-  }
+  // }
 
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
                      vel.twist.linear.y * vel.twist.linear.y);
@@ -383,6 +387,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
+  /*
   if (is_on_slope && slopeTrust < switchTimeThre)
   {
     // 根据最大加速度修正速度
@@ -400,6 +405,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   // {
   //   std::cout << "none" << std::endl;
   // }
+  */
 
   // std::cout << is_on_slope << std::endl;
 
@@ -717,7 +723,7 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        if (fabs(pathDir - vehicleYaw) > PI / 3 && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872)))
+        if (fabs(pathDir - vehicleYaw) > PI / 3/* && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872))*/)
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;

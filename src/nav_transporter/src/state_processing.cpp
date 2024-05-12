@@ -94,6 +94,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     track_dis_.data = 3.0;
   }
 
+  /*
   struct Point point;
   point.x = 5.75;
   point.y = 6.7;
@@ -140,6 +141,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   point.x = 2.3;
   point.y = 7.0;
   polygon_.push_back(point);
+  */
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
@@ -224,8 +226,8 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
   {
     static tf::TransformListener ls;
     tf::StampedTransform map2gimbal_transform;
-    // ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
-    ros::Time t = ros::Time::now() - ros::Duration(0.15);
+    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
+    // ros::Time t = ros::Time::now() - ros::Duration(0.15);
     if (req.gimbal) // 0 for right, 1 for left
     {
       try {
@@ -261,6 +263,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     way_point_.point.y = map2gimbal_transform.getOrigin().y() +
                         req.pose.pose.position.x * sin_yaw +
                         req.pose.pose.position.y * cos_yaw;
+    double z = map2gimbal_transform.getOrigin().z() + req.pose.pose.position.z + 0.35; // 雷达距地面高度0.35
 
     // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
     // std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
@@ -296,14 +299,14 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     }
     else // dynamic
     {
-      if (req.pose.pose.position.z > -0.05 || req.pose.pose.position.z < -0.7) // 高度不一致
+      if (z < 0.0 || z > 0.4) // 高度不一致
       {
         res.success = false;
         return true;
       }
       // if (!isPointInsidePolygon(way_point_, polygon_)) // 不在区域内 不跟随
-      if (way_point_.point.x > 2.6 || way_point_.point.x < -7.0 ||
-          way_point_.point.y > 3.0 || way_point_.point.y < -3.0) // 不在区域内 不跟随
+      if (!((way_point_.point.x < 4.5 && odom_.pose.pose.position.x < 4.5) ||
+            (way_point_.point.x > 13.0 && odom_.pose.pose.position.x > 13.0))) // 不在区域内 不跟随
       {
         res.success = false;
         return true;
