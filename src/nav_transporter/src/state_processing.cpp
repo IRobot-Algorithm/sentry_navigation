@@ -224,46 +224,49 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
 {
   if (track_target_)
   {
-    static tf::TransformListener ls;
-    tf::StampedTransform map2gimbal_transform;
-    ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
-    // ros::Time t = ros::Time::now() - ros::Duration(0.15);
-    if (req.gimbal) // 0 for right, 1 for left
+    if (!req.is_lost)
     {
-      try {
-        // ls.lookupTransform("/map", "/left_gimbal",  
-        //                     ros::Time(0), map2gimbal_transform);
-        ls.lookupTransform("/map", "/left_gimbal",  
-                            t, map2gimbal_transform);
+      static tf::TransformListener ls;
+      tf::StampedTransform map2gimbal_transform;
+      ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.155);
+      // ros::Time t = ros::Time::now() - ros::Duration(0.15);
+      if (req.gimbal) // 0 for right, 1 for left
+      {
+        try {
+          // ls.lookupTransform("/map", "/left_gimbal",  
+          //                     ros::Time(0), map2gimbal_transform);
+          ls.lookupTransform("/map", "/left_gimbal",  
+                              t, map2gimbal_transform);
+        }
+        catch (tf::TransformException &ex) {
+          ROS_WARN("TargetTrans : %s",ex.what());
+          return true;
+        }
       }
-      catch (tf::TransformException &ex) {
-        ROS_WARN("TargetTrans : %s",ex.what());
-        return true;
+      else
+      {
+        try {
+          // ls.lookupTransform("/map", "/right_gimbal",  
+          //                     ros::Time(0), map2gimbal_transform);
+          ls.lookupTransform("/map", "/right_gimbal",  
+                              t, map2gimbal_transform);
+        }
+        catch (tf::TransformException &ex) {
+          ROS_WARN("TargetTrans : %s",ex.what());
+          return true;
+        }
       }
+      double yaw = tf::getYaw(map2gimbal_transform.getRotation());
+      double cos_yaw = cos(yaw);
+      double sin_yaw = sin(yaw);
+      way_point_.point.x = map2gimbal_transform.getOrigin().x() +
+                          req.pose.pose.position.x * cos_yaw -
+                          req.pose.pose.position.y * sin_yaw;
+      way_point_.point.y = map2gimbal_transform.getOrigin().y() +
+                          req.pose.pose.position.x * sin_yaw +
+                          req.pose.pose.position.y * cos_yaw;
+      target_z_ = map2gimbal_transform.getOrigin().z() + req.pose.pose.position.z + 0.35; // 雷达距地面高度0.35
     }
-    else
-    {
-      try {
-        // ls.lookupTransform("/map", "/right_gimbal",  
-        //                     ros::Time(0), map2gimbal_transform);
-        ls.lookupTransform("/map", "/right_gimbal",  
-                            t, map2gimbal_transform);
-      }
-      catch (tf::TransformException &ex) {
-        ROS_WARN("TargetTrans : %s",ex.what());
-        return true;
-      }
-    }
-    double yaw = tf::getYaw(map2gimbal_transform.getRotation());
-    double cos_yaw = cos(yaw);
-    double sin_yaw = sin(yaw);
-    way_point_.point.x = map2gimbal_transform.getOrigin().x() +
-                        req.pose.pose.position.x * cos_yaw -
-                        req.pose.pose.position.y * sin_yaw;
-    way_point_.point.y = map2gimbal_transform.getOrigin().y() +
-                        req.pose.pose.position.x * sin_yaw +
-                        req.pose.pose.position.y * cos_yaw;
-    double z = map2gimbal_transform.getOrigin().z() + req.pose.pose.position.z + 0.35; // 雷达距地面高度0.35
 
     // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
     // std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
@@ -299,7 +302,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     }
     else // dynamic
     {
-      if (z < 0.0 || z > 0.4) // 高度不一致
+      if (target_z_ < 0.0 || target_z_ > 0.4 || odom_.pose.pose.position.z > 0.17) // 高度不一致
       {
         res.success = false;
         return true;

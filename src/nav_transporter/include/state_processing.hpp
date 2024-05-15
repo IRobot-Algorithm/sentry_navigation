@@ -111,6 +111,7 @@ class StateProcess {
 		geometry_msgs::PointStamped far_way_point_;
 		nav_msgs::Odometry odom_;
 		std::vector<Point> polygon_;
+		double target_z_ = 0.0;
 
 		ros::Timer loop_timer_;
 
