@@ -88,6 +88,9 @@ bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, liv
       continue;
     }
     
+    if (res(0) < 0.2 && res(2) < 1.0)
+      continue;
+
     if (d < 0.45 && res(2) < 0)
     {
       float dis = sqrt(in.points[i].x * in.points[i].x + in.points[i].y * in.points[i].y);

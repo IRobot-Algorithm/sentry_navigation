@@ -228,7 +228,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     {
       static tf::TransformListener ls;
       tf::StampedTransform map2gimbal_transform;
-      ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.155);
+      ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
       // ros::Time t = ros::Time::now() - ros::Duration(0.15);
       if (req.gimbal) // 0 for right, 1 for left
       {
@@ -266,6 +266,13 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
                           req.pose.pose.position.x * sin_yaw +
                           req.pose.pose.position.y * cos_yaw;
       target_z_ = map2gimbal_transform.getOrigin().z() + req.pose.pose.position.z + 0.35; // 雷达距地面高度0.35
+    }
+
+    if (req.restricted_area == 4)
+    {
+      way_point_.point.x = req.pose.pose.position.x;
+      way_point_.point.y = req.pose.pose.position.y;
+      target_z_ = req.pose.pose.position.z;
     }
 
     // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
