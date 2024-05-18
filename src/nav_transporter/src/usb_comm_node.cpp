@@ -347,7 +347,7 @@ void UsbCommNode::receiveCallback()
         in_supply_ = getBit(referee_info_.rfid_status, 13);
 
         // std::cout << "key: " << package.key << std::endl;
-        if (package.key == 's' || package.key == 'S')
+        if (package.key == 'b' || package.key == 'B')
           referee_info_.force_back = true;
         else
           referee_info_.force_back = false;

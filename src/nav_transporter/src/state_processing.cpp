@@ -315,8 +315,8 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
         return true;
       }
       // if (!isPointInsidePolygon(way_point_, polygon_)) // 不在区域内 不跟随
-      if (!((way_point_.point.x < 4.5 && odom_.pose.pose.position.x < 4.5) ||
-            (way_point_.point.x > 13.0 && odom_.pose.pose.position.x > 13.0))) // 不在区域内 不跟随
+      if (!((odom_.pose.pose.position.x < 4.5) || (odom_.pose.pose.position.x > 12.0) ||
+            (odom_.pose.pose.position.y > -2.0 && odom_.pose.pose.position.y < 2.0))) // 不在区域内 不跟随
       {
         res.success = false;
         return true;
