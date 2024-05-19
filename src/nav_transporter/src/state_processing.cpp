@@ -291,8 +291,8 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     // }
 
     // rmuc 在对面补给区
-    if (way_point_.point.x > 18.8 && way_point_.point.x < 21.3 &&
-        way_point_.point.y > 3.8 && way_point_.point.y < 8.0)
+    if (way_point_.point.x > 19.0 && way_point_.point.x < 21.3 &&
+        way_point_.point.y > 5.0 && way_point_.point.y < 8.0)
     {
       res.success = false;
       return true;
@@ -309,7 +309,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     }
     else // dynamic
     {
-      if (target_z_ < 0.0 || target_z_ > 0.4 || odom_.pose.pose.position.z > 0.17) // 高度不一致
+      if (target_z_ < 0.0 || target_z_ > 0.4 || odom_.pose.pose.position.z > 0.16) // 高度不一致
       {
         res.success = false;
         return true;
@@ -398,6 +398,14 @@ void StateProcess::loop(const ros::TimerEvent& event)
         way_point_.point.x = odom_.pose.pose.position.x;
         way_point_.point.y = odom_.pose.pose.position.y;
         way_point_.point.z = 0;
+      }
+      if (way_point_.point.z < -0.05 && way_point_.point.z > -0.25) // tracking
+      {
+        if (!((odom_.pose.pose.position.x < 4.5) || (odom_.pose.pose.position.x > 12.0) ||
+              (odom_.pose.pose.position.y > -2.0 && odom_.pose.pose.position.y < 2.0)))
+        {
+          way_point_.point.z -= 0.2; // static
+        }
       }
       pub_waypoint_.publish(way_point_);
       break;
