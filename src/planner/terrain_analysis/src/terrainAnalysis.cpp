@@ -276,28 +276,23 @@ int main(int argc, char** argv)
 
   ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/terrain_map", 2);
 
-  // pcl::PointXYZI point;
-  // point.x = 7.5;
-  // point.y = 5.2;
-  // point.intensity = vehicleHeight;
-  // staticObstacles->points.push_back(std::move(point));
-  // point.x = 7.7;
-  // point.y = 5.5;
-  // point.intensity = vehicleHeight;
-  // staticObstacles->points.push_back(std::move(point));
-  // point.x = 7.9;
-  // point.y = 5.8;
-  // point.intensity = vehicleHeight;
-  // staticObstacles->points.push_back(std::move(point));
-  // point.x = 8.1;
-  // point.y = 6.1;
-  // point.intensity = vehicleHeight;
-  // staticObstacles->points.push_back(std::move(point));
-  // point.x = 8.3;
-  // point.y = 6.4;
-  // point.intensity = vehicleHeight;
-  // staticObstacles->points.push_back(std::move(point));
-
+  pcl::PointXYZI point;
+  point.intensity = vehicleHeight;
+  point.x = 4.5;
+  point.y = -3.0;
+  for (int i = 0; i < 6; i++)
+  {
+    point.z = i * 0.1;
+    staticObstacles->points.push_back(std::move(point));
+  }
+  point.x = 11.9;
+  point.y = 3.0;
+  for (int i = 0; i < 6; i++)
+  {
+    point.z = i * 0.1;
+    staticObstacles->points.push_back(std::move(point));
+  }
+  
   for (int i = 0; i < terrainVoxelNum; i++) {
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());
   }
