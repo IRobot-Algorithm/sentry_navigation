@@ -279,14 +279,14 @@ int main(int argc, char** argv)
   pcl::PointXYZI point;
   point.intensity = vehicleHeight;
   point.x = 4.5;
-  point.y = -3.0;
+  point.y = -2.9;
   for (int i = 0; i < 6; i++)
   {
     point.z = i * 0.1;
     staticObstacles->points.push_back(std::move(point));
   }
   point.x = 11.9;
-  point.y = 3.0;
+  point.y = 2.9;
   for (int i = 0; i < 6; i++)
   {
     point.z = i * 0.1;
