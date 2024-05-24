@@ -1,0 +1,6864 @@
+header: 
+  seq: 1958
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.4771173000335693
+---
+header: 
+  seq: 2388
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.4780020713806152
+---
+header: 
+  seq: 2816
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.9656359553337097
+---
+header: 
+  seq: 3239
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.9652393460273743
+---
+header: 
+  seq: 3663
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.001662015914917
+---
+header: 
+  seq: 3972
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.21704514900217983
+    y: -0.830991091232788
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8262771368026733
+---
+header: 
+  seq: 4215
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8516358672218206
+    y: 1.0436174577886494
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8863498568534851
+---
+header: 
+  seq: 4429
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3736482476425966
+    y: 1.0954562985369778
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.242081880569458
+---
+header: 
+  seq: 4700
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5770541073688262
+    y: -1.2204543098992209
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.0124638080596924
+---
+header: 
+  seq: 4915
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.035471717752021154
+    y: -0.5329401545165829
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.5043357610702515
+---
+header: 
+  seq: 5240
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.06473439240562026
+    y: 1.331590667852419
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6193722486495972
+---
+header: 
+  seq: 5452
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.30212190679210366
+    y: 0.7756272479586575
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9422353506088257
+---
+header: 
+  seq: 5682
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3519704049158873
+    y: -1.297390446324059
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.835711121559143
+---
+header: 
+  seq: 5893
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.06804045067019936
+    y: -1.1683452873398115
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.5126254558563232
+---
+header: 
+  seq: 6136
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6928566333286268
+    y: 1.158641257846639
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.031855583190918
+---
+header: 
+  seq: 6349
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.19296154571631313
+    y: 1.318597741504189
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4254893064498901
+---
+header: 
+  seq: 6588
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.6587261901525827
+---
+header: 
+  seq: 6817
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.2732894398343007
+    y: -0.9436556181935224
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8526912927627563
+---
+header: 
+  seq: 7091
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.08420106575888223
+---
+header: 
+  seq: 7390
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.2477689616845454
+    y: 1.3140385598615663
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.7571635246276855
+---
+header: 
+  seq: 7660
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.9638159264759214
+    y: -0.9399162883294854
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.3687479496002197
+---
+header: 
+  seq: 7875
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.17874140074141429
+    y: -0.5278263693569171
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8973122835159302
+---
+header: 
+  seq: 8120
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3253298833979634
+    y: 0.2295458849037227
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.1714976727962494
+---
+header: 
+  seq: 8334
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.46403537152454916
+    y: 0.414479525121361
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7290491461753845
+---
+header: 
+  seq: 8583
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3428862216643431
+    y: -0.056804561725757007
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.0993175506591797
+---
+header: 
+  seq: 8798
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.9403539824297589
+    y: -0.19846255485977107
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.933594226837158
+---
+header: 
+  seq: 9044
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2920941617657662
+    y: -0.31255505462823685
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.23733890056610107
+---
+header: 
+  seq: 9256
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3473380507394712
+    y: -0.08473695318251444
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.06280943006277084
+---
+header: 
+  seq: 9526
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2783728379179977
+    y: 0.3960007084145697
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.8411974906921387
+---
+header: 
+  seq: 9737
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8035422223138307
+    y: 0.033845102398875594
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.0994975566864014
+---
+header: 
+  seq: 9991
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.291697606061506
+    y: -0.28533207565193797
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.21740570664405823
+---
+header: 
+  seq: 10202
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.36280677323819194
+    y: 0.25562706479916036
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6137943863868713
+---
+header: 
+  seq: 10464
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6861368814318031
+    y: -0.33403548829359564
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.6885323524475098
+---
+header: 
+  seq: 10746
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9700530574100892
+    y: 0.9062444160597128
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7514036893844604
+---
+header: 
+  seq: 10969
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4510219097137451
+---
+header: 
+  seq: 11215
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.328310674448916
+    y: -0.24102005403213175
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.962096929550171
+---
+header: 
+  seq: 11450
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.5394102931022644
+---
+header: 
+  seq: 11666
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9898576851474339
+    y: -0.4082968890831206
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.39121881127357483
+---
+header: 
+  seq: 11930
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.0926170349121094
+---
+header: 
+  seq: 12149
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5914766723633925
+    y: -0.3268773033058732
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.6367201805114746
+---
+header: 
+  seq: 12440
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.3174852288889639
+---
+header: 
+  seq: 12688
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9149287289177521
+    y: 0.6421882011424029
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6119996905326843
+---
+header: 
+  seq: 12975
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2630416607532575
+    y: -0.45912977658828397
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.7929322719573975
+---
+header: 
+  seq: 13190
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5381489403058797
+    y: -0.41472614236092303
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.48500394821167
+---
+header: 
+  seq: 13452
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2779556800956977
+    y: 0.3733702812539115
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.2842506468296051
+---
+header: 
+  seq: 13687
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.04037505324324032
+    y: 0.4091231170986304
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4724280834197998
+---
+header: 
+  seq: 14001
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1848245955323873
+    y: 0.6449530051514359
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.643101692199707
+---
+header: 
+  seq: 14212
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7439657751835497
+    y: 0.04804201723055717
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.077106475830078
+---
+header: 
+  seq: 14457
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0683314001487674
+    y: -0.8170008927424353
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6528711915016174
+---
+header: 
+  seq: 14668
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5127180771188031
+    y: 0.007249407212865399
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.014138193801045418
+---
+header: 
+  seq: 14973
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2405982483166142
+    y: 0.49247257195735183
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.7637064456939697
+---
+header: 
+  seq: 15187
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8865843595176133
+    y: 0.041774344884074055
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.0945091247558594
+---
+header: 
+  seq: 15444
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.059153248796113
+    y: -0.8334440162355268
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6666997671127319
+---
+header: 
+  seq: 15656
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7664382012909013
+    y: -0.2513333918454002
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.3168742060661316
+---
+header: 
+  seq: 15945
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -4.435372928155599
+---
+header: 
+  seq: 16162
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5123036865958701
+    y: 0.22791381360577434
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.7230043411254883
+---
+header: 
+  seq: 16390
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.07740828598336086
+    y: -1.3344373109140684
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.5128531455993652
+---
+header: 
+  seq: 16602
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3342981342360965
+    y: -0.3612065818672362
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8240680694580078
+---
+header: 
+  seq: 16845
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.35040393958576055
+    y: 1.2881926223803895
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8363826274871826
+---
+header: 
+  seq: 17058
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3773692487363565
+    y: 0.1929161546194927
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.6690146923065186
+---
+header: 
+  seq: 17311
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3926811533340711
+    y: -1.286336517456629
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.2745108604431152
+---
+header: 
+  seq: 17522
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3905448597125455
+    y: -0.26482544907424643
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.595871090888977
+---
+header: 
+  seq: 17755
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3521461879338329
+    y: 1.2648768898435716
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8423240184783936
+---
+header: 
+  seq: 17967
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4169659908551563
+    y: 0.4326389827333675
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.3377492427825928
+---
+header: 
+  seq: 18232
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4801444391225843
+    y: -1.2617295443592527
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.207173466682434
+---
+header: 
+  seq: 18449
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5646193501444262
+    y: -0.6579942652205667
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8616235256195068
+---
+header: 
+  seq: 18708
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6239483478131712
+    y: 1.1947593853608578
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.0520753860473633
+---
+header: 
+  seq: 18922
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5749760515020236
+    y: 0.43303094851691487
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4960923194885254
+---
+header: 
+  seq: 19203
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4934781094448875
+    y: -1.2556416754118
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.196331262588501
+---
+header: 
+  seq: 19414
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5202965451902158
+    y: -0.5937152319872913
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.851207435131073
+---
+header: 
+  seq: 19708
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.008760388188707462
+    y: 0.3759940992155168
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5475012063980103
+---
+header: 
+  seq: 19960
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.17854560238968675
+    y: 1.3330654565863052
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.7039400339126587
+---
+header: 
+  seq: 20174
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.31068678043345066
+    y: 0.42229748975150005
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.2050862312316895
+---
+header: 
+  seq: 20426
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5979544077886878
+    y: -1.1786226083052487
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.0402934551239014
+---
+header: 
+  seq: 20637
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.08791862645055247
+    y: -1.0070017427148468
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.6578829288482666
+---
+header: 
+  seq: 20877
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.033374393449182
+    y: 0.8591477388254879
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6935964226722717
+---
+header: 
+  seq: 21093
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8439155900138707
+    y: 1.0066841893875762
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8731269240379333
+---
+header: 
+  seq: 21314
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.1509501934051514
+---
+header: 
+  seq: 21583
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.822574031796237
+    y: -1.0591687567849606
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.23111891746521
+---
+header: 
+  seq: 21796
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.010599076244343999
+    y: -0.4771783959846205
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.5485880374908447
+---
+header: 
+  seq: 22042
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4800393998184915
+    y: 1.2314845525803118
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.1991091966629028
+---
+header: 
+  seq: 22255
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.06416111921561424
+    y: 0.5413530469526769
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6887658834457397
+---
+header: 
+  seq: 22500
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1146875364436586
+    y: -0.7440137764793855
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5530381202697754
+---
+header: 
+  seq: 22712
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3498371906806584
+    y: -0.7164818773736888
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.0250165462493896
+---
+header: 
+  seq: 22963
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.1730200250081424
+    y: 0.6682243785178196
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5178130865097046
+---
+header: 
+  seq: 23177
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.19870464212081604
+    y: 0.5224323647810619
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2073477506637573
+---
+header: 
+  seq: 23513
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3490315548134297
+    y: -0.035656498626804596
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.1151676177978516
+---
+header: 
+  seq: 23727
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.06372582241603206
+    y: -0.39897449697616627
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.729182481765747
+---
+header: 
+  seq: 23975
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.487973064306258
+    y: 0.5179253757723293
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8151661157608032
+---
+header: 
+  seq: 24299
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 4.347011038798631
+---
+header: 
+  seq: 24627
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8261255582774136
+    y: -1.0172793274879472
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.2528679370880127
+---
+header: 
+  seq: 24854
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3139829666540896
+    y: -0.23674217731010136
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.17825888097286224
+---
+header: 
+  seq: 25070
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6152686084712248
+    y: 0.22141525488196975
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.3454383611679077
+---
+header: 
+  seq: 25306
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.311245107576758
+    y: -0.0185736073352792
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.1274285316467285
+---
+header: 
+  seq: 25520
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.37566805708666423
+    y: -0.33210268826192035
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.4176697731018066
+---
+header: 
+  seq: 25784
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.291797873606869
+    y: 0.3601630568823744
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.2719026505947113
+---
+header: 
+  seq: 25996
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.27147634053409914
+    y: 0.3835125226569653
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.9548091888427734
+---
+header: 
+  seq: 26234
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3450947160582771
+    y: -0.04628038112008327
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.1071994304656982
+---
+header: 
+  seq: 26449
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4307299387745466
+    y: -0.401358527404054
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.3914780616760254
+---
+header: 
+  seq: 26736
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.336016519200551
+    y: 0.14836873074641746
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.11059987545013428
+---
+header: 
+  seq: 26949
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8177486999544485
+    y: 0.3772960103007291
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.4322802424430847
+---
+header: 
+  seq: 27191
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.7358031272888184
+---
+header: 
+  seq: 27429
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1290727076112579
+    y: -0.6929488850143699
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5911366939544678
+---
+header: 
+  seq: 27641
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.1383760722181626
+    y: -0.4505706248719398
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8687660694122314
+---
+header: 
+  seq: 27898
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.191781100905281
+    y: 0.5958877457081011
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.4636457562446594
+---
+header: 
+  seq: 28122
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6413793724920431
+---
+header: 
+  seq: 28430
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2271418501505056
+    y: 0.554035110725577
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.7175052165985107
+---
+header: 
+  seq: 28645
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.44799693577987326
+    y: -0.14079295368297162
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.8370940685272217
+---
+header: 
+  seq: 28975
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2727668973219468
+    y: -0.442010666975053
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.33425259590148926
+---
+header: 
+  seq: 29191
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8759206327624048
+    y: 0.020471694135697223
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.0233673844486475
+---
+header: 
+  seq: 29459
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.19832453338185807
+    y: 0.3380379135155787
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.1013739109039307
+---
+header: 
+  seq: 29674
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7535459151915435
+    y: -0.228351546014262
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.8473527431488037
+---
+header: 
+  seq: 29906
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0888704599700625
+    y: -0.7912730575811493
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6284160614013672
+---
+header: 
+  seq: 30144
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8710311844072642
+    y: 1.0301088134275302
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.272714138031006
+---
+header: 
+  seq: 30361
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8201760589313551
+    y: 0.5368452623215971
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.562026262283325
+---
+header: 
+  seq: 30630
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1007244713012838
+    y: -0.3697126044119054
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.3048118352890015
+---
+header: 
+  seq: 30864
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9026100294969316
+    y: -0.9902786575432724
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8316798210144043
+---
+header: 
+  seq: 31078
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6191067510201852
+    y: -0.19982265130921836
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.31220412254333496
+---
+header: 
+  seq: 31312
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6400563594522447
+    y: 1.1769670720671161
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.0688812732696533
+---
+header: 
+  seq: 31533
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.197153914667671
+---
+header: 
+  seq: 31868
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.25492277183719037
+    y: -1.3217394784323728
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.380266547203064
+---
+header: 
+  seq: 32083
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4372290216457933
+    y: -0.2193683077427058
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.465025931596756
+---
+header: 
+  seq: 32314
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5998339527589287
+    y: 1.183772562465514
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.0398006439208984
+---
+header: 
+  seq: 32528
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5724208512200356
+    y: 0.39040168656608176
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.543036937713623
+---
+header: 
+  seq: 32807
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0503439051135197
+    y: -0.833214531462649
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6706286668777466
+---
+header: 
+  seq: 33023
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5600408869538873
+    y: -0.015220142708694668
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.027170130982995033
+---
+header: 
+  seq: 33265
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1508283513900095
+    y: 0.6871851517910034
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.6032919883728027
+---
+header: 
+  seq: 33477
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.015515907329631
+    y: 0.2221880047738564
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.9261937141418457
+---
+header: 
+  seq: 33729
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5236339758958599
+    y: -1.2443100554449087
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.172469139099121
+---
+header: 
+  seq: 33943
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.48904474303173356
+    y: -0.5151548026314641
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8113932013511658
+---
+header: 
+  seq: 34183
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.01727528018934091
+    y: 1.3369934918001405
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5837165117263794
+---
+header: 
+  seq: 34399
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.37035228707899925
+    y: 0.13780262192951906
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.7853798866271973
+---
+header: 
+  seq: 34648
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8665335983638431
+    y: -1.0126504627231
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8629975318908691
+---
+header: 
+  seq: 34861
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.059544086456299
+---
+header: 
+  seq: 35107
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1097773493334222
+    y: 0.7242176183376765
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.563406467437744
+---
+header: 
+  seq: 35339
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3332964741397077
+    y: -0.20439196082672098
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.591491937637329
+---
+header: 
+  seq: 35585
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0034668317856554
+    y: -0.622261372380953
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.5550762414932251
+---
+header: 
+  seq: 35827
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.09261394545176044
+    y: 0.3636445552570848
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.3214154243469238
+---
+header: 
+  seq: 36141
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.122403992443893
+    y: 0.7429213304799998
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.556896209716797
+---
+header: 
+  seq: 36383
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4474436566199022
+    y: -0.03519215419710353
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.0631024837493896
+---
+header: 
+  seq: 36717
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.848913355670777
+    y: -1.0461411302194992
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8890998363494873
+---
+header: 
+  seq: 36929
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5508096298208428
+    y: -0.23813259471397416
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.40806445479393005
+---
+header: 
+  seq: 37176
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.08004473158440836
+    y: 0.769131776823482
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6744946241378784
+---
+header: 
+  seq: 37421
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0370514800938226
+    y: -0.8509577990477978
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.4544429779052734
+---
+header: 
+  seq: 37634
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5229079723358154
+---
+header: 
+  seq: 37878
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9553139648012818
+    y: 0.9292557926876647
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.771571934223175
+---
+header: 
+  seq: 38091
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.1470243514724595
+    y: 0.37013164201781745
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9489054679870605
+---
+header: 
+  seq: 38392
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5134810844991784
+    y: -1.2384728803340297
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.9638322591781616
+---
+header: 
+  seq: 38604
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1396746304052071
+    y: -0.46291544945574703
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.2777549028396606
+---
+header: 
+  seq: 38901
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.14253280644821106
+    y: 1.1631213137074878
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4488608837127686
+---
+header: 
+  seq: 39148
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3808506656992949
+    y: -0.0878282117336199
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.9149444103240967
+---
+header: 
+  seq: 39471
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2779292273450369
+    y: 0.24617317530913108
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7248808145523071
+---
+header: 
+  seq: 39735
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.057020193328695866
+    y: -0.40378697377460193
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.7110823392868042
+---
+header: 
+  seq: 40123
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6388733045865629
+---
+header: 
+  seq: 40477
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.174502706367845
+    y: 0.4201750326656471
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.3435598611831665
+---
+header: 
+  seq: 40715
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.854250192642212
+---
+header: 
+  seq: 40954
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1248468985904674
+    y: -0.7399669875811865
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.559727191925049
+---
+header: 
+  seq: 41214
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8690722584724426
+---
+header: 
+  seq: 41448
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6511503138875411
+    y: 1.1633956245506674
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.0605376958847046
+---
+header: 
+  seq: 41660
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.08082276125551306
+    y: 0.501747373964584
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.7305070161819458
+---
+header: 
+  seq: 41917
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0428785355230492
+    y: -0.8171200097041958
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.4769792556762695
+---
+header: 
+  seq: 42129
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.149495027596214
+    y: -0.5743405795728284
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8254358768463135
+---
+header: 
+  seq: 42378
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.179656489647131
+    y: 0.5834074601417301
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.4592837989330292
+---
+header: 
+  seq: 42592
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1299343561281164
+    y: 0.42383227357145337
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2733228206634521
+---
+header: 
+  seq: 42899
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.46772730674297874
+    y: -1.2583316974521015
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.926674485206604
+---
+header: 
+  seq: 43114
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2199762688508179
+    y: -0.44894777837505323
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.1151952743530273
+---
+header: 
+  seq: 43462
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6089884721009273
+---
+header: 
+  seq: 43732
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2135227402964248
+    y: 0.5632648336820999
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.43456411361694336
+---
+header: 
+  seq: 43949
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8685944080352783
+---
+header: 
+  seq: 44188
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3416253577367991
+    y: 0.05451144490128589
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.1009840965270996
+---
+header: 
+  seq: 44400
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7452040386372478
+    y: -0.24058846763772
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.8293073177337646
+---
+header: 
+  seq: 44644
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.338072556405404
+    y: 0.10843581558725948
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.08086208254098892
+---
+header: 
+  seq: 44858
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.986749806254597
+    y: 0.45224818179308046
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.42975205183029175
+---
+header: 
+  seq: 45123
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2962148786547574
+    y: -0.3468613295679419
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.8801231384277344
+---
+header: 
+  seq: 45337
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6611271623566588
+    y: -0.4129298659029558
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.583292007446289
+---
+header: 
+  seq: 45641
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6947555541992188
+---
+header: 
+  seq: 45859
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7171477044759648
+    y: 0.8343804625672372
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8608143329620361
+---
+header: 
+  seq: 46111
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.8093115409244276
+---
+header: 
+  seq: 46378
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7779822432514615
+    y: -0.797005354784847
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.3441169261932373
+---
+header: 
+  seq: 46609
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8300716842854866
+    y: -0.1094801594812662
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.13113558292388916
+---
+header: 
+  seq: 46904
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -4.819247803727832
+---
+header: 
+  seq: 47267
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.781008871220327
+---
+header: 
+  seq: 47524
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8276729484827339
+    y: -0.21622746892446404
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.886056423187256
+---
+header: 
+  seq: 47771
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.1601804861212837
+    y: -0.6902761384386591
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.536715030670166
+---
+header: 
+  seq: 47986
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2647084469337535
+    y: -0.45990798353611073
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.3487807810306549
+---
+header: 
+  seq: 48207
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.443575859069824
+---
+header: 
+  seq: 48443
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8748429550090524
+    y: 0.3877256119421516
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.724412441253662
+---
+header: 
+  seq: 48703
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2802718790726233
+    y: -0.42460468081951563
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.32023659348487854
+---
+header: 
+  seq: 48916
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7459978829983672
+    y: 0.13093502809525345
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.1737469583749771
+---
+header: 
+  seq: 49186
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3520556546653372
+    y: -0.15323881345832208
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.7310564517974854
+---
+header: 
+  seq: 49387
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.32101991482567
+    y: 0.17187457853572546
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.012211799621582
+---
+header: 
+  seq: 49618
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.710759553099842
+    y: -1.143221542008814
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.0145617723464966
+---
+header: 
+  seq: 49830
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5390507630018351
+    y: -0.20323310641187298
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.36054083704948425
+---
+header: 
+  seq: 50065
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3119427216390525
+    y: 1.3094602941021047
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8046596050262451
+---
+header: 
+  seq: 50280
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.40138168970369037
+    y: 0.3062593670721427
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4898152351379395
+---
+header: 
+  seq: 50521
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4039849936276983
+    y: -1.2783613937696967
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.2647098302841187
+---
+header: 
+  seq: 50736
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5569704964147062
+    y: -0.5244991045827212
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.7553820013999939
+---
+header: 
+  seq: 50990
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1576717456712054
+    y: 1.3324608063231884
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4530127048492432
+---
+header: 
+  seq: 51203
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.1911329198332221
+    y: 0.8124814392228971
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8018410205841064
+---
+header: 
+  seq: 51423
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.24434594951221034
+    y: -1.3237992471620688
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.7533212900161743
+---
+header: 
+  seq: 51637
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3867588852966911
+    y: 0.008954275433057346
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.023147834464907646
+---
+header: 
+  seq: 51889
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6085883847374839
+    y: 0.47774092624195424
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4760661125183105
+---
+header: 
+  seq: 52159
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.248814009574215
+---
+header: 
+  seq: 52446
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8611619008110999
+    y: -1.029103781917785
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.874011218547821
+---
+header: 
+  seq: 52667
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.17627449333667755
+---
+header: 
+  seq: 52922
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.9446031769247872
+    y: 0.9352927545509208
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.361146926879883
+---
+header: 
+  seq: 53154
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.6750491857528687
+---
+header: 
+  seq: 53375
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.18445008192131743
+    y: -1.261741996273218
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.4256374835968018
+---
+header: 
+  seq: 53620
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.6057709455490112
+---
+header: 
+  seq: 53841
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.06444692466867999
+    y: 1.339734852239664
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6188634634017944
+---
+header: 
+  seq: 54062
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.833263751267275
+---
+header: 
+  seq: 54358
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0097805086397074
+    y: -0.8901281745357132
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.7225033640861511
+---
+header: 
+  seq: 54595
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.39143913580983425
+    y: 0.1288603826500298
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.3180227279663086
+---
+header: 
+  seq: 54936
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.18365380065944778
+    y: 1.331224906002282
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4337031841278076
+---
+header: 
+  seq: 55148
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3596082950706404
+    y: 0.2482883828721905
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.537310838699341
+---
+header: 
+  seq: 55379
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.18102977410690715
+    y: -0.5237852143677987
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.903562307357788
+---
+header: 
+  seq: 55701
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.9600609849334721
+---
+header: 
+  seq: 56017
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0256132351647895
+    y: 0.30098272049121677
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.2854515314102173
+---
+header: 
+  seq: 56269
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1744186373358412
+    y: -0.6654187867469811
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.626098394393921
+---
+header: 
+  seq: 56482
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6789546348006871
+    y: -0.7199627568346441
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.3268885612487793
+---
+header: 
+  seq: 56754
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.23401810582898844
+---
+header: 
+  seq: 56980
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.101370639738522
+    y: 0.7288282210639105
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5845887064933777
+---
+header: 
+  seq: 57193
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.995487689971924
+---
+header: 
+  seq: 57412
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1505565036136736
+    y: -0.6526480160413449
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.625605583190918
+---
+header: 
+  seq: 57626
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.06893515499406229
+    y: -0.41680592753462525
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.406890630722046
+---
+header: 
+  seq: 57881
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2315177943479152
+    y: 0.5298991220602018
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.4063355028629303
+---
+header: 
+  seq: 58085
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.284864644606287
+    y: 0.5497360555621729
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.0927071571350098
+---
+header: 
+  seq: 58329
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1870928305689505
+    y: -0.6350179401611616
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.650388717651367
+---
+header: 
+  seq: 58547
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 4.890326081714907
+---
+header: 
+  seq: 58797
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2456868915111652
+    y: 0.5203501885713392
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.39568963646888733
+---
+header: 
+  seq: 59011
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.20256713549362457
+    y: 0.3495738037162658
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.095982551574707
+---
+header: 
+  seq: 59243
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.902677840204684
+    y: -0.6904859099651176
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.4886043071746826
+---
+header: 
+  seq: 59492
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3624897481230552
+    y: -0.1950367843409061
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.49362051486968994
+---
+header: 
+  seq: 59729
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2152184758774168
+    y: 0.5754030017681172
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2128756046295166
+---
+header: 
+  seq: 59995
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7777821246738565
+    y: -0.5720694239937362
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.507427453994751
+---
+header: 
+  seq: 60252
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.16016871553088965
+---
+header: 
+  seq: 60597
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.07374349236488342
+---
+header: 
+  seq: 60841
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3259235774313452
+    y: 0.4013872251082625
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8887853026390076
+---
+header: 
+  seq: 61075
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.340359552592566
+    y: -0.12448212771417061
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.0489859580993652
+---
+header: 
+  seq: 61287
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.2901571216098741
+    y: -0.40652299255383795
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.1906931400299072
+---
+header: 
+  seq: 61549
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.1796676735558416
+    y: 0.6486631955033274
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5027429461479187
+---
+header: 
+  seq: 61763
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.011501588446638972
+    y: 0.42787281278802364
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.543921947479248
+---
+header: 
+  seq: 62007
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.166326422088829
+    y: -0.6438151043292455
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.6372132301330566
+---
+header: 
+  seq: 62221
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.10349400989487788
+    y: -0.475900173467959
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.7849318981170654
+---
+header: 
+  seq: 62493
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3309150635600533
+    y: -0.13173043081343014
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.09865599870681763
+---
+header: 
+  seq: 62707
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4738278750860314
+    y: 0.310834650204687
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5805867910385132
+---
+header: 
+  seq: 62939
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.034754649770733
+    y: 0.8611911518629187
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4474844932556152
+---
+header: 
+  seq: 63150
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4896541372183271
+    y: -0.0774843898862438
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.9846508502960205
+---
+header: 
+  seq: 63395
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2962890472993398
+    y: -0.3642012351481021
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.2738956809043884
+---
+header: 
+  seq: 63608
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.304418780584322
+    y: 0.3029150912580511
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7829222679138184
+---
+header: 
+  seq: 63855
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3183787588879727
+    y: 0.2701905727644907
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.9394500255584717
+---
+header: 
+  seq: 64106
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9801538336073964
+    y: -0.9152819508528767
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.7511862516403198
+---
+header: 
+  seq: 64322
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.03531885686838962
+---
+header: 
+  seq: 64682
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.408730822931056
+---
+header: 
+  seq: 64945
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6145348972837716
+    y: 1.0060475575385608
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.1191489696502686
+---
+header: 
+  seq: 65174
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2670800958534721
+    y: -0.26649603739066796
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.7843035459518433
+---
+header: 
+  seq: 65479
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5140954491643781
+    y: -1.2443947968021078
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.1790233850479126
+---
+header: 
+  seq: 65692
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5537880724350254
+    y: -0.4295282019374211
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6596963405609131
+---
+header: 
+  seq: 65930
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7851849436253007
+    y: 1.066154767496283
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.205578088760376
+---
+header: 
+  seq: 66141
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5560767809870062
+    y: 0.07077624827742425
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.0149953365325928
+---
+header: 
+  seq: 66395
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5681785700066633
+    y: -0.9546972677977936
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.033958077430725
+---
+header: 
+  seq: 66636
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4300138387614236
+    y: 1.2770208990677925
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8956025838851929
+---
+header: 
+  seq: 66843
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5415158447095612
+    y: 0.5131254744760676
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.3831074237823486
+---
+header: 
+  seq: 67109
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0533737797135234
+    y: -0.838187050447808
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6721237301826477
+---
+header: 
+  seq: 67320
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.694819624018605
+    y: -0.28446965023366566
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.38859638571739197
+---
+header: 
+  seq: 67575
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.9467781379170379
+    y: 0.9623465800635994
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.3480398654937744
+---
+header: 
+  seq: 67788
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.9848466100776476
+    y: 0.23746056309363112
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.904994249343872
+---
+header: 
+  seq: 68032
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.47076302709912166
+    y: -1.2621331441071688
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.2137891054153442
+---
+header: 
+  seq: 68246
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.43171826230308324
+    y: -0.2452463813398635
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.5166109204292297
+---
+header: 
+  seq: 68476
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.13642821495801427
+    y: 1.3394426602877696
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.6723008155822754
+---
+header: 
+  seq: 68752
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0582585710468475
+    y: -0.8010101357175313
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.647911012172699
+---
+header: 
+  seq: 68966
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6385031498360008
+    y: -0.11327726278727787
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.17558373510837555
+---
+header: 
+  seq: 69178
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0947088337779967
+    y: 0.7531876195704678
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.5389485359191895
+---
+header: 
+  seq: 69390
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0091590727979567
+    y: 0.22109510125993942
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.9259121417999268
+---
+header: 
+  seq: 69656
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.698326218878691
+---
+header: 
+  seq: 69882
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.1845861720909816
+    y: -0.6408260128449159
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.4958842396736145
+---
+header: 
+  seq: 70095
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.30092358148967413
+    y: 0.2709652579923744
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7330611348152161
+---
+header: 
+  seq: 70375
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6506436270114675
+    y: 1.1786697029666515
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.0751852989196777
+---
+header: 
+  seq: 70598
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.7817108631134033
+---
+header: 
+  seq: 70834
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3675766517153039
+    y: -1.2757762357045157
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.290273904800415
+---
+header: 
+  seq: 71046
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3921403169800866
+    y: -0.034555872253016665
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.08789414912462234
+---
+header: 
+  seq: 71303
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8707933409393801
+    y: 1.0266942654804592
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.274216890335083
+---
+header: 
+  seq: 71516
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5718912675788171
+    y: 0.09503938354867272
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.9769132137298584
+---
+header: 
+  seq: 71783
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9665013595972877
+    y: -0.6685767428753987
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6051671504974365
+---
+header: 
+  seq: 72024
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.17323502345621433
+    y: 0.3399707290918063
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.0995310544967651
+---
+header: 
+  seq: 72314
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.08940295068484772
+    y: 0.6425287310411543
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4325416088104248
+---
+header: 
+  seq: 72550
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.46970025326641995
+    y: -1.2443800310290494
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.9317195415496826
+---
+header: 
+  seq: 72763
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2345142603668846
+    y: -0.34081589361706216
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.9681040048599243
+---
+header: 
+  seq: 73021
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.36010119866765405
+    y: 1.3010870128723773
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.300785779953003
+---
+header: 
+  seq: 73250
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.034167528152466
+---
+header: 
+  seq: 73490
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.15762771721629723
+    y: -1.0792770293681013
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.7158203125
+---
+header: 
+  seq: 73735
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5122811917389135
+    y: 1.2473959976017959
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.1811167001724243
+---
+header: 
+  seq: 73950
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.13523039807278558
+    y: 1.3432098216961992
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.4704574346542358
+---
+header: 
+  seq: 74198
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0385418194692115
+    y: -0.8594245566117601
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.450289011001587
+---
+header: 
+  seq: 74411
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.057609483734013624
+    y: -0.3926709940182727
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.425123691558838
+---
+header: 
+  seq: 74767
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9632287119417806
+---
+header: 
+  seq: 75033
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7108532175859825
+    y: 0.43681649856049165
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.551010251045227
+---
+header: 
+  seq: 75263
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3146483029920755
+    y: -0.288435509555271
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.9256136417388916
+---
+header: 
+  seq: 75470
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8667392731889417
+    y: -0.5922560316413941
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5421526432037354
+---
+header: 
+  seq: 75706
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.8537495826386581
+    y: 1.0444316637674682
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8855173587799072
+---
+header: 
+  seq: 75922
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1879240972338996
+    y: 0.8458177192320716
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.3521671295166016
+---
+header: 
+  seq: 76159
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.43343803579497303
+    y: -1.275488426820629
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8983745574951172
+---
+header: 
+  seq: 76374
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.15106869940114884
+    y: -0.6810250583241174
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.3525054454803467
+---
+header: 
+  seq: 76610
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.316233289339364
+    y: 0.8056719276929115
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.196764588356018
+---
+header: 
+  seq: 76889
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.663844021336399
+---
+header: 
+  seq: 77238
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.19300878169480626
+    y: -1.3361315162811604
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.7142573595046997
+---
+header: 
+  seq: 77453
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.39179865415292764
+    y: -0.2811181826134378
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6223790645599365
+---
+header: 
+  seq: 77698
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.755470335483551
+---
+header: 
+  seq: 77956
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6836661315261809
+    y: 1.1593522197138109
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.0379873514175415
+---
+header: 
+  seq: 78194
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3733644936505581
+    y: 0.22674140204649007
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.5958282947540283
+---
+header: 
+  seq: 78428
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0866046915149632
+    y: -0.7938481858168199
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.51063871383667
+---
+header: 
+  seq: 78644
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.15135019093600927
+    y: -0.5701893499490884
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.830251693725586
+---
+header: 
+  seq: 78877
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.006376348043804
+    y: 0.8998370551447096
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7295657396316528
+---
+header: 
+  seq: 79091
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.006456850871219702
+    y: 0.46444399250661556
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5846977233886719
+---
+header: 
+  seq: 79383
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5296894277832334
+    y: -1.2417443747368613
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.9739949703216553
+---
+header: 
+  seq: 79602
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.37524690839646774
+    y: 0.02658312325789186
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.07072347402572632
+---
+header: 
+  seq: 79943
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.4863779770454033
+---
+header: 
+  seq: 80258
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.247738724793751
+    y: 0.5154105167938116
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.39172741770744324
+---
+header: 
+  seq: 80490
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.979609489440918
+---
+header: 
+  seq: 80723
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.336992342704012
+    y: 0.04665196129997383
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 3.1067135334014893
+---
+header: 
+  seq: 80936
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.27615045834118523
+    y: -0.42100701125526535
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.1513278484344482
+---
+header: 
+  seq: 81184
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2896289376954664
+    y: 0.28250655855538237
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.21565386652946472
+---
+header: 
+  seq: 81397
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.3372945266389396
+    y: 0.4063754549832339
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.8780242800712585
+---
+header: 
+  seq: 81629
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2136561913482093
+    y: -0.5912182158576467
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.6882874965667725
+---
+header: 
+  seq: 81842
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6798809661032532
+    y: -0.665768719356865
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.3666813373565674
+---
+header: 
+  seq: 82062
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.271893678087108
+    y: -0.42209945625084605
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.32043030858039856
+---
+header: 
+  seq: 82276
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3126464561436086
+    y: -0.1408573455772872
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.10689882189035416
+---
+header: 
+  seq: 82500
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2151005268096924
+---
+header: 
+  seq: 82730
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1605467015488453
+    y: 0.5150108171646657
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.723935127258301
+---
+header: 
+  seq: 82981
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.6093094248623894
+---
+header: 
+  seq: 83230
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7751415555390222
+    y: -0.5254214205384401
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.5956977605819702
+---
+header: 
+  seq: 83496
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0797686929628687
+    y: 0.8089686715568343
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4986002445220947
+---
+header: 
+  seq: 83713
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0538965258990187
+    y: 0.34597487407339667
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.8243954181671143
+---
+header: 
+  seq: 83981
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3398412357020189
+    y: -0.14414892112054636
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.10717438906431198
+---
+header: 
+  seq: 84194
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3096552467371751
+    y: 0.1180603993272939
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.08990313857793808
+---
+header: 
+  seq: 84456
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.3318181953237982
+    y: -0.01012275397921997
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -3.1339919567108154
+---
+header: 
+  seq: 84669
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.8334631386737795
+    y: -0.2331263159218398
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.8688547611236572
+---
+header: 
+  seq: 84906
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9565311014845976
+    y: -0.9312701469198693
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.772017776966095
+---
+header: 
+  seq: 85118
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.46104990314487104
+    y: -0.05315918466052959
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.11479336768388748
+---
+header: 
+  seq: 85351
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.5775079860455793
+    y: 0.45733834991981154
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.471799850463867
+---
+header: 
+  seq: 85662
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.8682162676705273
+---
+header: 
+  seq: 85996
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.0306533491260996
+    y: -0.8337353551206379
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6801676750183105
+---
+header: 
+  seq: 86224
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.662322759628296
+---
+header: 
+  seq: 86457
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3399887227956747
+    y: 0.8885251580426996
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9362514019012451
+---
+header: 
+  seq: 86703
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.20042640192108158
+    y: -1.330401663321432
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.4212697744369507
+---
+header: 
+  seq: 86918
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4705859177714553
+    y: -0.47545365029979436
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.7905436754226685
+---
+header: 
+  seq: 87185
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4027257791716559
+    y: 1.260353560244684
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.8800761699676514
+---
+header: 
+  seq: 87400
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4614836532167197
+    y: 0.1175957769676913
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.8920814990997314
+---
+header: 
+  seq: 87661
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.259804044983463
+    y: -1.3157609557409882
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.3758487701416016
+---
+header: 
+  seq: 87874
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5186779318558449
+    y: -0.39044732049748115
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.6452740430831909
+---
+header: 
+  seq: 88105
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.08117487932256162
+    y: 1.3386739340692853
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5102322101593018
+---
+header: 
+  seq: 88320
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4228016020233926
+    y: 0.5487214664489668
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.227302312850952
+---
+header: 
+  seq: 88544
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.6337789581175484
+    y: -1.1622043053757252
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.070042848587036
+---
+header: 
+  seq: 88760
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.15944135926603412
+    y: -0.45423458790955623
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.2332208156585693
+---
+header: 
+  seq: 89026
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.29020313614208954
+    y: 1.300446460429566
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.351237177848816
+---
+header: 
+  seq: 89238
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3306261766649042
+    y: 0.32786179305183544
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.3603925704956055
+---
+header: 
+  seq: 89497
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.5121729979346168
+    y: -1.238914439515691
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.1787879467010498
+---
+header: 
+  seq: 89736
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.4831193444422371
+    y: -0.07868781901285207
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.16145679354667664
+---
+header: 
+  seq: 89978
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.3532478548463067
+    y: 0.6872335275688933
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.0455923080444336
+---
+header: 
+  seq: 90203
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0242261110930737
+    y: -0.7214790395134261
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5279104709625244
+---
+header: 
+  seq: 90443
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.9332232475280762
+---
+header: 
+  seq: 90676
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.00018922074165580546
+    y: 0.6311874210507437
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5704965591430664
+---
+header: 
+  seq: 90921
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.10568288708030318
+    y: -1.3273694634840345
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.6502468585968018
+---
+header: 
+  seq: 91134
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.2475874705019481
+    y: -0.5407182261953652
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.1414034366607666
+---
+header: 
+  seq: 91368
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.47775534591488006
+    y: 1.253062672848797
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2065399885177612
+---
+header: 
+  seq: 91586
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.01010997466232945
+    y: 0.9926209997333851
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.560611605644226
+---
+header: 
+  seq: 91811
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.30865621810835325
+    y: -1.3123588441092586
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.8017899990081787
+---
+header: 
+  seq: 92026
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.09547345846546652
+    y: -1.1074122454235904
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.4847958087921143
+---
+header: 
+  seq: 92284
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 1.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.27126582132034616
+---
+header: 
+  seq: 92515
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.022032615073083777
+    y: 1.001011751366965
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.5928031206130981
+---
+header: 
+  seq: 92728
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0840721017035662
+    y: -0.7915782896858847
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5108911991119385
+---
+header: 
+  seq: 92942
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.7098935019964846
+    y: -1.0066209118790157
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.1850197315216064
+---
+header: 
+  seq: 93192
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.37899654565126084
+    y: -0.04470832093813483
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.11742246896028519
+---
+header: 
+  seq: 93411
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.1273358542251977
+    y: 0.6762539737642508
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5403232574462891
+---
+header: 
+  seq: 93624
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.09046095941746277
+    y: 0.5875326956573483
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.418028473854065
+---
+header: 
+  seq: 93865
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.238094044191417
+    y: -0.5152564189999117
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.747225522994995
+---
+header: 
+  seq: 94083
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.1479197754021577
+    y: -0.7092221366422322
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.5881640911102295
+---
+header: 
+  seq: 94353
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.20463821291923523
+---
+header: 
+  seq: 94779
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.2043062299489975
+---
+header: 
+  seq: 95205
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.40814799070358276
+---
+header: 
+  seq: 95621
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.12480002641677856
+---
+header: 
+  seq: 96045
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.23002983629703522
+---
+header: 
+  seq: 96470
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.566390872001648
+---
+header: 
+  seq: 96895
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5664231181144714
+---
+header: 
+  seq: 97320
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5637050867080688
+---
+header: 
+  seq: 97747
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5638989806175232
+---
+header: 
+  seq: 98169
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5637540817260742
+---
+header: 
+  seq: 98573
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5645584464073181
+---
+header: 
+  seq: 98999
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5652831792831421
+---
+header: 
+  seq: 99326
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.38139557914803185
+    y: 1.1993488850133447
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2629066705703735
+---
+header: 
+  seq: 99539
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.38078299504455654
+    y: 1.200732255207951
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.2637028694152832
+---
+header: 
+  seq: 99776
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.0411502979695797
+---
+header: 
+  seq: 100201
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.042219433933496475
+---
+header: 
+  seq: 100627
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.04110283777117729
+---
+header: 
+  seq: 101055
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5624511241912842
+---
+header: 
+  seq: 101481
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5615149736404419
+---
+header: 
+  seq: 101910
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.4006998836994171
+---
+header: 
+  seq: 102336
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.38975048065185547
+---
+header: 
+  seq: 102764
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.3912979066371918
+---
+header: 
+  seq: 103194
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.3757922053337097
+---
+header: 
+  seq: 103620
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.21447782218456268
+---
+header: 
+  seq: 104045
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5610101819038391
+---
+header: 
+  seq: 104475
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5624759197235107
+---
+header: 
+  seq: 104877
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.295270265492932
+    y: 0.3566283665013588
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.2686741352081299
+---
+header: 
+  seq: 105090
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.1308943344320965
+    y: 0.4975999727362084
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.3135722875595093
+---
+header: 
+  seq: 105324
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.30853828144013656
+    y: 0.6036652188447862
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.098301649093628
+---
+header: 
+  seq: 105574
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.0540670084170813
+    y: -0.8279794187229207
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.475750207901001
+---
+header: 
+  seq: 105790
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.268160343170166
+---
+header: 
+  seq: 106086
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9729932075218856
+    y: 0.9278035831863638
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.7616285681724548
+---
+header: 
+  seq: 106298
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0627734477246539
+    y: 0.5133973043444694
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.449129581451416
+---
+header: 
+  seq: 106529
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.9107613563537598
+---
+header: 
+  seq: 106813
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2442198044667656
+    y: -0.4744934081615583
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.777259349822998
+---
+header: 
+  seq: 107082
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3142192290982917
+    y: -0.09011782733492855
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.06846420466899872
+---
+header: 
+  seq: 107296
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.6948380449781072
+    y: 0.2729767208896906
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.37433940172195435
+---
+header: 
+  seq: 107535
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -1.2463969242742619
+    y: 0.437834015039353
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.8037781715393066
+---
+header: 
+  seq: 107746
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: -0.4710697780609447
+    y: -0.24186486108489794
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -2.667252779006958
+---
+header: 
+  seq: 107979
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2679900909870199
+    y: -0.38549919533817717
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.2951442301273346
+---
+header: 
+  seq: 108195
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.7755112627264202
+    y: -0.09072145460309039
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.11645346134901047
+---
+header: 
+  seq: 108497
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.5040767192840576
+---
+header: 
+  seq: 108925
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 2.4761695861816406
+---
+header: 
+  seq: 109173
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.23589101433753967
+---
+header: 
+  seq: 109449
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3459291816401033
+    y: 0.09166225546193486
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.06799827516078949
+---
+header: 
+  seq: 109661
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.3148439754081933
+    y: 0.07147812328787428
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.0543089397251606
+---
+header: 
+  seq: 110024
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -1.3288885354995728
+---
+header: 
+  seq: 110453
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.9864689111709595
+---
+header: 
+  seq: 110799
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2906788705971832
+    y: -0.3930830197244732
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.29563063383102417
+---
+header: 
+  seq: 111015
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2914779108760412
+    y: -0.3921994570155286
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.29483193159103394
+---
+header: 
+  seq: 111217
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 1.2905192138022406
+    y: -0.39497544774920423
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: -0.2970065474510193
+---
+header: 
+  seq: 111429
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.9246832027548081
+    y: 0.5979114114692128
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 0.5739899277687073
+---

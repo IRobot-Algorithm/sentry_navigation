@@ -1,0 +1,48 @@
+header: 
+  seq: 1952
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.947349190711975
+---
+header: 
+  seq: 2382
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9471913576126099
+---
+header: 
+  seq: 2811
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: "world"
+twist: 
+  linear: 
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  angular: 
+    x: 0.0
+    y: 0.0
+    z: 1.9454187154769897
+---
