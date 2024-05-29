@@ -4,9 +4,11 @@
 #include<sensor_msgs/PointCloud2.h>
 #include<std_msgs/Bool.h>
 #include<pcl/io/pcd_io.h>
+
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/GetMap.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/voxel_grid.h>
 
 bool color_init = false;
 bool color_info;
@@ -79,6 +81,7 @@ int main(int argc,char **argv)
 
     ros::ServiceClient client = nh.serviceClient<nav_msgs::GetMap>("static_map");
     ros::Publisher obstacle_pub = nh.advertise<sensor_msgs::PointCloud2>("static_obstacles", 1);
+    ros::Publisher added_obstacle_pub = nh.advertise<sensor_msgs::PointCloud2>("/added_obstacles", 1);
     ros::Subscriber color_info_sub = nh.subscribe<std_msgs::Bool>("/color_info", 1, ColorInfoCallBack);
 
     nav_msgs::GetMap srv;
@@ -95,56 +98,25 @@ int main(int argc,char **argv)
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     OccupancyGridToPointCloud(map, cloud);
 
-    while (!color_init)
-        ros::spinOnce();
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::VoxelGrid<pcl::PointXYZ> sor;
+    sor.setInputCloud(cloud);
+    sor.setLeafSize(0.6f, 0.6f, 0.6f);
+    sor.filter(*filtered_cloud);
 
-    Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
-    Eigen::Vector3d T = Eigen::Vector3d::Zero();
-    if (color_info) // blue
-    {
-        R << 1, 0, 0,
-             0, 1, 0,
-             0, 0, 1;
-        T << 0,
-             0,
-             0;
-    }
-    else // red
-    {
-        R << 1, 0, 0,
-             0, 1, 0,
-             0, 0, 1;
-        T << 0,
-             0,
-             0;
-    }
+    sensor_msgs::PointCloud2 output_cloud;
+    pcl::toROSMsg(*cloud, output_cloud);
+    output_cloud.header.frame_id = "map";
 
-    // 对 PointCloud 中的每个点进行平移和旋转操作
-    for (size_t i = 0; i < cloud->points.size(); ++i)
-    {
-        pcl::PointXYZ& point = cloud->points[i];
-
-        // 应用平移向量
-        point.x += T(0);
-        point.y += T(1);
-        point.z += T(2);
-
-        // 应用旋转矩阵
-        Eigen::Vector3d point_vec(point.x, point.y, point.z);
-        Eigen::Vector3d rotated_point = R * point_vec;
-        point.x = rotated_point(0);
-        point.y = rotated_point(1);
-        point.z = rotated_point(2);
-    }
-
-    sensor_msgs::PointCloud2 output;
-    pcl::toROSMsg(*cloud, output);
-    output.header.frame_id = "map";
+    sensor_msgs::PointCloud2 output_filtered_cloud;
+    pcl::toROSMsg(*filtered_cloud, output_filtered_cloud);
+    output_filtered_cloud.header.frame_id = "map";
 
     ros::Rate loop_rate(0.2);
     while (ros::ok())
     {
-        obstacle_pub.publish(output);
+        obstacle_pub.publish(output_cloud);
+        added_obstacle_pub.publish(output_filtered_cloud);
         ros::spinOnce();
         loop_rate.sleep();
     }

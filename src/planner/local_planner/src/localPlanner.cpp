@@ -737,12 +737,15 @@ int main(int argc, char** argv)
       for (int i = 0; i < addedObstaclesSize; i++) {
         point.x = (addedObstacles->points[i].x - vehicleX);
         point.y = (addedObstacles->points[i].y - vehicleY);
-        point.z = addedObstacles->points[i].z;
         point.intensity = addedObstacles->points[i].intensity;
 
         float dis = sqrt(point.x * point.x + point.y * point.y);
-        if (dis < adjacentRange) {
-          plannerCloudCrop->push_back(point);
+        if (dis < adjacentRange && dis > 0.3) {
+          for (int i = 0; i < 6; i++)
+          {
+            point.z = i * 0.1;
+            plannerCloudCrop->push_back(std::move(point));
+          }
         }
       }
 
