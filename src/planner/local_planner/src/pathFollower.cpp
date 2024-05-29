@@ -374,8 +374,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   */
   // {
     // std::cout << "none" << std::endl;
-    if (dis < 1.6)
-      endMaxSpeed *= fabs(dis / 2.0 + 0.2);
+    if (fabs(dis) < 1.6)
+      endMaxSpeed *= (fabs(dis / 2.0) + 0.2);
   // 
 
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
