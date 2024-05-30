@@ -137,13 +137,13 @@ std::vector<std::vector<cv::Point>> polygons =
     cv::Point(6.4, 6.4),
     cv::Point(7.5, 5.2)
   },
-  // // 梯高
-  // {
-  //   cv::Point(-3.0, 3.8),
-  //   cv::Point(-3.0, 2.3),
-  //   cv::Point(-0.7, 2.3),
-  //   cv::Point(0.8, 3.8)
-  // }
+  // 梯高
+  {
+    cv::Point(-3.0, 3.8),
+    cv::Point(-3.0, 2.3),
+    cv::Point(-0.7, 2.3),
+    cv::Point(0.8, 3.8)
+  }
 };
 
 bool is_on_slope = false;
@@ -166,7 +166,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   vehicleY = odomIn->pose.pose.position.y;
   vehicleZ = odomIn->pose.pose.position.z;
 
-  /*
   is_on_slope = false;
 
   if (adjustByPitch)
@@ -200,7 +199,6 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
         }
     }
   }
-  */
 
   odomInit = true;
 
@@ -290,61 +288,13 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   float endMaxSpeed = maxSpeed;
   float endMaxAccel = maxAccel;
 
-  // static double slopeTrust = switchTimeThre; // 倾斜置信度
   double dt = ros::Time::now().toSec() - sendTime.toSec();
   sendTime = ros::Time::now();
-  // if (fabs(vehicleSlopeAngle) > 0.17 && adjustByPitch)
-  // {
-  //   slopeTrust -= dt;
-  //   if (fabs(vehicleSlopeAngle) > 0.2) // must be sloped
-  //     slopeTrust = 0.0;
-  // }
-  // else
-  //   slopeTrust += dt;
 
-  // if (slopeTrust < 0.0)
-  //   slopeTrust = 0.0;
-  // else if (slopeTrust > 2.0 * switchTimeThre)
-  //   slopeTrust = 2.0 * switchTimeThre;
-
-  // if (slopeTrust < switchTimeThre) // 上下坡 | 正常
-  // {
-  //   float slopeDir = 0.0;
-  //   if (velAngle > -4.0 && fabs(vehicleSlopeAngle) > 0.0873) // 朝向
-  //   {
-  //     slopeDir = fabs(velAngle - vehicleSlopeYaw);
-  //     // std::cout << "slopeDir:" << slopeDir << std::endl;
-  //     if (slopeDir > PI)
-  //       slopeDir = 2 * PI - slopeDir;
-
-  //     if (slopeDir <= PI / 2.0)
-  //     {
-  //       // std::cout << "down" << std::endl;
-  //       endMaxSpeed *= 0.5;
-  //     }
-  //     else
-  //     {
-  //       // std::cout << "up" << std::endl;
-  //       endMaxSpeed *= 1.2;
-  //       vel.twist.linear.x *= 1.2;
-  //       vel.twist.linear.y *= 1.2;
-  //       vel.twist.angular.y = 1.0; // open
-  //     }
-  //   }
-  //   else
-  //   {
-  //     endMaxSpeed *= 0.5;
-  //   }
-
-  //   endMaxAccel *= 0.3;
-  //   vel.twist.linear.z = 3.0;
-
-  // }
-  /*
   static double slopeTrust = 0; // 倾斜置信度
   if (is_on_slope)
   {
-    if (fabs(vehicleSlopeAngle) > 0.1)
+    if (fabs(vehicleSlopeAngle) > 0.12)
       slopeTrust = 0; // 倾斜置信度
     else
       slopeTrust += dt;
@@ -371,12 +321,11 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     endMaxAccel *= 0.3;
   }
   else
-  */
-  // {
+  {
     // std::cout << "none" << std::endl;
     if (fabs(dis) < 1.6)
       endMaxSpeed *= (fabs(dis / 2.0) + 0.2);
-  // 
+  }
 
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 
                      vel.twist.linear.y * vel.twist.linear.y);
@@ -387,7 +336,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  /*
+  
   if (is_on_slope && slopeTrust < switchTimeThre)
   {
     // 根据最大加速度修正速度
@@ -399,13 +348,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       vel.twist.linear.x = last_speed_x + (endMaxAccel * dt) * (delta_speed_x / delta_speed);
       vel.twist.linear.y = last_speed_y + (endMaxAccel * dt) * (delta_speed_y / delta_speed);
     }
-    vel.twist.linear.z = 3.0;
+    // vel.twist.linear.z = 3.0;
   }
-  // else
-  // {
-  //   std::cout << "none" << std::endl;
-  // }
-  */
 
   // std::cout << is_on_slope << std::endl;
 
@@ -723,7 +667,8 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        if (fabs(pathDir - vehicleYaw) > PI / 3/* && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872))*/)
+        /*
+        if (fabs(pathDir - vehicleYaw) > PI / 3 && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872)))
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
@@ -732,7 +677,8 @@ int main(int argc, char** argv)
           // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
           publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
           continue;
-        }        
+        } 
+        */       
       }
 
 
