@@ -8,6 +8,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
 #include <std_msgs/Bool.h>
+#include <visualization_msgs/Marker.h>
 
 #include "usb.hpp"
 #include "sentry_msgs/RefereeInformation.h"
@@ -29,6 +30,8 @@ class UsbCommNode {
 
 		void velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel);
 		// void velHandler(const geometry_msgs::Twist::ConstPtr& vel);
+
+		void vizPathHandler(const visualization_msgs::Marker::ConstPtr& path);
 
 		/*
 		* @brief 决策购买弹丸服务器
@@ -68,6 +71,7 @@ class UsbCommNode {
 		ros::ServiceServer buy_bullets_server;
 		ros::Subscriber sub_odom_;
 		ros::Subscriber sub_vel_;
+		ros::Subscriber sub_path_;
 		ros::Publisher pub_referee_info_;
 		ros::Publisher pub_color_info_;
 
@@ -95,6 +99,7 @@ class UsbCommNode {
     int interface_usb_write_timeout_;
 
     transporter::NavVelocitySendPackage send_package_;
+    transporter::MapDataSendPackage map_data_package_;
 
     std::shared_ptr<transporter_sdk::TransporterInterface> transporter_; // usb通信接口
     std::thread receive_thread_;

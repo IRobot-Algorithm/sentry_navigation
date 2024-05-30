@@ -19,6 +19,7 @@
 #define RMOS_IMU_0_RECEIVE_ID 0x5
 #define RMOS_IMU_1_RECEIVE_ID 0x6
 #define RMOS_SEND_ID 0x7
+#define MAP_DATA_SEND_ID 0x8
 
 namespace transporter
 {
@@ -127,6 +128,25 @@ typedef struct
     // 包尾
     uint8_t _EOF;
 } NavVelocitySendPackage;
+
+typedef struct
+{
+    // 包头
+    uint8_t _SOF;
+    uint8_t ID;
+    // 标识
+    uint8_t intention;
+    // 起点坐标 单位dm
+    uint16_t start_position_x;
+    uint16_t start_position_y;
+    // 增量数组 单位dm
+    int8_t delta_x[49];
+    int8_t delta_y[49];
+    // 发送者ID
+    uint16_t sender_id;
+    // 包尾
+    uint8_t _EOF;
+} MapDataSendPackage;
 
 typedef struct
 {

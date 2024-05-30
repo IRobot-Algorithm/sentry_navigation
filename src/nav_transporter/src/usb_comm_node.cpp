@@ -45,6 +45,7 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   this->sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 1, &UsbCommNode::odomHandler, this);
   this->sub_vel_ = nh.subscribe<geometry_msgs::TwistStamped>("/cmd_vel", 1, &UsbCommNode::velHandler, this);
   // this->sub_vel_ = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 5, &UsbCommNode::velHandler, this);
+  this->sub_path_ = nh.subscribe<visualization_msgs::Marker>("/viz_path_topic", 1, &UsbCommNode::vizPathHandler, this);
         
   this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 1);
   this->pub_color_info_ = nh.advertise<std_msgs::Bool>("/color_info", 10);
@@ -118,6 +119,15 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   setBitsRange(send_package_.sentry_cmd, 13, 16, 0);    // 13-16位0 远程兑换发弹量
   setBitsRange(send_package_.sentry_cmd, 17, 20, 0);    // 17-20位0 远程兑换血量
 
+  map_data_package_._SOF = 0x55;
+  map_data_package_._EOF = 0xFF;
+  map_data_package_.ID = MAP_DATA_SEND_ID;
+  map_data_package_.intention = 3;
+  map_data_package_.start_position_x = 0;
+  map_data_package_.start_position_y = 0;
+  std::fill(std::begin(map_data_package_.delta_x), std::end(map_data_package_.delta_x), 0);
+  std::fill(std::begin(map_data_package_.delta_y), std::end(map_data_package_.delta_y), 0);
+
   // referee infomation
   referee_info_.force_back = false;
   referee_info_.keep_patrol = false;
@@ -183,6 +193,99 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
 
   transporter_->write((unsigned char *)&send_package_, sizeof(transporter::NavVelocitySendPackage));
   
+}
+
+void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& path)
+{
+  if (path->points.empty())
+  {
+    ROS_WARN("Received empty path message");
+    return;
+  }
+
+  // ROS_INFO("Received path message with %zu points", path->points.size());
+  map_data_package_._SOF = 0x55;
+  map_data_package_._EOF = 0xFF;
+  map_data_package_.ID = MAP_DATA_SEND_ID;
+  map_data_package_.intention = 3;
+  std::fill(std::begin(map_data_package_.delta_x), std::end(map_data_package_.delta_x), 0);
+  std::fill(std::begin(map_data_package_.delta_y), std::end(map_data_package_.delta_y), 0);
+
+  // Push points back
+  std::vector<geometry_msgs::Point> points;
+  points.reserve(path->points.size());
+  if (map_data_package_.sender_id < 10) // red
+  {
+    for (const auto& p : path->points)
+    {
+      geometry_msgs::Point point;
+      point.x = 7.5 - p.y;
+      point.y = p.x + 5.8;
+      points.push_back(point);
+    }
+  }
+  else // blue
+  {
+    for (const auto& p : path->points)
+    {
+      geometry_msgs::Point point;
+      point.x = p.y + 7.5;
+      point.y = 22.2 - p.x;
+      points.push_back(point);
+    }
+  }
+
+  if (points.size() > 50)
+    points.resize(50);
+
+  points[0].x = std::max(points[0].x, 0.0);
+  points[0].y = std::max(points[0].y, 0.0);
+  points[0].x = std::min(points[0].x, 15.0);
+  points[0].y = std::min(points[0].y, 28.0);
+
+  map_data_package_.start_position_x = static_cast<uint16_t>(points[0].x * 10);
+  map_data_package_.start_position_y = static_cast<uint16_t>(points[0].y * 10);
+
+  std::vector<geometry_msgs::Point> deltas;
+  deltas.reserve(points.size());
+  for (size_t i = 1; i < points.size(); ++i)
+  {
+    geometry_msgs::Point delta;
+    delta.x = points[i].x - points[i - 1].x;
+    delta.y = points[i].y - points[i - 1].y;
+
+    if (std::abs(delta.x) > 12.0 || std::abs(delta.y) > 12.0)
+    {
+      double scale_factor = std::max(std::abs(delta.x) / 12.0, std::abs(delta.y) / 12.0);
+      int num_segments = std::ceil(scale_factor);
+
+      double segment_x = delta.x / num_segments;
+      double segment_y = delta.y / num_segments;
+
+      for (int j = 0; j < num_segments; ++j)
+      {
+        geometry_msgs::Point scaled_delta;
+        scaled_delta.x = segment_x;
+        scaled_delta.y = segment_y;
+        deltas.push_back(scaled_delta);
+      }
+    }
+    else
+    {
+      deltas.push_back(delta);
+    }
+  }
+
+  if (deltas.size() > 49)
+    deltas.resize(49);
+
+  for (size_t i = 0; i < deltas.size(); ++i)
+  {
+    map_data_package_.delta_x[i] = static_cast<int8_t>(deltas[i].x * 10);
+    map_data_package_.delta_y[i] = static_cast<int8_t>(deltas[i].y * 10);
+  }
+
+  transporter_->write(reinterpret_cast<unsigned char*>(&map_data_package_), sizeof(transporter::MapDataSendPackage));
 }
 
 bool UsbCommNode::buyBulletsHandler(sentry_srvs::BuyBullets::Request &req, sentry_srvs::BuyBullets::Response &res)
@@ -309,6 +412,8 @@ void UsbCommNode::receiveCallback()
         referee_info_.max_hp = package.max_HP;
         referee_info_.bullets = package.projectile_allowance_17mm;
         
+        map_data_package_.sender_id = static_cast<uint16_t>(package.robot_id);
+
         if (package.robot_id < 10) // red
         {
           referee_info_.robot_hp = package.red_sentry_remain_HP;
@@ -369,30 +474,30 @@ void UsbCommNode::receiveCallback()
   }
 }
 
-  inline void UsbCommNode::setBit(uint32_t& data, int pos)
-  {
-    data |= (static_cast<uint32_t>(1) << pos);
-  }
+inline void UsbCommNode::setBit(uint32_t& data, int pos)
+{
+  data |= (static_cast<uint32_t>(1) << pos);
+}
 
-  inline void UsbCommNode::clearBit(uint32_t& data, int pos)
-  {
-    data &= ~(static_cast<uint32_t>(1) << pos);
-  }
+inline void UsbCommNode::clearBit(uint32_t& data, int pos)
+{
+  data &= ~(static_cast<uint32_t>(1) << pos);
+}
 
-  inline bool UsbCommNode::getBit(const uint32_t& data, int pos)
-  {
-    return (data >> pos) & static_cast<uint32_t>(1);
-  }
+inline bool UsbCommNode::getBit(const uint32_t& data, int pos)
+{
+  return (data >> pos) & static_cast<uint32_t>(1);
+}
 
-  void UsbCommNode::setBitsRange(uint32_t &data, int start, int end, uint32_t value)
-  {
-    uint32_t mask = ~((~static_cast<uint32_t>(0) << start) & ((static_cast<uint32_t>(1) << (end + 1)) - 1));
-    data &= mask;
-    
-    value <<= start;
-    data |= value;
-    // printBinary(data);
-  }
+void UsbCommNode::setBitsRange(uint32_t &data, int start, int end, uint32_t value)
+{
+  uint32_t mask = ~((~static_cast<uint32_t>(0) << start) & ((static_cast<uint32_t>(1) << (end + 1)) - 1));
+  data &= mask;
+  
+  value <<= start;
+  data |= value;
+  // printBinary(data);
+}
 
 
 } // namespace nav_transporter
