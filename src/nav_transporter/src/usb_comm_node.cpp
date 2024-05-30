@@ -248,7 +248,7 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
 
   std::vector<geometry_msgs::Point> deltas;
   deltas.reserve(points.size());
-  for (size_t i = 1; i < points.size(); ++i)
+  for (size_t i = 1; i < points.size(); i++)
   {
     geometry_msgs::Point delta;
     delta.x = points[i].x - points[i - 1].x;
@@ -257,17 +257,24 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     if (std::abs(delta.x) > 12.0 || std::abs(delta.y) > 12.0)
     {
       double scale_factor = std::max(std::abs(delta.x) / 12.0, std::abs(delta.y) / 12.0);
-      int num_segments = std::ceil(scale_factor);
-
-      double segment_x = delta.x / num_segments;
-      double segment_y = delta.y / num_segments;
-
-      for (int j = 0; j < num_segments; ++j)
+      double segment_x = delta.x / scale_factor;
+      double segment_y = delta.y / scale_factor;
+      int int_scale_factor = static_cast<int>(std::floor(scale_factor));
+      
+      for (int j = 0; j < int_scale_factor; j++)
       {
         geometry_msgs::Point scaled_delta;
         scaled_delta.x = segment_x;
         scaled_delta.y = segment_y;
         deltas.push_back(scaled_delta);
+      }
+      double remain_factor = scale_factor - int_scale_factor;
+      if (remain_factor > 0)
+      {
+        geometry_msgs::Point remain_delta;
+        remain_delta.x = segment_x * remain_factor;
+        remain_delta.y = segment_y * remain_factor;
+        deltas.push_back(remain_delta);
       }
     }
     else
