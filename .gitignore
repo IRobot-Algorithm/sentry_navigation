@@ -39,7 +39,6 @@ devel_isolated/
 CMakeLists.txt.user
 
 srv/_*.py
-*.pcd
 *.pyc
 qtcreator-*
 *.user
