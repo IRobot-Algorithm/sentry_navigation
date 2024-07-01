@@ -64,9 +64,9 @@ int main(int argc, char **argv) {
 
   ros::Rate loop_rate(1.0);
 
-  private_nh.param("file_directory", file_directory, std::string("/home/nuc/Desktop/pcd_to_pgm/src/pcd/"));
+  private_nh.param("file_directory", file_directory, std::string("/home/niuoruo/workspace/sentry/ws/sentry_navigation/src/fast_gicp/data/"));
 
-  private_nh.param("file_name", file_name, std::string("rmuc2023"));
+  private_nh.param("file_name", file_name, std::string("map"));
 
   pcd_file = file_directory + file_name + pcd_format;
   // pcd_file ="./src/pcd/rmuc2023.pcd";
@@ -134,9 +134,6 @@ int main(int argc, char **argv) {
         point.z = rotated_point(2);
     }
 
-
-  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "blue_map.pcd",
-                                      *pcd_cloud);
   }
 
   while (ros::ok()) {
@@ -165,11 +162,11 @@ void PassThroughFilter(const double &thre_low, const double &thre_high,
   passthrough.setFilterLimitsNegative(flag_in);
   //执行滤波并存储
   passthrough.filter(*cloud_after_PassThrough);
-  // test 保存滤波后的点云到文件
-  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map_filter.pcd",
-                                      *cloud_after_PassThrough);
-  std::cout << "直通滤波后点云数据点数："
-            << cloud_after_PassThrough->points.size() << std::endl;
+  // // test 保存滤波后的点云到文件
+  // pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map_filter.pcd",
+  //                                     *cloud_after_PassThrough);
+  // std::cout << "直通滤波后点云数据点数："
+  //           << cloud_after_PassThrough->points.size() << std::endl;
 }
 
 //半径滤波
@@ -184,11 +181,11 @@ void RadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud0,
   //设置查询点的邻域点集数，小于该阈值的删除
   radiusoutlier.setMinNeighborsInRadius(thre_count);
   radiusoutlier.filter(*cloud_after_Radius);
-  // test 保存滤波后的点云到文件
-  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map_radius_filter.pcd",
-                                      *cloud_after_Radius);
-  std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()
-            << std::endl;
+  // // test 保存滤波后的点云到文件
+  // pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map_radius_filter.pcd",
+  //                                     *cloud_after_Radius);
+  // std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()
+  //           << std::endl;
 }
 
 //半径滤波
@@ -206,8 +203,8 @@ void MapRadiusOutlierFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &pcd_cloud
   // test 保存滤波后的点云到文件
   // pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "map.pcd",
   //                                     *cloud_after_Radius);
-  pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "red_map.pcd",
-                                      *pcd_cloud0);
+  // pcl::io::savePCDFile<pcl::PointXYZ>(file_directory + "red_map.pcd",
+  //                                     *pcd_cloud0);
 
 
   std::cout << "半径滤波后点云数据点数：" << cloud_after_Radius->points.size()

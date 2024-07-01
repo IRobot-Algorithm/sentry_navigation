@@ -1,0 +1,7 @@
+<launch>
+	<param name="icp/pub_result" type="bool" value="1"/>
+	<param name="icp/blue_map_pcd_path" type="string" value="$(find faster_lio)/PCD/red_map.pcd"/>
+	<param name="icp/red_map_pcd_path" type="string" value="$(find faster_lio)/PCD/red_map.pcd"/>
+    <node pkg="fast_gicp" type="gicp_node" name="gicp_node" output="screen" />
+
+</launch>

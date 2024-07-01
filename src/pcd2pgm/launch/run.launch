@@ -2,9 +2,9 @@
 <launch>
   <node pkg="pcd2pgm" name="pcd2pgm" type="pcd2pgm" output="screen">
     <!-- 存放pcd文件的路径-->
-    <param name="file_directory" value= "$(find faster_lio)/PCD/" />
+    <param name="file_directory" value= "$(find fast_gicp)/data/" />
     <!-- pcd文件名称-->
-    <param name="file_name" value= "scans" />
+    <param name="file_name" value= "map" />
     <!-- 选取的范围　最小的高度-->
     <param name="thre_z_min" value= "0.05" />
     <!-- 选取的范围　最大的高度-->

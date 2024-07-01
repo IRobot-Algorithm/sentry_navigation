@@ -37,6 +37,7 @@ void test_pcl(Registration& reg, const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&
   auto t2 = std::chrono::high_resolution_clock::now();
   fitness_score = reg.getFitnessScore();
   double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
+  std::cout << "fitness_score:" << fitness_score << std::flush;
   std::cout << "cost:" << cost << "[msec] " << std::flush;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
@@ -118,8 +119,13 @@ void test(Registration& reg, const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& tar
   }
 
   // 保存点云到 PCD 文件
+#ifdef inverse
+  pcl::io::savePCDFileASCII("inverse_colored_aligned.pcd", *colored_cloud);
+  pcl::io::savePCDFileASCII("inverse_aligned.pcd", *aligned);
+#else
   pcl::io::savePCDFileASCII("colored_aligned.pcd", *colored_cloud);
   pcl::io::savePCDFileASCII("aligned.pcd", *aligned);
+#endif
 
 }
 
@@ -149,8 +155,8 @@ int main(int argc, char** argv) {
     std::remove_if(source_cloud->begin(), source_cloud->end(), [=](const pcl::PointXYZ& pt) { return (pt.getVector3fMap().squaredNorm() < 1e-3 ||
                                                                                                       pt.getVector3fMap()(2) > 3.0 ||
                                                                                                       fabs(pt.getVector3fMap()(1)) > 7.5) ||
-                                                                                                      pt.getVector3fMap()(0) > 21.0 ||
-                                                                                                      pt.getVector3fMap()(0) < -8.0; }),
+                                                                                                      pt.getVector3fMap()(0) > 17.0 ||
+                                                                                                      pt.getVector3fMap()(0) < -10.0; }),
     source_cloud->end());
   target_cloud->erase(
     std::remove_if(target_cloud->begin(), target_cloud->end(), [=](const pcl::PointXYZ& pt) { return (pt.getVector3fMap().squaredNorm() < 1e-3 ||
@@ -159,14 +165,9 @@ int main(int argc, char** argv) {
 
   // downsampling
   pcl::ApproximateVoxelGrid<pcl::PointXYZ> voxelgrid;
-  voxelgrid.setLeafSize(0.5f, 0.5f, 0.5f);
+  voxelgrid.setLeafSize(0.3f, 0.3f, 0.3f);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr filtered(new pcl::PointCloud<pcl::PointXYZ>());
-  voxelgrid.setInputCloud(target_cloud);
-  voxelgrid.filter(*filtered);
-  target_cloud = filtered;
-
-  filtered.reset(new pcl::PointCloud<pcl::PointXYZ>());
   voxelgrid.setInputCloud(source_cloud);
   voxelgrid.filter(*filtered);
   source_cloud = filtered;
@@ -240,8 +241,11 @@ int main(int argc, char** argv) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr final(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::transformPointCloud(*filtered, *final, final_transform);
 
+#ifdef inverse
+  pcl::io::savePCDFileASCII("inverse_final.pcd", *final);
+#else
   pcl::io::savePCDFileASCII("final.pcd", *final);
-
+#endif
 
   // std::cout << "--- vgicp_st ---" << std::endl;
   // fast_gicp::FastVGICP<pcl::PointXYZ, pcl::PointXYZ> vgicp;

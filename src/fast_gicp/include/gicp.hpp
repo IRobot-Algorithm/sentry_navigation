@@ -64,5 +64,6 @@ class GicpLooper
     bool pub_result_ = false;
     bool color_init_ = false;
     bool map_init_ = false;
+    bool is_init_ = false;
     bool color_info_;
 };

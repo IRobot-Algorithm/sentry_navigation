@@ -55,9 +55,12 @@ void GicpLooper::Load(ros::NodeHandle &nh)
 
 void GicpLooper::loop(const ros::TimerEvent& event)
 {
-  mtx_tf_.lock();
-  br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map", "odom"));
-  mtx_tf_.unlock();
+  if (is_init_)
+  {
+    mtx_tf_.lock();
+    br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map", "odom"));
+    mtx_tf_.unlock();
+  }
 }
 
 void GicpLooper::icp(const ros::TimerEvent& event)
@@ -117,6 +120,22 @@ void GicpLooper::icp(const ros::TimerEvent& event)
     mtx_tf_.lock();
     trans_ = eigenMatrixToTf(fgicp_mt_.getFinalTransformation()).inverse();
     mtx_tf_.unlock();
+    is_init_ = true;
+
+    if (pub_result_)
+    {
+
+      sensor_msgs::PointCloud2 map_msg;
+      pcl::toROSMsg(*cloud_target_, map_msg);
+      map_msg.header.frame_id = "map";
+      pub_map_.publish(map_msg);
+
+      sensor_msgs::PointCloud2 scan_msg;
+      pcl::toROSMsg(*aligned, scan_msg);
+      scan_msg.header.frame_id = "map";
+      pub_scan_.publish(scan_msg);
+
+    }
   }
 
 }
