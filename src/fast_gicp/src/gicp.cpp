@@ -65,7 +65,7 @@ void GicpLooper::loop(const ros::TimerEvent& event)
 
 void GicpLooper::icp(const ros::TimerEvent& event)
 {
-
+  
   // downsampling
   pcl::VoxelGrid<pcl::PointXYZ> voxelgrid;
   voxelgrid.setLeafSize(0.5f, 0.5f, 0.5f);
