@@ -46,27 +46,28 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   sub_scan_ = nh.subscribe<sensor_msgs::PointCloud2>("/cloud_registered", 5, 
                                             [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {ScanHandler(msg);});
 
+  pub_reboot_ = nh.advertise<std_msgs::Bool>("/reboot_localization", 1);
   if (pub_result_)
   {
       pub_map_ = nh.advertise<sensor_msgs::PointCloud2>("/icp_cloud_map", 1);
       pub_scan_ = nh.advertise<sensor_msgs::PointCloud2>("/icp_cloud_scan", 1);
   }
 
-  this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &GicpLooper::loop, this);
-  this->icp_timer_ = nh.createTimer(ros::Duration(2.0), &GicpLooper::icp, this);
+  this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &GicpLooper::Loop, this);
+  this->icp_timer_ = nh.createTimer(ros::Duration(2.0), &GicpLooper::Icp, this);
 
 }
 
-void GicpLooper::loop(const ros::TimerEvent& event)
+void GicpLooper::Loop(const ros::TimerEvent& event)
 {
   mtx_tf_.lock();
   br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map", "odom"));
   mtx_tf_.unlock();
 }
 
-void GicpLooper::icp(const ros::TimerEvent& event)
+void GicpLooper::Icp(const ros::TimerEvent& event)
 {
-  
+
   // downsampling
   pcl::VoxelGrid<pcl::PointXYZ> voxelgrid;
   voxelgrid.setLeafSize(0.5f, 0.5f, 0.5f);
@@ -100,6 +101,32 @@ void GicpLooper::icp(const ros::TimerEvent& event)
     map_init_ = true;
   }
 
+  static tf::TransformListener ls;
+  tf::StampedTransform odom2baselink_transform;
+  ls.lookupTransform("/odom", "/base_link",  
+                    ros::Time::now(), odom2baselink_transform);
+
+  std_msgs::Bool msg;
+  if (fabs(odom2baselink_transform.getOrigin().x()) > 30.0 ||
+      fabs(odom2baselink_transform.getOrigin().y()) > 10.0) // 定位跑飞
+  {
+    // stop robot
+    msg.data = true;
+    pub_reboot_.publish(msg);
+    sleep(1);
+
+    bool success = false;
+    while (!success)
+      success = Relocalize();
+
+    return;
+  }
+  else
+  {
+    msg.data = false;
+    pub_reboot_.publish(msg);
+  }
+
   PointCloudT::Ptr aligned(new PointCloudT);
 
   double fitness_score = 0.0;
@@ -116,7 +143,7 @@ void GicpLooper::icp(const ros::TimerEvent& event)
   std::cout << "icp_cost:" << cost << "[msec] " << std::flush;
   std::cout << "fitness_score:" << fitness_score << std::flush;
 
-  if (fitness_score < 1.0)
+  if (fitness_score < 0.5)
   {
     last_result_ = fgicp_mt_.getFinalTransformation();
     mtx_tf_.lock();
@@ -139,6 +166,95 @@ void GicpLooper::icp(const ros::TimerEvent& event)
     }
   }
 
+}
+
+bool GicpLooper::Relocalize()
+{
+  ROS_INFO("Relocalization started!!!");
+
+  // Restart lio
+  system("rosnode kill /laserMapping");
+
+  // Clear cloud
+  mtx_scan_.lock();
+  cloud_scan_->clear();
+  mtx_scan_.unlock();
+
+  ros::Rate rate(10);
+  while (cloud_scan_->points.size() < 20000)
+    rate.sleep();
+
+  // downsampling
+  pcl::VoxelGrid<pcl::PointXYZ> voxelgrid;
+  voxelgrid.setLeafSize(0.5f, 0.5f, 0.5f);
+
+  PointCloudT::Ptr cloud_source(new PointCloudT());
+  mtx_scan_.lock();
+  voxelgrid.setInputCloud(cloud_scan_);
+  voxelgrid.filter(*cloud_source);
+  cloud_scan_->clear();
+  mtx_scan_.unlock();
+
+  for (int i = 0; i < 18; i++)
+  {
+    // 定义旋转矩阵
+    Eigen::Matrix3f rotation = Eigen::Matrix3f::Identity();
+    float theta = i * M_PI / 9.0;
+    rotation(0, 0) = cos(theta);
+    rotation(0, 1) = -sin(theta);
+    rotation(1, 0) = sin(theta);
+    rotation(1, 1) = cos(theta);
+
+    // 定义平移向量
+    Eigen::Vector3f translation(0.0, 0.0, 0.0); // uwb
+
+    // 创建4x4的变换矩阵
+    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+    transform.block<3, 3>(0, 0) = rotation;
+    transform.block<3, 1>(0, 3) = translation;
+
+    PointCloudT::Ptr aligned(new PointCloudT);
+
+    double fitness_score = 0.0;
+
+    auto t1 = std::chrono::high_resolution_clock::now();
+    fgicp_mt_.clearTarget();
+    fgicp_mt_.clearSource();
+    fgicp_mt_.setInputTarget(cloud_target_);
+    fgicp_mt_.setInputSource(cloud_source);
+    fgicp_mt_.align(*aligned, transform);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    fitness_score = fgicp_mt_.getFitnessScore();
+    double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
+
+    std::cout << "relocalizaion_icp_cost:" << cost << "[msec] " << std::flush;
+    std::cout << "relocalizaion_fitness_score:" << fitness_score << std::flush;
+
+    if (pub_result_)
+    {
+      sensor_msgs::PointCloud2 map_msg;
+      pcl::toROSMsg(*cloud_target_, map_msg);
+      map_msg.header.frame_id = "map";
+      pub_map_.publish(map_msg);
+
+      sensor_msgs::PointCloud2 scan_msg;
+      pcl::toROSMsg(*aligned, scan_msg);
+      scan_msg.header.frame_id = "map";
+      pub_scan_.publish(scan_msg);
+    }
+
+    if (fitness_score < 0.5)
+    {
+      last_result_ = fgicp_mt_.getFinalTransformation();
+      mtx_tf_.lock();
+      trans_ = eigenMatrixToTf(last_result_).inverse();
+      mtx_tf_.unlock();
+
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void GicpLooper::ScanHandler(const sensor_msgs::PointCloud2ConstPtr& scan)

@@ -39,11 +39,14 @@ class GicpLooper
 
 
   private:
-    void loop(const ros::TimerEvent& event);
-    void icp(const ros::TimerEvent& event);
+    void Loop(const ros::TimerEvent& event);
+    
+    void Icp(const ros::TimerEvent& event);
+
+    bool Relocalize();
 
     ros::Subscriber sub_scan_, sub_color_info_;
-    ros::Publisher pub_map_, pub_scan_;
+    ros::Publisher pub_map_, pub_scan_, pub_reboot_;
 
     tf::Transform trans_;
 		tf::TransformBroadcaster br_;
