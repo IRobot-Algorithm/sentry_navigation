@@ -30,8 +30,10 @@ GicpLooper::GicpLooper()
   cloud_target_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   cloud_scan_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   fgicp_mt_.setNumThreads(4);
+  
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans_.setOrigin(tf::Vector3(0, 0, 0));
+  last_result_ = Eigen::Matrix4f::Identity();
 }
 
 void GicpLooper::Load(ros::NodeHandle &nh)
@@ -106,7 +108,7 @@ void GicpLooper::icp(const ros::TimerEvent& event)
   // fgicp_mt_.clearSource();
   fgicp_mt_.setInputTarget(cloud_target_);
   fgicp_mt_.setInputSource(cloud_source);
-  fgicp_mt_.align(*aligned);
+  fgicp_mt_.align(*aligned, last_result_);
   auto t2 = std::chrono::high_resolution_clock::now();
   fitness_score = fgicp_mt_.getFitnessScore();
   double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
@@ -116,8 +118,9 @@ void GicpLooper::icp(const ros::TimerEvent& event)
 
   if (fitness_score < 1.0)
   {
+    last_result_ = fgicp_mt_.getFinalTransformation();
     mtx_tf_.lock();
-    trans_ = eigenMatrixToTf(fgicp_mt_.getFinalTransformation()).inverse();
+    trans_ = eigenMatrixToTf(last_result_).inverse();
     mtx_tf_.unlock();
 
     if (pub_result_)
