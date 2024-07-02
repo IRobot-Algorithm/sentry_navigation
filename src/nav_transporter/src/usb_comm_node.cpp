@@ -220,7 +220,7 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     {
       geometry_msgs::Point point;
       point.x = 7.5 - p.y;
-      point.y = p.x + 5.8;
+      point.y = p.x + 6.4;
       points.push_back(point);
     }
   }
@@ -230,7 +230,7 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     {
       geometry_msgs::Point point;
       point.x = p.y + 7.5;
-      point.y = 22.2 - p.x;
+      point.y = 21.6 - p.x;
       points.push_back(point);
     }
   }

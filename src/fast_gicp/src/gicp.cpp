@@ -30,6 +30,8 @@ GicpLooper::GicpLooper()
   cloud_target_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   cloud_scan_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   fgicp_mt_.setNumThreads(4);
+  trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
+  trans_.setOrigin(tf::Vector3(0, 0, 0));
 }
 
 void GicpLooper::Load(ros::NodeHandle &nh)
@@ -55,12 +57,9 @@ void GicpLooper::Load(ros::NodeHandle &nh)
 
 void GicpLooper::loop(const ros::TimerEvent& event)
 {
-  if (is_init_)
-  {
-    mtx_tf_.lock();
-    br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map", "odom"));
-    mtx_tf_.unlock();
-  }
+  mtx_tf_.lock();
+  br_.sendTransform(tf::StampedTransform(trans_, ros::Time::now(), "map", "odom"));
+  mtx_tf_.unlock();
 }
 
 void GicpLooper::icp(const ros::TimerEvent& event)
@@ -120,7 +119,6 @@ void GicpLooper::icp(const ros::TimerEvent& event)
     mtx_tf_.lock();
     trans_ = eigenMatrixToTf(fgicp_mt_.getFinalTransformation()).inverse();
     mtx_tf_.unlock();
-    is_init_ = true;
 
     if (pub_result_)
     {
