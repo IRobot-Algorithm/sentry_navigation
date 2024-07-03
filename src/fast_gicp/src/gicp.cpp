@@ -43,7 +43,7 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   nh.param<std::string>("icp/blue_map_pcd_path", blue_map_pcd_path_, "");
   nh.param<std::string>("icp/red_map_pcd_path", red_map_pcd_path_, "");
 
-  sub_scan_ = nh.subscribe<sensor_msgs::PointCloud2>("/registered_scan", 5, 
+  sub_scan_ = nh.subscribe<sensor_msgs::PointCloud2>("/cloud_registered", 5, 
                                             [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {ScanHandler(msg);});
   sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 5,
                                             [this](const std_msgs::Bool::ConstPtr &msg) {ColorInfoHandler(msg);});

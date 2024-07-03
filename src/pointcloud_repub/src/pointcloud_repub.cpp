@@ -151,13 +151,19 @@ bool PointCloudProcess::transformPointCloud(const std::string &source_frame, con
 
   // if (tf_listener.waitForTransform(target_frame, source_frame, time, ros::Duration(0.1)))
   // {
-    tf::StampedTransform transform;
+  tf::StampedTransform transform;
+  try {
+    tf_listener.waitForTransform(target_frame, source_frame, ros::Time(0), ros::Duration(0.1));
     tf_listener.lookupTransform(target_frame, source_frame, ros::Time(0), transform);
-    // Convert the TF transform to Eigen format  
-    Eigen::Matrix4f eigen_transform;
-    pcl_ros::transformAsMatrix(transform, eigen_transform);
-    pcl::transformPointCloud(in, out, eigen_transform);
-    return true;
+  } catch (tf::TransformException ex){
+    throw ex;
+    return false;
+  }
+  // Convert the TF transform to Eigen format  
+  Eigen::Matrix4f eigen_transform;
+  pcl_ros::transformAsMatrix(transform, eigen_transform);
+  pcl::transformPointCloud(in, out, eigen_transform);
+  return true;
   // }
     
   // return false;
@@ -192,17 +198,19 @@ void PointCloudProcess::LivoxMsgHandler(const livox_ros_driver2::CustomMsgConstP
 
 void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr& livox_cloud_in)
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_out(new pcl::PointCloud<pcl::PointXYZI>());
-  pcl::fromROSMsg(*livox_cloud_in, *livox_cloud_out);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_odom(new pcl::PointCloud<pcl::PointXYZI>());
+  pcl::fromROSMsg(*livox_cloud_in, *livox_cloud_odom);
 
+  pcl::PointCloud<pcl::PointXYZI>::Ptr livox_cloud_map(new pcl::PointCloud<pcl::PointXYZI>());
+  transformPointCloud(livox_cloud_odom->header.frame_id, "map", *livox_cloud_odom, *livox_cloud_map, livox_cloud_in->header.stamp, tf_);
 
-      pcl::PointCloud<pcl::PointXYZI> registered_cloud_out = *livox_cloud_out + *D435_cloud_out_; //点云融合
+  // pcl::PointCloud<pcl::PointXYZI> registered_cloud_out = *livox_cloud_out + *D435_cloud_out_; //点云融合
 
-      sensor_msgs::PointCloud2 registered_cloud;
-      pcl::toROSMsg(registered_cloud_out, registered_cloud);
-      registered_cloud.header.stamp = livox_cloud_in->header.stamp;
-      registered_cloud.header.frame_id = "map";
-      pub_registered_cloud_.publish(registered_cloud);
+  sensor_msgs::PointCloud2 registered_cloud;
+  pcl::toROSMsg(*livox_cloud_map, registered_cloud);
+  registered_cloud.header.stamp = livox_cloud_in->header.stamp;
+  registered_cloud.header.frame_id = "map";
+  pub_registered_cloud_.publish(registered_cloud);
   
 }
 

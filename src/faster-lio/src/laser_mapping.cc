@@ -1,3 +1,4 @@
+#include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 #include <yaml-cpp/yaml.h>
@@ -893,7 +894,7 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
     // odom_base.twist.twist.linear.y = MAP_V(1);
     // odom_base.twist.twist.linear.z = MAP_V(2);
 
-    pub_odom_aft_mapped.publish(odom_base);
+    // pub_odom_aft_mapped.publish(odom_base);
     auto P = kf_.get_P();
     for (int i = 0; i < 6; i++) {
         int k = i < 3 ? i + 3 : i - 3;
@@ -912,6 +913,25 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                                     odom_base.pose.pose.position.z));
     transform.setRotation(tf_q);
     br.sendTransform(tf::StampedTransform(transform, odom_base.header.stamp, "odom", "base_link"));
+
+    tf::Pose tf_odom_pose;
+    tf::poseMsgToTF(odom_base.pose.pose, tf_odom_pose);
+    tf::StampedTransform odom_to_map_tf_stamp;
+    static tf::TransformListener tf_listener;
+    try
+    {
+      tf_listener.lookupTransform("map", "odom", ros::Time(0), odom_to_map_tf_stamp);
+      tf_odom_pose = odom_to_map_tf_stamp * tf_odom_pose;
+    }
+    catch (tf::TransformException ex){
+      ROS_ERROR("Tracking odom TF lookup: %s",ex.what());
+      return;
+    }
+
+    tf::poseTFToMsg(tf_odom_pose, odom_base.pose.pose);
+    odom_base.header.frame_id = "map";
+    pub_odom_aft_mapped.publish(odom_base);
+
 }
 
 void LaserMapping::PublishFrameWorld() {

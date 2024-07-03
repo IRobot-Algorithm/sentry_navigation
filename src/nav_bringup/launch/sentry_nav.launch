@@ -10,7 +10,7 @@
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
-	    <arg name="rviz" value="true" />
+	    <arg name="rviz" value="false" />
     </include>
     <include file="$(find fast_gicp)/launch/gicp_loop.launch" />
 
