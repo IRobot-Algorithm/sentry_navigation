@@ -10,12 +10,13 @@
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
-	    <arg name="rviz" value="false" />
+	    <arg name="rviz" value="true" />
     </include>
+    <include file="$(find fast_gicp)/launch/gicp_loop.launch" />
 
     <include file="$(find far_planner)/launch/far_planner.launch" />
 
-    <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" />
+    <!-- <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" /> -->
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
     <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
 
@@ -29,8 +30,8 @@
     <include file="$(find nav_transporter)/launch/transporter.launch" >
         <arg name="use_pose_goal" value="false"/>
         <arg name="track_target" value="true"/>
-        <arg name="use_map" value="true"/>
-        <arg name="is_test" value="false"/>
+        <arg name="use_map" value="false"/>
+        <arg name="is_test" value="true"/>
         <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->

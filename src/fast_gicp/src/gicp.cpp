@@ -29,7 +29,7 @@ GicpLooper::GicpLooper()
 {
   cloud_target_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   cloud_scan_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
-  fgicp_mt_.setNumThreads(4);
+  fgicp_mt_.setNumThreads(6);
   
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans_.setOrigin(tf::Vector3(0, 0, 0));
@@ -43,8 +43,10 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   nh.param<std::string>("icp/blue_map_pcd_path", blue_map_pcd_path_, "");
   nh.param<std::string>("icp/red_map_pcd_path", red_map_pcd_path_, "");
 
-  sub_scan_ = nh.subscribe<sensor_msgs::PointCloud2>("/cloud_registered", 5, 
+  sub_scan_ = nh.subscribe<sensor_msgs::PointCloud2>("/registered_scan", 5, 
                                             [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {ScanHandler(msg);});
+  sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 5,
+                                            [this](const std_msgs::Bool::ConstPtr &msg) {ColorInfoHandler(msg);});
 
   pub_reboot_ = nh.advertise<std_msgs::Bool>("/reboot_localization", 1);
   if (pub_result_)
@@ -54,7 +56,7 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   }
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &GicpLooper::Loop, this);
-  this->icp_timer_ = nh.createTimer(ros::Duration(2.0), &GicpLooper::Icp, this);
+  this->icp_timer_ = nh.createTimer(ros::Duration(5.0), &GicpLooper::Icp, this);
 
 }
 
@@ -67,6 +69,8 @@ void GicpLooper::Loop(const ros::TimerEvent& event)
 
 void GicpLooper::Icp(const ros::TimerEvent& event)
 {
+  if (cloud_scan_->points.size() < 5000)
+    return;
 
   // downsampling
   pcl::VoxelGrid<pcl::PointXYZ> voxelgrid;
@@ -80,7 +84,10 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   mtx_scan_.unlock();
 
   if (!color_init_)
+  {
+    ROS_WARN("[Gicp node]:Color init failed!");
     return;
+  }
 
   if (!map_init_)
   {
@@ -103,12 +110,18 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
 
   static tf::TransformListener ls;
   tf::StampedTransform odom2baselink_transform;
-  ls.lookupTransform("/odom", "/base_link",  
-                    ros::Time::now(), odom2baselink_transform);
+  try {
+    ls.lookupTransform("/odom", "/base_link",  
+                      ros::Time(0), odom2baselink_transform);
+  }
+  catch (tf::TransformException &ex) {
+    ROS_WARN("GicpTrans : %s",ex.what());
+    return;
+  }
 
   std_msgs::Bool msg;
-  if (fabs(odom2baselink_transform.getOrigin().x()) > 30.0 ||
-      fabs(odom2baselink_transform.getOrigin().y()) > 10.0) // 定位跑飞
+  if (fabs(odom2baselink_transform.getOrigin().x()) > 50.0 ||
+      fabs(odom2baselink_transform.getOrigin().y()) > 50.0) // 定位跑飞
   {
     // stop robot
     msg.data = true;
@@ -127,6 +140,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     pub_reboot_.publish(msg);
   }
 
+  ROS_INFO_STREAM("\033[1;32m[Gicp node]:Gicp start!\033[0m");
   PointCloudT::Ptr aligned(new PointCloudT);
 
   double fitness_score = 0.0;
@@ -140,14 +154,14 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   fitness_score = fgicp_mt_.getFitnessScore();
   double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
 
-  std::cout << "icp_cost:" << cost << "[msec] " << std::flush;
-  std::cout << "fitness_score:" << fitness_score << std::flush;
+  std::cout << "\033[1;33m" << "icp_cost:" << cost << "[msec] " << "\033[0m" << std::flush;
+  std::cout << "\033[1;33m" << "fitness_score:" << fitness_score << "\033[0m" << std::flush;
 
-  if (fitness_score < 0.5)
+  if (fitness_score < 0.3)
   {
     last_result_ = fgicp_mt_.getFinalTransformation();
     mtx_tf_.lock();
-    trans_ = eigenMatrixToTf(last_result_).inverse();
+    trans_ = eigenMatrixToTf(last_result_);
     mtx_tf_.unlock();
 
     if (pub_result_)
@@ -164,13 +178,18 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
       pub_scan_.publish(scan_msg);
 
     }
+    ROS_INFO_STREAM("\033[1;32m[Gicp node]:[Gicp node]:Gicp succeed!!!\033[0m");
+  }
+  else
+  {
+    ROS_WARN("[Gicp node]:Gicp failed!!!");
   }
 
 }
 
 bool GicpLooper::Relocalize()
 {
-  ROS_INFO("Relocalization started!!!");
+  ROS_INFO_STREAM("\033[1;32m[Gicp node]:Relocalization started!!!\033[0m");
 
   // Restart lio
   system("rosnode kill /laserMapping");
@@ -206,7 +225,7 @@ bool GicpLooper::Relocalize()
     rotation(1, 1) = cos(theta);
 
     // 定义平移向量
-    Eigen::Vector3f translation(0.0, 0.0, 0.0); // uwb
+    Eigen::Vector3f translation(-7.0, -3.0, 0.0); // uwb
 
     // 创建4x4的变换矩阵
     Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
@@ -227,8 +246,8 @@ bool GicpLooper::Relocalize()
     fitness_score = fgicp_mt_.getFitnessScore();
     double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
 
-    std::cout << "relocalizaion_icp_cost:" << cost << "[msec] " << std::flush;
-    std::cout << "relocalizaion_fitness_score:" << fitness_score << std::flush;
+    std::cout << "\033[1;33m" << "relocalizaion_icp_cost:" << cost << "[msec] " <<  "\033[0m" << std::flush;
+    std::cout << "\033[1;33m" << "relocalizaion_fitness_score:" << fitness_score << "\033[0m" << std::flush;
 
     if (pub_result_)
     {
@@ -243,14 +262,19 @@ bool GicpLooper::Relocalize()
       pub_scan_.publish(scan_msg);
     }
 
-    if (fitness_score < 0.5)
+    if (fitness_score < 0.3)
     {
+      ROS_INFO_STREAM("\033[1;32m[Gicp node]:Relocalization succeed!!!\033[0m");
       last_result_ = fgicp_mt_.getFinalTransformation();
       mtx_tf_.lock();
       trans_ = eigenMatrixToTf(last_result_).inverse();
       mtx_tf_.unlock();
 
       return true;
+    }
+    else
+    {
+      ROS_WARN("[Gicp node]:Relocalization failed!!!");
     }
   }
 

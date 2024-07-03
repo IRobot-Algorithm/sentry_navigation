@@ -998,7 +998,7 @@ void LaserMapping::PublishVelocity(const ros::Publisher &pub_vel)
 {
     geometry_msgs::TwistStamped msg;
     msg.header.stamp = odom_.header.stamp;
-    msg.header.frame_id = "map";
+    msg.header.frame_id = "odom";
     msg.twist = odom_.twist.twist;
     pub_vel.publish(msg);
 }
