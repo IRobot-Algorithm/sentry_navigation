@@ -10,6 +10,8 @@
 #include <vector>
 #include <Eigen/Dense>
 
+#include <geometry_msgs/PointStamped.h>
+
 #include "usb_comm_node.hpp"
 
 using namespace std::chrono;
@@ -49,6 +51,7 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
         
   this->pub_referee_info_ = nh.advertise<sentry_msgs::RefereeInformation>("/referee_info", 1);
   this->pub_color_info_ = nh.advertise<std_msgs::Bool>("/color_info", 10);
+  this->pub_uwb_ = nh.advertise<geometry_msgs::PointStamped>("/clicked_point", 10);
 
   // ROS timer initialization
   // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
@@ -132,6 +135,8 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   referee_info_.force_back = false;
   referee_info_.keep_patrol = false;
   referee_info_.normal_mode = 0; // 反前哨站
+
+  uwb_.header.frame_id = "map";
 
 }
 
@@ -220,7 +225,7 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     {
       geometry_msgs::Point point;
       point.x = 7.5 - p.y;
-      point.y = p.x + 6.4;
+      point.y = p.x + 6.5;
       points.push_back(point);
     }
   }
@@ -230,7 +235,7 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     {
       geometry_msgs::Point point;
       point.x = p.y + 7.5;
-      point.y = 21.6 - p.x;
+      point.y = 21.5 - p.x;
       points.push_back(point);
     }
   }
@@ -470,6 +475,28 @@ void UsbCommNode::receiveCallback()
         // TODO: keyward force back
         pub_referee_info_.publish(referee_info_);
         pub_color_info_.publish(color_info);
+        break;
+      }
+      case UWB_RECEIVE_ID:
+      {
+        transporter::UwbReceivePackage package;
+        memcpy(&package, receive_package, 
+                sizeof(transporter::UwbReceivePackage));
+
+        uwb_.header.stamp = ros::Time().now();
+        uwb_.header.frame_id = "map";
+        if (map_data_package_.sender_id < 10) // red
+        {
+          uwb_.point.x = package.y - 6.5;
+          uwb_.point.y = 7.5 - package.x;
+        }
+        else // blue
+        {
+          uwb_.point.x = 21.5 - package.y;
+          uwb_.point.y = package.x - 7.5;
+        }
+
+        pub_uwb_.publish(uwb_);
         break;
       }
     }

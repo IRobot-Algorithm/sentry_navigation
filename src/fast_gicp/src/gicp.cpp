@@ -47,6 +47,8 @@ void GicpLooper::Load(ros::NodeHandle &nh)
                                             [this](const sensor_msgs::PointCloud2::ConstPtr &msg) {ScanHandler(msg);});
   sub_color_info_ = nh.subscribe<std_msgs::Bool>("/color_info", 5,
                                             [this](const std_msgs::Bool::ConstPtr &msg) {ColorInfoHandler(msg);});
+  sub_uwb_ = nh.subscribe<geometry_msgs::PointStamped>("/clicked_point", 5,
+                                            [this](const geometry_msgs::PointStamped::ConstPtr &msg) {UwbHandler(msg);});
 
   pub_reboot_ = nh.advertise<std_msgs::Bool>("/reboot_localization", 1);
   if (pub_result_)
@@ -225,7 +227,7 @@ bool GicpLooper::Relocalize()
     rotation(1, 1) = cos(theta);
 
     // 定义平移向量
-    Eigen::Vector3f translation(0.0, 0.0, 0.0); // uwb
+    Eigen::Vector3f translation(uwb_.point.x, uwb_.point.y, 0.0); // uwb
 
     // 创建4x4的变换矩阵
     Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
@@ -295,6 +297,11 @@ void GicpLooper::ColorInfoHandler(const std_msgs::Bool::ConstPtr& color)
 {
   color_info_ = color->data;
   color_init_ = true;
+}
+
+void GicpLooper::UwbHandler(const geometry_msgs::PointStamped::ConstPtr& uwb)
+{
+  uwb_ = *uwb;
 }
 
 int main(int argc, char** argv)

@@ -74,11 +74,13 @@ class UsbCommNode {
 		ros::Subscriber sub_path_;
 		ros::Publisher pub_referee_info_;
 		ros::Publisher pub_color_info_;
+		ros::Publisher pub_uwb_;
 
 		ros::Timer send_vel_timer_;
 
     sentry_msgs::RefereeInformation referee_info_;
     geometry_msgs::Quaternion odom_quat_;
+		geometry_msgs::PointStamped uwb_;
     double odom_time_;
     bool new_odom_ = false;
 		bool in_supply_ = false;

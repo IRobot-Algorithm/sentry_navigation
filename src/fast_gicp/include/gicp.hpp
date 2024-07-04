@@ -4,6 +4,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/point_cloud_conversion.h>
+#include <geometry_msgs/PointStamped.h>
 #include <std_msgs/Bool.h>
 
 #include <pcl/io/pcd_io.h>
@@ -37,6 +38,7 @@ class GicpLooper
 
     void ColorInfoHandler(const std_msgs::Bool::ConstPtr &color);
 
+    void UwbHandler(const geometry_msgs::PointStamped::ConstPtr &uwb);
 
   private:
     void Loop(const ros::TimerEvent& event);
@@ -45,11 +47,13 @@ class GicpLooper
 
     bool Relocalize();
 
-    ros::Subscriber sub_scan_, sub_color_info_;
+    ros::Subscriber sub_scan_, sub_color_info_, sub_uwb_;
     ros::Publisher pub_map_, pub_scan_, pub_reboot_;
 
     tf::Transform trans_;
 		tf::TransformBroadcaster br_;
+
+    geometry_msgs::PointStamped uwb_;
 
     PointCloudT::Ptr cloud_target_;
     PointCloudT::Ptr cloud_scan_;

@@ -20,6 +20,7 @@
 #define RMOS_IMU_1_RECEIVE_ID 0x6
 #define RMOS_SEND_ID 0x7
 #define MAP_DATA_SEND_ID 0x8
+#define UWB_RECEIVE_ID 0x9
 
 namespace transporter
 {
@@ -111,6 +112,18 @@ typedef struct
   // 包尾
   uint8_t _EOF;
 } NavIMUReceivePackage;
+
+typedef struct
+{
+  // 包头
+  uint8_t _SOF;
+  uint8_t ID;
+	// 坐标
+	float x;
+	float y;
+  // 包尾
+  uint8_t _EOF;
+} UwbReceivePackage;
 
 typedef struct
 {
