@@ -117,6 +117,8 @@ float last_speed_y = 0;
 float path_range = 0;
 float trackDis = 3.0;
 
+bool is_reboot = false;
+
 ros::Time sendTime;
 
 nav_msgs::Path path;
@@ -323,8 +325,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   else
   {
     // std::cout << "none" << std::endl;
-    if (fabs(dis) < 1.6)
-      endMaxSpeed *= (fabs(dis / 2.0) + 0.2);
+    if (fabs(dis) < 1.2)
+      endMaxSpeed *= (fabs(dis / 1.5) + 0.2);
   }
 
   float speed = sqrt(vel.twist.linear.x * vel.twist.linear.x + 

@@ -924,7 +924,7 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
       tf_odom_pose = odom_to_map_tf_stamp * tf_odom_pose;
     }
     catch (tf::TransformException ex){
-      ROS_ERROR("Tracking odom TF lookup: %s",ex.what());
+      ROS_WARN("Tracking odom TF lookup: %s",ex.what());
       return;
     }
 

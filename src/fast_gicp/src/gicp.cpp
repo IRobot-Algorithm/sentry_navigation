@@ -56,7 +56,7 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   }
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &GicpLooper::Loop, this);
-  this->icp_timer_ = nh.createTimer(ros::Duration(5.0), &GicpLooper::Icp, this);
+  this->icp_timer_ = nh.createTimer(ros::Duration(3.0), &GicpLooper::Icp, this);
 
 }
 
