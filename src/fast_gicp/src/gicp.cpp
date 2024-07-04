@@ -120,13 +120,13 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   }
 
   std_msgs::Bool msg;
-  if (fabs(odom2baselink_transform.getOrigin().x()) > 50.0 ||
-      fabs(odom2baselink_transform.getOrigin().y()) > 50.0) // 定位跑飞
+  if (fabs(odom2baselink_transform.getOrigin().x()) > 2.0 ||
+      fabs(odom2baselink_transform.getOrigin().y()) > 2.0) // 定位跑飞
   {
     // stop robot
     msg.data = true;
     pub_reboot_.publish(msg);
-    sleep(1);
+    sleep(2);
 
     bool success = false;
     while (!success)
@@ -225,7 +225,7 @@ bool GicpLooper::Relocalize()
     rotation(1, 1) = cos(theta);
 
     // 定义平移向量
-    Eigen::Vector3f translation(-7.0, -3.0, 0.0); // uwb
+    Eigen::Vector3f translation(0.0, 0.0, 0.0); // uwb
 
     // 创建4x4的变换矩阵
     Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();

@@ -23,7 +23,7 @@ mapping:
 
 irobot:
     # 侧装双头龙
-    extrinsic_T: [ -0.17, 0, 0 ]
+    extrinsic_T: [ -0.16, 0, 0 ]
     extrinsic_R: [ 0.7071, 0, -0.7071,
                    0, 1, 0,
                    0.7071, 0, 0.7071]

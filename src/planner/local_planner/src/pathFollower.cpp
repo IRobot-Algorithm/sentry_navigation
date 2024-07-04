@@ -276,6 +276,11 @@ void trackDisHandler(const std_msgs::Float32::ConstPtr& dis)
   trackDis = dis->data;
 }
 
+void rebootHandler(const std_msgs::Bool::ConstPtr& reboot)
+{
+  is_reboot = reboot->data;
+}
+
 //zbh接收航点信息
 void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
 {
@@ -353,6 +358,14 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     // vel.twist.linear.z = 3.0;
   }
 
+  if (is_reboot)
+  {
+    vel.twist.linear.x = 0.0;
+    vel.twist.linear.y = 0.0;
+    vel.twist.linear.z = 3.0; // KEEP
+    vel.twist.angular.z = 0.0;
+  }
+
   // std::cout << is_on_slope << std::endl;
 
   last_speed_x = vel.twist.linear.x;
@@ -414,6 +427,8 @@ int main(int argc, char** argv)
   ros::Subscriber subStop = nh.subscribe<std_msgs::Bool> ("/stop", 5, stopHandler);
 
   ros::Subscriber subTrackDis = nh.subscribe<std_msgs::Float32> ("/track_distance", 1, trackDisHandler);
+
+  ros::Subscriber subReboot = nh.subscribe<std_msgs::Bool> ("/reboot_localization", 1, rebootHandler);
 
   //订阅航点（位姿）
   ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);

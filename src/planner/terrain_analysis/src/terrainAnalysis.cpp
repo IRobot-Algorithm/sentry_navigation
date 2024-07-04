@@ -9,6 +9,7 @@
 #include <message_filters/sync_policies/approximate_time.h>
 
 #include <std_msgs/Float32.h>
+#include <std_msgs/Bool.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Joy.h>
@@ -103,6 +104,7 @@ float sinVehiclePitch = 0, cosVehiclePitch = 0;
 float sinVehicleYaw = 0, cosVehicleYaw = 0;
 
 double cloudRoll = 0, cloudPitch = 0, cloudYaw = 0;
+bool is_reboot = false;
 
 pcl::VoxelGrid<pcl::PointXYZI> downSizeFilter;
 
@@ -229,6 +231,11 @@ void staticObstaclesHandler(const sensor_msgs::PointCloud2ConstPtr& staticObstac
   // }
 }
 
+void rebootHandler(const std_msgs::Bool::ConstPtr& reboot)
+{
+  is_reboot = reboot->data;
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "terrainAnalysis");
@@ -273,6 +280,8 @@ int main(int argc, char** argv)
   ros::Subscriber subClearing = nh.subscribe<std_msgs::Float32> ("/map_clearing", 5, clearingHandler);
 
   // ros::Subscriber subStaticObstacles = nh.subscribe<sensor_msgs::PointCloud2> ("/static_obstacles", 5, staticObstaclesHandler);
+
+  ros::Subscriber subReboot = nh.subscribe<std_msgs::Bool> ("/reboot_localization", 1, rebootHandler);
 
   ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2> ("/terrain_map", 2);
 
@@ -409,7 +418,7 @@ int main(int argc, char** argv)
           yawDiff -= 2.0 * PI;
         else if (yawDiff < -2.0 * PI)
           yawDiff += 2.0 * PI;
-        if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre || clearingCloud ||
+        if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre || clearingCloud || is_reboot ||
            (laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre &&
             fabs(yawDiff) < PI / 5.0))
         {
