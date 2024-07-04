@@ -1,5 +1,6 @@
 <launch>
 
+    <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="0 0 0 0 0 0 map odom 1" />
     <include file="$(find nav_bringup)/launch/robot_state_publisher.launch" />
     <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
 
