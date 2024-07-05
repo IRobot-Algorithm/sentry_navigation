@@ -125,27 +125,48 @@ nav_msgs::Path path;
 
 std::vector<std::vector<cv::Point>> polygons =
 {
-  // 环高1
+  // 我方梯高斜坡
   {
-    cv::Point(2.7, -0.6),
-    cv::Point(4.5, -0.1),
-    cv::Point(6.0, -2.2),
-    cv::Point(4.7, -3.2)
+    cv::Point(-0.971, 3.896),
+    cv::Point(-3.557, 3.896),
+    cv::Point(-3.557, 2.798),
+    cv::Point(-1.740, 2.798)
   },
-  // 环高2
+  // 我方环高左侧斜坡
   {
-    cv::Point(6.2, 3.2),
-    cv::Point(4.8, 4.5),
-    cv::Point(6.4, 6.4),
-    cv::Point(7.5, 5.2)
+    cv::Point(6.667, 5.173),
+    cv::Point(5.358, 6.090),
+    cv::Point(4.240, 4.493),
+    cv::Point(3.835, 1.300)
   },
-  // 梯高
+  // 我方环高右侧斜坡
   {
-    cv::Point(-3.0, 3.8),
-    cv::Point(-3.0, 2.3),
-    cv::Point(-0.7, 2.3),
-    cv::Point(0.8, 3.8)
-  }
+    cv::Point(3.836, -0.244),
+    cv::Point(2.336, -0.716),
+    cv::Point(3.891, -2.939),
+    cv::Point(5.120, -2.078)
+  },
+  // 敌方梯高斜坡
+  {
+    cv::Point(18.593, -2.838),
+    cv::Point(16.776, -2.838),
+    cv::Point(16.006, -3.937),
+    cv::Point(18.593, -3.937)
+  },
+  // 敌方环高左侧斜坡
+  {
+    cv::Point(12.427, 1.065),
+    cv::Point(11.143, 2.899),
+    cv::Point(9.914, 2.038),
+    cv::Point(11.199, 0.224)
+  },
+  // 敌方环高右侧斜坡
+  {
+    cv::Point(10.794, -4.533),
+    cv::Point(9.566, -3.673),
+    cv::Point(8.448, -5.270),
+    cv::Point(9.677, -6.130)
+  },
 };
 
 bool is_on_slope = false;
@@ -298,14 +319,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   double dt = ros::Time::now().toSec() - sendTime.toSec();
   sendTime = ros::Time::now();
 
-  static double slopeTrust = 0; // 倾斜置信度
   if (is_on_slope)
   {
-    if (fabs(vehicleSlopeAngle) > 0.12)
-      slopeTrust = 0; // 倾斜置信度
-    else
-      slopeTrust += dt;
-    
     float slopeDir = 0.0;
     if (velAngle > -4.0) // 朝向
     {
@@ -317,12 +332,12 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
       if (slopeDir <= PI / 2.0)
       {
         // std::cout << "down" << std::endl;
-        endMaxSpeed *= 0.5;
+        endMaxSpeed *= 0.3;
       }
       else
       {
         // std::cout << "up" << std::endl;
-        endMaxSpeed *= 0.7;
+        endMaxSpeed *= 0.5;
       }
     }
     endMaxAccel *= 0.3;
@@ -343,8 +358,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
     vel.twist.linear.y *= endMaxSpeed / speed;
   }
 
-  
-  if (is_on_slope && slopeTrust < switchTimeThre)
+  if (is_on_slope)
   {
     // 根据最大加速度修正速度
     float delta_speed_x = vel.twist.linear.x - last_speed_x;
