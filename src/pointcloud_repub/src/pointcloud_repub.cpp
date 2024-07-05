@@ -17,17 +17,17 @@ PointCloudProcess::PointCloudProcess()
   {
     // 我方环高玻璃区域
     {
-      cv::Point(3.836, -0.244),
-      cv::Point(3.836, 1.300),
-      cv::Point(2.336, 1.773),
-      cv::Point(2.336, -0.718)
+      cv::Point2d(3.836, -0.244),
+      cv::Point2d(3.836, 1.300),
+      cv::Point2d(2.336, 1.773),
+      cv::Point2d(2.336, -0.718)
     },
     // 敌方环高玻璃区域
     {
-      cv::Point(12.699, -1.813),
-      cv::Point(12.699, 0.678),
-      cv::Point(11.199, 0.205),
-      cv::Point(11.199, -1.340)
+      cv::Point2d(12.699, -1.813),
+      cv::Point2d(12.699, 0.678),
+      cv::Point2d(11.199, 0.205),
+      cv::Point2d(11.199, -1.340)
     },
   };
 }
@@ -52,6 +52,16 @@ void PointCloudProcess::SubAndPubToROS(ros::NodeHandle &nh)
   pub_livox_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/livox_pcl", 5);
   pub_D435_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/D435_pcl", 5);
   pub_test_cloud_ = nh.advertise<sensor_msgs::PointCloud2>("/test_pcl", 5);
+  pub_glass_marker_ = nh.advertise<visualization_msgs::Marker>("/glass_area", 10);
+
+  /*
+  ros::Rate rate(1);
+  while (ros::ok())
+  {
+    publishPolygons();
+    rate.sleep();
+  }
+  */
 }
 
 bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
@@ -74,6 +84,43 @@ bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
 
   return true;
 
+}
+
+void PointCloudProcess::publishPolygons()
+{
+  int id = 0;
+  for (const auto& polygon : polygons_)
+  {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "map";
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "glass";
+    marker.id = id++;
+    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose.orientation.w = 1.0;
+    marker.scale.x = 0.1;  // Line width
+    marker.color.r = 0.0;
+    marker.color.g = 1.0;
+    marker.color.b = 0.0;
+    marker.color.a = 1.0;
+
+    for (const auto& point : polygon) {
+      geometry_msgs::Point p;
+      p.x = point.x;
+      p.y = point.y;
+      p.z = 0.0;
+      marker.points.push_back(p);
+    }
+    // Close the loop
+    geometry_msgs::Point p;
+    p.x = polygon[0].x;
+    p.y = polygon[0].y;
+    p.z = 0.0;
+    marker.points.push_back(p);
+
+    pub_glass_marker_.publish(marker);
+  }
 }
 
 bool PointCloudProcess::cutCustomMsg(const livox_ros_driver2::CustomMsg &in, livox_ros_driver2::CustomMsg &out)
@@ -234,7 +281,7 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
         for (const auto& polygon : polygons_)
         {
           if (cv::pointPolygonTest(polygon, 
-              cv::Point(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
+              cv::Point2d(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
           {
             livox_cloud_map->points[i].z = 0.273;
             break;

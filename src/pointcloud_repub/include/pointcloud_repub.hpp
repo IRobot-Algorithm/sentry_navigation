@@ -67,6 +67,8 @@ private:
                            const pcl::PointCloud<pcl::PointXYZI> &in, pcl::PointCloud<pcl::PointXYZI> &out, 
                            const ros::Time &time, const tf::TransformListener &tf_listener);
 
+  void publishPolygons();
+
 private:
   tf::TransformListener tf_;
 
@@ -79,6 +81,7 @@ private:
   ros::Publisher pub_D435_cloud_;
   ros::Publisher pub_test_cloud_;
   ros::Publisher pub_registered_cloud_;
+  ros::Publisher pub_glass_marker_;
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr D435_cloud_out_;
   
@@ -91,7 +94,7 @@ private:
   double undecay_radio_;
   bool adjust_height_;
 
-  std::vector<std::vector<cv::Point>> polygons_;
+  std::vector<std::vector<cv::Point2d>> polygons_;
 
 };
 

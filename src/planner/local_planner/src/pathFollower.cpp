@@ -126,49 +126,49 @@ ros::Time sendTime;
 
 nav_msgs::Path path;
 
-std::vector<std::vector<cv::Point>> polygons =
+std::vector<std::vector<cv::Point2d>> polygons =
 {
   // 我方梯高斜坡
   {
-    cv::Point(-0.971, 3.896),
-    cv::Point(-3.557, 3.896),
-    cv::Point(-3.557, 2.798),
-    cv::Point(-1.740, 2.798)
+    cv::Point2d(-0.971, 3.896),
+    cv::Point2d(-3.557, 3.896),
+    cv::Point2d(-3.557, 2.798),
+    cv::Point2d(-1.740, 2.798)
   },
   // 我方环高左侧斜坡
   {
-    cv::Point(6.667, 5.173),
-    cv::Point(5.358, 6.090),
-    cv::Point(4.240, 4.493),
-    cv::Point(3.835, 1.300)
+    cv::Point2d(6.667, 5.173),
+    cv::Point2d(5.358, 6.090),
+    cv::Point2d(4.240, 4.493),
+    cv::Point2d(5.469, 3.633)
   },
   // 我方环高右侧斜坡
   {
-    cv::Point(3.836, -0.244),
-    cv::Point(2.336, -0.716),
-    cv::Point(3.891, -2.939),
-    cv::Point(5.120, -2.078)
+    cv::Point2d(3.836, -0.244),
+    cv::Point2d(2.607, -1.104),
+    cv::Point2d(3.891, -2.939),
+    cv::Point2d(5.120, -2.078)
   },
   // 敌方梯高斜坡
   {
-    cv::Point(18.593, -2.838),
-    cv::Point(16.776, -2.838),
-    cv::Point(16.006, -3.937),
-    cv::Point(18.593, -3.937)
+    cv::Point2d(18.593, -2.838),
+    cv::Point2d(16.776, -2.838),
+    cv::Point2d(16.006, -3.937),
+    cv::Point2d(18.593, -3.937)
   },
   // 敌方环高左侧斜坡
   {
-    cv::Point(12.427, 1.065),
-    cv::Point(11.143, 2.899),
-    cv::Point(9.914, 2.038),
-    cv::Point(11.199, 0.224)
+    cv::Point2d(12.427, 1.065),
+    cv::Point2d(11.143, 2.899),
+    cv::Point2d(9.914, 2.038),
+    cv::Point2d(11.199, 0.224)
   },
   // 敌方环高右侧斜坡
   {
-    cv::Point(10.794, -4.533),
-    cv::Point(9.566, -3.673),
-    cv::Point(8.448, -5.270),
-    cv::Point(9.677, -6.130)
+    cv::Point2d(10.794, -4.533),
+    cv::Point2d(9.566, -3.673),
+    cv::Point2d(8.448, -5.270),
+    cv::Point2d(9.677, -6.130)
   },
 };
 
@@ -198,7 +198,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   {
     for (const auto& polygon : polygons)
     {
-        if (cv::pointPolygonTest(polygon, cv::Point(vehicleX, vehicleY), false) >= 0)
+        if (cv::pointPolygonTest(polygon, cv::Point2d(vehicleX, vehicleY), false) >= 0)
         {
             is_on_slope = true;
             
@@ -311,6 +311,43 @@ void goalHandler(const geometry_msgs::PointStamped::ConstPtr& goal)
   goalX = goal->point.x;
   goalY = goal->point.y;
   goalZ = goal->point.z;
+}
+
+void publishPolygons(ros::Publisher& marker_pub)
+{
+  int id = 0;
+  for (const auto& polygon : polygons)
+  {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "map";
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "slope";
+    marker.id = id++;
+    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose.orientation.w = 1.0;
+    marker.scale.x = 0.1;  // Line width
+    marker.color.r = 1.0;
+    marker.color.g = 0.0;
+    marker.color.b = 1.0;
+    marker.color.a = 1.0;
+
+    for (const auto& point : polygon) {
+      geometry_msgs::Point p;
+      p.x = point.x;
+      p.y = point.y;
+      p.z = 0.0;
+      marker.points.push_back(p);
+    }
+    // Close the loop
+    geometry_msgs::Point p;
+    p.x = polygon[0].x;
+    p.y = polygon[0].y;
+    p.z = 0.0;
+    marker.points.push_back(p);
+
+    marker_pub.publish(marker);
+  }
 }
 
 void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const float& dis, const float& velAngle)
@@ -451,6 +488,9 @@ int main(int argc, char** argv)
   ros::Subscriber subGoal = nh.subscribe<geometry_msgs::PointStamped> ("/way_point", 5, goalHandler);
 
   ros::Publisher pubSpeed = nh.advertise<geometry_msgs::TwistStamped> ("/cmd_vel", 5);
+
+  ros::Publisher pubMarker = nh.advertise<visualization_msgs::Marker>("/slope_area", 10);
+
   geometry_msgs::TwistStamped cmd_vel;
   cmd_vel.header.frame_id = "world";
 
@@ -468,6 +508,14 @@ int main(int argc, char** argv)
   ros::Rate rate(200);
   bool status = ros::ok();
   while (status) {
+
+    /*
+    static u_int32_t n = 0;
+    n++;
+    if (n % 200 == 0)
+      publishPolygons(pubMarker);
+    */
+
     rate.sleep();
     ros::spinOnce();
     if (pathInit && odomInit) {
