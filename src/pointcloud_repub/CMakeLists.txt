@@ -12,6 +12,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
+  visualization_msgs
   nav_msgs
   sensor_msgs
   roscpp

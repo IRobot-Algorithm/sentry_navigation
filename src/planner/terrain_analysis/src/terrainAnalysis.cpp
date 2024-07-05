@@ -174,7 +174,7 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud2)
 
       /*
       if (pointX > 3.2 && pointX < 4.5 && pointY > -0.6 && pointY < 1.6 && pointZ < 0.23)
-        point.z = 0.23;
+        point.z = 0.273;
       else
         point.z = pointZ;
       */

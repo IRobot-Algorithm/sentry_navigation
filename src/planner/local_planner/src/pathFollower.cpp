@@ -19,6 +19,9 @@
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Joy.h>
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/Point32.h>
 
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>

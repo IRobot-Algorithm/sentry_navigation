@@ -12,6 +12,24 @@ namespace pointcloud_repub{
 PointCloudProcess::PointCloudProcess()
 {
   D435_cloud_out_  = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>());
+
+  polygons_ = 
+  {
+    // 我方环高玻璃区域
+    {
+      cv::Point(3.836, -0.244),
+      cv::Point(3.836, 1.300),
+      cv::Point(2.336, 1.773),
+      cv::Point(2.336, -0.718)
+    },
+    // 敌方环高玻璃区域
+    {
+      cv::Point(12.699, -1.813),
+      cv::Point(12.699, 0.678),
+      cv::Point(11.199, 0.205),
+      cv::Point(11.199, -1.340)
+    },
+  };
 }
 
 void PointCloudProcess::SubAndPubToROS(ros::NodeHandle &nh)
@@ -45,6 +63,7 @@ bool PointCloudProcess::loadParams(ros::NodeHandle &nh)
   nh.param<std::vector<double>>("lidar/extrinsic_R", extrinR_IMU_BOT, std::vector<double>());
   nh.param<double>("/pointcloud_repub/undecay_dis", undecay_dis_, 0.33);
   nh.param<double>("/pointcloud_repub/undecay_angle", undecay_angle_, 0.15);
+  nh.param<bool>("/pointcloud_repub/adjust_height", adjust_height_, true);
   undecay_radio_ = tan(undecay_angle_);
 
   extrinT_IMU_BOT_ << extrinT_IMU_BOT[0], extrinT_IMU_BOT[1], extrinT_IMU_BOT[2];
@@ -205,6 +224,25 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
   transformPointCloud(livox_cloud_odom->header.frame_id, "map", *livox_cloud_odom, *livox_cloud_map, livox_cloud_in->header.stamp, tf_);
 
   // pcl::PointCloud<pcl::PointXYZI> registered_cloud_out = *livox_cloud_out + *D435_cloud_out_; //点云融合
+
+  if (adjust_height_)
+  {
+    for (size_t i = 0; i < livox_cloud_map->points.size(); i++)
+    {
+      if (livox_cloud_map->points[i].z < 0.273)
+      {
+        for (const auto& polygon : polygons_)
+        {
+          if (cv::pointPolygonTest(polygon, 
+              cv::Point(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
+          {
+            livox_cloud_map->points[i].z = 0.273;
+            break;
+          }
+        }
+      }
+    }
+  }
 
   sensor_msgs::PointCloud2 registered_cloud;
   pcl::toROSMsg(*livox_cloud_map, registered_cloud);

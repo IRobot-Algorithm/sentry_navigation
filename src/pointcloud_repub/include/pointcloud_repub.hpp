@@ -19,6 +19,12 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl_ros/transforms.h>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/Point32.h>
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/TwistStamped.h"
 #include <geometry_msgs/PoseStamped.h>
@@ -83,6 +89,9 @@ private:
   double undecay_dis_;
   double undecay_angle_;
   double undecay_radio_;
+  bool adjust_height_;
+
+  std::vector<std::vector<cv::Point>> polygons_;
 
 };
 
