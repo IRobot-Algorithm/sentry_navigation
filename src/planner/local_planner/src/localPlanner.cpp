@@ -744,7 +744,7 @@ int main(int argc, char** argv)
           for (int i = 0; i < 6; i++)
           {
             point.z = i * 0.1;
-            plannerCloudCrop->push_back(std::move(point));
+            plannerCloudCrop->push_back(point);
           }
         }
       }

@@ -537,7 +537,7 @@ int main(int argc, char** argv)
       float endDis = sqrt(endDisX * endDisX + endDisY * endDisY);
       float startDisX = path.poses[0].pose.position.x - vehicleX;
       float startDisY = path.poses[0].pose.position.y - vehicleY;
-      float pathDis = path_range - sqrt(startDisX * startDisX + startDisY * startDisY);
+      float pathDis = fabs(path_range - sqrt(startDisX * startDisX + startDisY * startDisY));
 
       // test
       // static int n;
@@ -701,15 +701,15 @@ int main(int argc, char** argv)
 
       // float target_vx = 0.95 * v_kp * dis_x + 0.05 * v_kp * next_dis_x;
       // float target_vy = 0.95 * v_kp * dis_y + 0.05 * v_kp * next_dis_y;
-      I_x += dis_x;
-      I_y += dis_y;
-      float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
-      float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
-      last_err_x = dis_x;
-      last_err_y = dis_y;
+      // I_x += dis_x;
+      // I_y += dis_y;
+      // float speed_x = v_kp * dis_x + v_ki * I_x + v_kd * (last_err_x - dis_x);
+      // float speed_y = v_kp * dis_y + v_ki * I_y + v_kd * (last_err_y - dis_y);
+      // last_err_x = dis_x;
+      // last_err_y = dis_y;
 
-      // float speed_x = v_kp * dis_x;
-      // float speed_y = v_kp * dis_y;
+      float speed_x = v_kp * dis_x;
+      float speed_y = v_kp * dis_y;
 
       float yawDiff, pathDir;
       if (goalZ < -0.05)
