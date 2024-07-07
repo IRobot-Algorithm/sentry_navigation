@@ -94,7 +94,7 @@ private:
   double undecay_radio_;
   bool adjust_height_;
 
-  std::vector<std::vector<cv::Point2d>> polygons_;
+  std::vector<std::vector<cv::Point2f>> polygons_;
 
 };
 

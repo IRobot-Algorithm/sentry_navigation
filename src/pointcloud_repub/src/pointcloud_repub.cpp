@@ -17,17 +17,17 @@ PointCloudProcess::PointCloudProcess()
   {
     // 我方环高玻璃区域
     {
-      cv::Point2d(3.836, -0.244),
-      cv::Point2d(3.836, 1.300),
-      cv::Point2d(2.336, 1.773),
-      cv::Point2d(2.336, -0.718)
+      cv::Point2f(3.836, -0.244),
+      cv::Point2f(3.836, 1.300),
+      cv::Point2f(2.336, 1.773),
+      cv::Point2f(2.336, -0.718)
     },
     // 敌方环高玻璃区域
     {
-      cv::Point2d(12.699, -1.813),
-      cv::Point2d(12.699, 0.678),
-      cv::Point2d(11.199, 0.205),
-      cv::Point2d(11.199, -1.340)
+      cv::Point2f(12.699, -1.813),
+      cv::Point2f(12.699, 0.678),
+      cv::Point2f(11.199, 0.205),
+      cv::Point2f(11.199, -1.340)
     },
   };
 }
@@ -281,7 +281,7 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
         for (const auto& polygon : polygons_)
         {
           if (cv::pointPolygonTest(polygon, 
-              cv::Point2d(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
+              cv::Point2f(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
           {
             livox_cloud_map->points[i].z = 0.273;
             break;

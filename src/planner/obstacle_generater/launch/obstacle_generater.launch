@@ -2,7 +2,7 @@
 <launch>
 
   <!-- 启动地图 -->
-  <node pkg="map_server" name="map_server" type="map_server" args="$(find obstacle_generater)/map/map.yaml"/>
+  <node pkg="map_server" name="map_server" type="map_server" args="$(find obstacle_generater)/map/3floor.yaml"/>
 
   <node pkg="obstacle_generater" type="obstacleGenerating" respawn="true" name="obstacleGenerating" output="screen"/>
 
