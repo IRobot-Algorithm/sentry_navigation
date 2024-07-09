@@ -126,51 +126,62 @@ ros::Time sendTime;
 
 nav_msgs::Path path;
 
-std::vector<std::vector<cv::Point2f>> polygons =
+std::vector<std::vector<cv::Point2d>> polygons =
 {
-  // 我方梯高斜坡
+  // 3楼梯高
   {
-    cv::Point2f(-0.971, 3.896),
-    cv::Point2f(-3.557, 3.896),
-    cv::Point2f(-3.557, 2.798),
-    cv::Point2f(-1.740, 2.798)
-  },
-  // 我方环高左侧斜坡
-  {
-    cv::Point2f(6.667, 5.173),
-    cv::Point2f(5.358, 6.090),
-    cv::Point2f(4.240, 4.493),
-    cv::Point2f(5.469, 3.633)
-  },
-  // 我方环高右侧斜坡
-  {
-    cv::Point2f(3.836, -0.244),
-    cv::Point2f(2.607, -1.104),
-    cv::Point2f(3.891, -2.939),
-    cv::Point2f(5.120, -2.078)
-  },
-  // 敌方梯高斜坡
-  {
-    cv::Point2f(18.593, -2.838),
-    cv::Point2f(16.776, -2.838),
-    cv::Point2f(16.006, -3.937),
-    cv::Point2f(18.593, -3.937)
-  },
-  // 敌方环高左侧斜坡
-  {
-    cv::Point2f(12.427, 1.065),
-    cv::Point2f(11.143, 2.899),
-    cv::Point2f(9.914, 2.038),
-    cv::Point2f(11.199, 0.224)
-  },
-  // 敌方环高右侧斜坡
-  {
-    cv::Point2f(10.794, -4.533),
-    cv::Point2f(9.566, -3.673),
-    cv::Point2f(8.448, -5.270),
-    cv::Point2f(9.677, -6.130)
+    cv::Point2d(-3.4, 1.50),
+    cv::Point2d(-3.24, 0.42),
+    cv::Point2d(-1.65, 0.60),
+    cv::Point2d(-1.00, 1.51)
   },
 };
+
+// std::vector<std::vector<cv::Point2f>> polygons =
+// {
+//   // 我方梯高斜坡
+//   {
+//     cv::Point2f(-0.971, 3.896),
+//     cv::Point2f(-3.557, 3.896),
+//     cv::Point2f(-3.557, 2.798),
+//     cv::Point2f(-1.740, 2.798)
+//   },
+//   // 我方环高左侧斜坡
+//   {
+//     cv::Point2f(6.667, 5.173),
+//     cv::Point2f(5.358, 6.090),
+//     cv::Point2f(4.240, 4.493),
+//     cv::Point2f(5.469, 3.633)
+//   },
+//   // 我方环高右侧斜坡
+//   {
+//     cv::Point2f(3.836, -0.244),
+//     cv::Point2f(2.607, -1.104),
+//     cv::Point2f(3.891, -2.939),
+//     cv::Point2f(5.120, -2.078)
+//   },
+//   // 敌方梯高斜坡
+//   {
+//     cv::Point2f(18.593, -2.838),
+//     cv::Point2f(16.776, -2.838),
+//     cv::Point2f(16.006, -3.937),
+//     cv::Point2f(18.593, -3.937)
+//   },
+//   // 敌方环高左侧斜坡
+//   {
+//     cv::Point2f(12.427, 1.065),
+//     cv::Point2f(11.143, 2.899),
+//     cv::Point2f(9.914, 2.038),
+//     cv::Point2f(11.199, 0.224)
+//   },
+//   // 敌方环高右侧斜坡
+//   {
+//     cv::Point2f(10.794, -4.533),
+//     cv::Point2f(9.566, -3.673),
+//     cv::Point2f(8.448, -5.270),
+//     cv::Point2f(9.677, -6.130)
+//   },
+// };
 
 bool is_on_slope = false;
 
@@ -204,8 +215,8 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
             
             Eigen::Matrix3d eigen_mat;
             eigen_mat << tf_mat[0][0], tf_mat[0][1], tf_mat[0][2],
-                        tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
-                        tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
+                         tf_mat[1][0], tf_mat[1][1], tf_mat[1][2],
+                         tf_mat[2][0], tf_mat[2][1], tf_mat[2][2];
                         
             // 定义原始坐标系的Z轴向量
             Eigen::Vector3d original_z_axis(0, 0, 1);
