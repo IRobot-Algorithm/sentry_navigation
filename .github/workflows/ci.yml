@@ -29,26 +29,28 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
-        sudo echo "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" > /etc/apt/sources.list.d/realsense.list
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
+        sudo sh -c 'echo "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" > /etc/apt/sources.list.d/realsense.list'
         sudo apt-get update
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake libeigen3-dev libpcl-dev libgoogle-glog-dev libudev-dev git libxrandr-dev libxi-dev libxinerama-dev libsdl2-dev libusb-1.0.0-dev
         sudo cp -rf /usr/include/eigen3/Eigen /usr/include/Eigen -R
 
     - name: Install thirdparty dependencies
       run: |
+        sudo mkdir -p /home/nav_ws/thirdparty
+        sudo chown -R $USER:$USER /home/nav_ws/thirdparty
         for file in /home/nav_ws/thirdparty/*; do \
             if [ -f "$file" ]; then \
                 case "$file" in \
-                    *.tar.gz) tar -xzf "$file" -C /home/nav_ws/thirdparty ;; \
-                    *.zip) unzip "$file" -d /home/nav_ws/thirdparty ;; \
-                    *.tar.bz2) tar -xjf "$file" -C /home/nav_ws/thirdparty ;; \
-                    *.tar.xz) tar -xJf "$file" -C /home/nav_ws/thirdparty ;; \
+                    *.tar.gz) sudo tar -xzf "$file" -C /home/nav_ws/thirdparty ;; \
+                    *.zip) sudo unzip "$file" -d /home/nav_ws/thirdparty ;; \
+                    *.tar.bz2) sudo tar -xjf "$file" -C /home/nav_ws/thirdparty ;; \
+                    *.tar.xz) sudo tar -xJf "$file" -C /home/nav_ws/thirdparty ;; \
                 esac; \
-                rm "$file"; \
+                sudo rm "$file"; \
             fi; \
         done
-        sudo find /home/nav_ws/thirdparty -name "install.sh" -type f -exec bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
+        sudo find /home/nav_ws/thirdparty -name "install.sh" -type f -exec sudo bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
 
     - name: Install ROS dependencies
       run: sudo apt-get install -y ros-noetic-rviz ros-noetic-cv-bridge ros-noetic-pcl-ros \
@@ -64,6 +66,5 @@ jobs:
 
     - name: Run tests
       run: |
-        exec bash
         source /opt/ros/noetic/setup.sh
         catkin_test_results build
