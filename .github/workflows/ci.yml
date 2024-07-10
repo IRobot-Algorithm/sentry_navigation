@@ -21,19 +21,19 @@ jobs:
         sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key F42ED6FBAB17C654
         sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C8B3A55A6F3EFCDE
 
-    - name: Set up ROS
-      uses: ros-tooling/setup-ros@v0.1
-      with:
-        distribution: 'noetic'
-        version: '1.0'
+    - name: Set up ROS environment
+      run: |
+        sudo apt-get install -y ros-noetic-desktop
+        echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
     - name: Install dependencies
       run: |
         sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
         sudo sh -c 'echo "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" > /etc/apt/sources.list.d/realsense.list'
         sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake libeigen3-dev libpcl-dev libgoogle-glog-dev libudev-dev git libxrandr-dev libxi-dev libxinerama-dev libsdl2-dev libusb-1.0.0-dev
-        sudo cp -rf /usr/include/eigen3/Eigen /usr/include/Eigen -R
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake libeigen3-dev libpcl-dev libgoogle-glog-dev libudev-dev git libxrandr-dev libxi-dev libxinerama-dev libsdl2-dev libusb-1.0.0-dev xz-utils
+        sudo cp -rf /usr/include/eigen3/Eigen /usr/include/Eigen -R \
+        file ./thirdparty/ceres-solver-1.14.0.tar.xz
 
     - name: Install thirdparty dependencies
       run: |
