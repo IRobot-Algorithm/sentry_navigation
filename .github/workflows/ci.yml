@@ -16,6 +16,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Update ROS GPG KEY
+      run: |
+        sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key F42ED6FBAB17C654
+        sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C8B3A55A6F3EFCDE
+
     - name: Set up ROS
       uses: ros-tooling/setup-ros@v0.1
       with:
