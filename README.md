@@ -27,18 +27,18 @@
 - 解压并编译安装第三方库：
 
   ```shell
-  for file in /home/nav_ws/thirdparty/*; do \
+  for file in ./thirdparty/*; do \
       if [ -f "$file" ]; then \
           case "$file" in \
-              *.tar.gz) tar -xzf "$file" -C /home/nav_ws/thirdparty ;; \
-              *.zip) unzip "$file" -d /home/nav_ws/thirdparty ;; \
-              *.tar.bz2) tar -xjf "$file" -C /home/nav_ws/thirdparty ;; \
-              *.tar.xz) tar -xJf "$file" -C /home/nav_ws/thirdparty ;; \
+              *.tar.gz) tar -xzf "$file" -C ./thirdparty ;; \
+              *.zip) unzip "$file" -d ./thirdparty ;; \
+              *.tar.bz2) tar -xjf "$file" -C ./thirdparty ;; \
+              *.tar.xz) tar -xJf "$file" -C ./thirdparty ;; \
           esac; \
           rm "$file"; \
       fi; \
   done
-  find /home/nav_ws/thirdparty -name "install.sh" -type f -exec bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
+  find ./thirdparty -name "install.sh" -type f -exec bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
   ```
 
 - 下载所需ROS第三方库：

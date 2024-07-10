@@ -37,20 +37,18 @@ jobs:
 
     - name: Install thirdparty dependencies
       run: |
-        sudo mkdir -p /home/nav_ws/thirdparty
-        sudo chown -R $USER:$USER /home/nav_ws/thirdparty
-        for file in /home/nav_ws/thirdparty/*; do \
+        for file in ./thirdparty/*; do \
             if [ -f "$file" ]; then \
                 case "$file" in \
-                    *.tar.gz) sudo tar -xzf "$file" -C /home/nav_ws/thirdparty ;; \
-                    *.zip) sudo unzip "$file" -d /home/nav_ws/thirdparty ;; \
-                    *.tar.bz2) sudo tar -xjf "$file" -C /home/nav_ws/thirdparty ;; \
-                    *.tar.xz) sudo tar -xJf "$file" -C /home/nav_ws/thirdparty ;; \
+                    *.tar.gz) sudo tar -xzf "$file" -C ./thirdparty ;; \
+                    *.zip) sudo unzip "$file" -d ./thirdparty ;; \
+                    *.tar.bz2) sudo tar -xjf "$file" -C ./thirdparty ;; \
+                    *.tar.xz) sudo tar -xJf "$file" -C ./thirdparty ;; \
                 esac; \
                 sudo rm "$file"; \
             fi; \
         done
-        sudo find /home/nav_ws/thirdparty -name "install.sh" -type f -exec sudo bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
+        sudo find ./thirdparty -name "install.sh" -type f -exec sudo bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
 
     - name: Install ROS dependencies
       run: sudo apt-get install -y ros-noetic-rviz ros-noetic-cv-bridge ros-noetic-pcl-ros \
