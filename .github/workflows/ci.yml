@@ -16,8 +16,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install ROS
-      uses: ros-tooling/setup-ros@v0.7
+    - uses: ros-tooling/setup-ros@v0.7
       with:
         required-ros-distributions: noetic
 
@@ -45,6 +44,13 @@ jobs:
             fi; \
         done
         sudo find ./thirdparty -name "install.sh" -type f -exec sudo bash -c 'cd "$(dirname "{}")" && chmod 777 install.sh && ./install.sh' \;
+
+    - name: Install ROS dependencies
+      run: sudo apt-get install -y ros-noetic-rviz ros-noetic-cv-bridge ros-noetic-pcl-ros \
+                                   ros-noetic-tf-conversions ros-noetic-eigen-conversions \
+                                   ros-noetic-ddynamic-reconfigure ros-noetic-diagnostic-updater \
+                                   ros-noetic-image-geometry ros-noetic-costmap-2d \
+                                   ros-noetic-nav-core ros-noetic-navfn
 
     - name: Build the workspace
       run: |
