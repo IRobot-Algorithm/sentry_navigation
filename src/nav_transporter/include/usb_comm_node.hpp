@@ -12,6 +12,7 @@
 
 #include "usb.hpp"
 #include "sentry_msgs/RefereeInformation.h"
+#include "sentry_msgs/RecordInformation.h"
 #include "sentry_srvs/BuyBullets.h"
 
 namespace nav_transporter {
@@ -41,6 +42,8 @@ class UsbCommNode {
 
 		void sendVelCallback(const ros::TimerEvent& event);
 		
+		void sendRecordCallback(const ros::TimerEvent& event);
+
 		/*
 		* @brief 电控imu四元数与odom差值
 		*/
@@ -73,12 +76,15 @@ class UsbCommNode {
 		ros::Subscriber sub_vel_;
 		ros::Subscriber sub_path_;
 		ros::Publisher pub_referee_info_;
+		ros::Publisher pub_record_info_;
 		ros::Publisher pub_color_info_;
 		ros::Publisher pub_uwb_;
 
 		ros::Timer send_vel_timer_;
+		ros::Timer send_record_timer_;
 
     sentry_msgs::RefereeInformation referee_info_;
+    sentry_msgs::RecordInformation record_info_;
     geometry_msgs::Quaternion odom_quat_;
 		geometry_msgs::PointStamped uwb_;
     double odom_time_;

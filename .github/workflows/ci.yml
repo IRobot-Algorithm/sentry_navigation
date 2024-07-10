@@ -55,7 +55,6 @@ jobs:
 
     - name: Build the workspace
       run: |
-        sudo chmod 777 build.sh
         ./build.sh
 
     - name: Run tests
