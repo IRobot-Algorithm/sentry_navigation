@@ -25,11 +25,14 @@ jobs:
         sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
         sudo sh -c 'echo "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" > /etc/apt/sources.list.d/realsense.list'
         sudo apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake libeigen3-dev libpcl-dev libgoogle-glog-dev libudev-dev git libxrandr-dev libxi-dev libxinerama-dev libsdl2-dev libusb-1.0.0-dev xz-utils
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential cmake libeigen3-dev libpcl-dev libgoogle-glog-dev libudev-dev git libxrandr-dev libxi-dev libxinerama-dev libsdl2-dev libusb-1.0.0-dev xz-utils git-lfs
         sudo cp -rf /usr/include/eigen3/Eigen /usr/include/Eigen -R
 
     - name: Install thirdparty dependencies
       run: |
+        git lfs install
+        git lfs pull
+        ls ./thirdparty
         for file in ./thirdparty/*; do \
             if [ -f "$file" ]; then \
                 case "$file" in \
