@@ -40,10 +40,11 @@ jobs:
         for file in ./thirdparty/*; do \
             if [ -f "$file" ]; then \
                 case "$file" in \
-                    *.tar.gz) sudo tar -xzf "$file" -C ./thirdparty ;; \
-                    *.zip) sudo unzip "$file" -d ./thirdparty ;; \
-                    *.tar.bz2) sudo tar -xjf "$file" -C ./thirdparty ;; \
-                    *.tar.xz) sudo tar -xJf "$file" -C ./thirdparty ;; \
+                  *.tar.gz) sudo tar -xzf "$file" -C ./thirdparty || { echo "Error extracting $file"; exit 1; } ;; \
+                  *.zip) sudo unzip "$file" -d ./thirdparty || { echo "Error extracting $file"; exit 1; } ;; \
+                  *.tar.bz2) sudo tar -xjf "$file" -C ./thirdparty || { echo "Error extracting $file"; exit 1; } ;; \
+                  *.tar.xz) sudo tar -xJf "$file" -C ./thirdparty || { echo "Error extracting $file"; exit 1; } ;; \
+                  *) echo "Unsupported file format: $file"; exit 1 ;; \
                 esac; \
                 sudo rm "$file"; \
             fi; \
