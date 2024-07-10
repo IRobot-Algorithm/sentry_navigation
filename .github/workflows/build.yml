@@ -1,4 +1,4 @@
-name: SentryNavigation CI
+name: SentryNavigation-Build-CI
 
 on:
   push:
@@ -50,11 +50,12 @@ jobs:
     - name: Install ROS dependencies
       run: sudo apt-get install -y ros-noetic-rviz ros-noetic-cv-bridge ros-noetic-pcl-ros ros-noetic-tf-conversions ros-noetic-eigen-conversions ros-noetic-ddynamic-reconfigure ros-noetic-diagnostic-updater ros-noetic-image-geometry ros-noetic-costmap-2d ros-noetic-nav-core ros-noetic-navfn
 
-    - name: Start SSH Service
-      uses: mxschmitt/action-tmate@v2
+    # - name: Start SSH Service
+    #   uses: mxschmitt/action-tmate@v2
 
     - name: Build the workspace
       run: |
+        sudo chmod 777 build.sh
         ./build.sh
 
     - name: Run tests
