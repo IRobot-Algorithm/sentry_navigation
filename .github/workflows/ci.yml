@@ -16,15 +16,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Update ROS GPG KEY
-      run: |
-        sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key F42ED6FBAB17C654
-        sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C8B3A55A6F3EFCDE
-
-    - name: Set up ROS environment
-      run: |
-        sudo apt-get install -y ros-noetic-desktop
-        echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+    - uses: ros-tooling/setup-ros@v0.7
+      with:
+        required-ros-distributions: noetic
+    - uses: ros-tooling/action-ros-ci@v0.3
+      with:
+        package-name: ros-noetic-rviz ros-noetic-cv-bridge ros-noetic-pcl-ros \
+                      ros-noetic-tf-conversions ros-noetic-eigen-conversions \
+                      ros-noetic-ddynamic-reconfigure ros-noetic-diagnostic-updater \
+                      ros-noetic-image-geometry ros-noetic-costmap-2d \
+                      ros-noetic-nav-core ros-noetic-navfn
+        target-ros1-distro: noetic
 
     - name: Install dependencies
       run: |
