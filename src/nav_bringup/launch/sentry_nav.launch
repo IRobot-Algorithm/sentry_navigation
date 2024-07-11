@@ -33,6 +33,7 @@
         <arg name="track_target" value="true"/>
         <arg name="use_map" value="false"/>
         <arg name="is_test" value="true"/>
+        <arg name="restricted_track" value="true"/>
         <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/>
     </include>
     <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->

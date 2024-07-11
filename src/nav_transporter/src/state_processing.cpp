@@ -45,6 +45,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   nh.param<bool>("/state_processing/track_target", track_target_, false);
   nh.param<bool>("/state_processing/use_map", use_map_, false);
   nh.param<bool>("/state_processing/is_test", is_test_, false);
+  nh.param<bool>("/state_processing/restricted_track", restricted_track_, true);
   nh.param<std::string>("/state_processing/map_path", map_path_, "");
 
   if (is_test_)
@@ -94,54 +95,23 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     track_dis_.data = 3.0;
   }
 
-  /*
-  struct Point point;
-  point.x = 5.75;
-  point.y = 6.7;
-  polygon_.push_back(point);
-  point.x = 2.75;
-  point.y = 2.3;
-  polygon_.push_back(point);
-  point.x = 2.75;
-  point.y = -0.9;
-  polygon_.push_back(point);
-  point.x = 4.6;
-  point.y = -3.4;
-  polygon_.push_back(point);
-  point.x = 6.6;
-  point.y = -2.7;
-  polygon_.push_back(point);
-  point.x = 8.4;
-  point.y = -6.0;
-  polygon_.push_back(point);
-  point.x = 4.1;
-  point.y = -6.0;
-  polygon_.push_back(point);
-  point.x = 4.07;
-  point.y = -4.62;
-  polygon_.push_back(point);
-  point.x = 2.53;
-  point.y = -4.5;
-  polygon_.push_back(point);
-  point.x = 1.4;
-  point.y = -3.0;
-  polygon_.push_back(point);
-  point.x = -1.35;
-  point.y = -3.05;
-  polygon_.push_back(point);
-  point.x = -5.8;
-  point.y = -4.6;
-  polygon_.push_back(point);
-  point.x = -5.6;
-  point.y = 2.66;
-  polygon_.push_back(point);
-  point.x = -0.7;
-  point.y = 2.8;
-  polygon_.push_back(point);
-  point.x = 2.3;
-  point.y = 7.0;
-  polygon_.push_back(point);
-  */
+  polygons_ = 
+  {
+    // 我方环高玻璃区域
+    {
+      cv::Point2f(3.836, -0.244),
+      cv::Point2f(3.836, 1.300),
+      cv::Point2f(2.336, 1.773),
+      cv::Point2f(2.336, -0.718)
+    },
+    // 敌方环高玻璃区域
+    {
+      cv::Point2f(12.699, -1.813),
+      cv::Point2f(12.699, 0.678),
+      cv::Point2f(11.199, 0.205),
+      cv::Point2f(11.199, -1.340)
+    },
+  };
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
@@ -309,6 +279,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     }
     else // dynamic
     {
+      /*
       if (target_z_ < 0.0 || target_z_ > 0.4 || odom_.pose.pose.position.z > 0.16) // 高度不一致
       {
         res.success = false;
@@ -321,6 +292,19 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
         res.success = false;
         return true;
       }
+      */
+      if (restricted_track_)
+      {
+        for (const auto& polygon : polygons_)
+        {
+          if(cv::pointPolygonTest(polygon, 
+             cv::Point2f(odom_.pose.pose.position.x, odom_.pose.pose.position.y), false) >= 0)
+          {
+            res.success = false;
+            return true;
+          }
+        }
+      }
     }
 
     track_dis_.data = req.distance;
@@ -332,25 +316,6 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
 
   res.success = true;
   return true;
-}
-
-bool StateProcess::isPointInsidePolygon(const geometry_msgs::PointStamped& point, const std::vector<Point>& polygon)
-{
-  int crossings = 0;
-  const Point& p = {point.point.x, point.point.y};
-
-  for (size_t i = 0, j = polygon.size() - 1; i < polygon.size(); j = i++)
-  {
-      const Point& p1 = polygon[i];
-      const Point& p2 = polygon[j];
-      if (((p1.y > p.y) != (p2.y > p.y)) &&
-          (p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x))
-      {
-          crossings++;
-      }
-  }
-
-  return (crossings % 2 == 1);
 }
 
 void StateProcess::loop(const ros::TimerEvent& event)

@@ -3,6 +3,7 @@
     <arg name="track_target" default="false"/>
     <arg name="use_map" default="false"/>
     <arg name="is_test" default="false"/>
+    <arg name="restricted_track" default="true"/>
     <arg name="map_path" default=""/>
 
 	<rosparam command="load" file="$(find nav_transporter)/config/config.yaml" />
@@ -13,6 +14,7 @@
         <param name="track_target" type="bool" value="$(arg track_target)" />
         <param name="use_map" type="bool" value="$(arg use_map)" />
         <param name="is_test" type="bool" value="$(arg is_test)" />
+        <param name="restricted_track" type="bool" value="$(arg restricted_track)" />
         <param name="map_path" type="string" value="$(arg map_path)" />
     </node>
     <!-- <node pkg="nav_transporter" type="can_comm_node" respawn="true" name="can_comm_node" output="screen" /> -->

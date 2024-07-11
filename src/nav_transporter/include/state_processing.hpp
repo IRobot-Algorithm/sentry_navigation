@@ -3,6 +3,9 @@
 
 #include <ros/ros.h>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
@@ -23,11 +26,6 @@ enum NAV_EXEC_STATE {
 	INIT, 
 	TRACK,
 	NAVIGATE,
-};
-
-struct Point {
-  double x;
-  double y;
 };
 
 class StateProcess {
@@ -62,12 +60,6 @@ class StateProcess {
 		* @auther wyq
 		*/
 		bool navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry_srvs::NavTarget::Response &res);
-
-		/*
-		* @brief 判断点是否在多边形内
-		* @auther wyq
-		*/
-		bool isPointInsidePolygon(const geometry_msgs::PointStamped& point, const std::vector<Point>& polygon);
 
 		/*
 		* @brief 状态机主循环
@@ -110,7 +102,7 @@ class StateProcess {
 		geometry_msgs::PointStamped way_point_;
 		geometry_msgs::PointStamped far_way_point_;
 		nav_msgs::Odometry odom_;
-		std::vector<Point> polygon_;
+  	std::vector<std::vector<cv::Point2f>> polygons_;
 		double target_z_ = 0.0;
 
 		ros::Timer loop_timer_;
@@ -120,6 +112,7 @@ class StateProcess {
 		bool have_odom_ = false;
 		bool path_init_ = false;
 		bool is_test_ = false;
+		bool restricted_track_ = true;
 
 };
 
