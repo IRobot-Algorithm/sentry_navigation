@@ -274,7 +274,11 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
 
   if (adjust_height_)
   {
-    for (size_t i = 0; i < livox_cloud_map->points.size(); i++)
+    std::vector<size_t> index(livox_cloud_map->points.size());
+    for (size_t i = 0; i < livox_cloud_map->points.size(); ++i)
+        index[i] = i;
+
+    std::for_each(std::execution::unseq, index.begin(), index.end(), [&](const size_t &i)
     {
       if (livox_cloud_map->points[i].z < 0.273)
       {
@@ -288,7 +292,7 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
           }
         }
       }
-    }
+    });
   }
 
   sensor_msgs::PointCloud2 registered_cloud;
