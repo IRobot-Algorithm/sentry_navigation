@@ -96,23 +96,53 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   }
   pub_untrack_marker_ = nh.advertise<visualization_msgs::Marker>("/untrack_area", 10);
   
+  // /*
   polygons_ = 
   {
-    // 我方环高玻璃区域
+    // 三楼
     {
-      cv::Point2f(3.836, -0.244),
-      cv::Point2f(3.836, 1.300),
-      cv::Point2f(2.336, 1.773),
-      cv::Point2f(2.336, -0.718)
-    },
-    // 敌方环高玻璃区域
-    {
-      cv::Point2f(12.699, -1.813),
-      cv::Point2f(12.699, 0.678),
-      cv::Point2f(11.199, 0.205),
-      cv::Point2f(11.199, -1.340)
+      cv::Point2f(-1.346134, 3.600440),
+      cv::Point2f(-1.092801, 1.379447),
+      cv::Point2f(-0.781189, 2.5),
+      cv::Point2f(7.689121, 2.5),
+      cv::Point2f(7.689121, 3.650847)
     },
   };
+  // */
+
+  /*
+  polygons_ = 
+  {
+    // 我方台阶
+    {
+      cv::Point2f(7.483, 6.339),
+      cv::Point2f(6.566, 7.420),
+      cv::Point2f(5.521, 5.975),
+      cv::Point2f(6.587, 5.230)
+    },
+    // 敌方台阶
+    {
+      cv::Point2f(8.408, -7.350),
+      cv::Point2f(9.546, -6.038),
+      cv::Point2f(8.448, -5.270),
+      cv::Point2f(7.551, -6.379)
+    },
+    // 我方右侧梯高
+    {
+      cv::Point2f(-1.959, -4.019),
+      cv::Point2f(-1.959, -3.150),
+      cv::Point2f(-3.159, -3.150),
+      cv::Point2f(-3.159, -4.019)
+    },
+    // 敌方右侧梯高
+    {
+      cv::Point2f(18.093, 3.110),
+      cv::Point2f(18.093, 3.978),
+      cv::Point2f(16.994, 3.978),
+      cv::Point2f(16.994, 3.110)
+    },
+  };
+  */
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
@@ -381,7 +411,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
         pub_map_reset_.publish(msg);
       }
     }
-    // publishPolygons();
+    publishPolygons();
     nav_num = 0;
   }
 

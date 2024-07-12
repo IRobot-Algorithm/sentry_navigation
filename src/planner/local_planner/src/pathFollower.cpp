@@ -131,8 +131,8 @@ std::vector<std::vector<cv::Point2f>> polygons =
   // 3楼梯高
   {
     cv::Point2f(-3.4, 1.50),
-    cv::Point2f(-3.24, 0.42),
-    cv::Point2f(-1.65, 0.60),
+    cv::Point2f(-3.24, 0.3),
+    cv::Point2f(-1.65, 0.5),
     cv::Point2f(-1.00, 1.51)
   },
 };
@@ -396,6 +396,8 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   else
   {
     // std::cout << "none" << std::endl;
+    if (vehicleZ > 0.15)
+      endMaxSpeed *= 0.5;
     if (fabs(dis) < 1.2)
       endMaxSpeed *= (fabs(dis / 1.5) + 0.2);
   }
