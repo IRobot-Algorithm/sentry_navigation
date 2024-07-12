@@ -94,7 +94,8 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
     this->pub_track_dis_ = nh.advertise<std_msgs::Float32>("/track_distance", 1);
     track_dis_.data = 3.0;
   }
-
+  pub_untrack_marker_ = nh.advertise<visualization_msgs::Marker>("/untrack_area", 10);
+  
   polygons_ = 
   {
     // 我方环高玻璃区域
@@ -114,6 +115,43 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   };
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
+}
+
+void StateProcess::publishPolygons()
+{
+  int id = 0;
+  for (const auto& polygon : polygons_)
+  {
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "map";
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "glass";
+    marker.id = id++;
+    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose.orientation.w = 1.0;
+    marker.scale.x = 0.1;  // Line width
+    marker.color.r = 1.0;
+    marker.color.g = 0.0;
+    marker.color.b = 0.0;
+    marker.color.a = 1.0;
+
+    for (const auto& point : polygon) {
+      geometry_msgs::Point p;
+      p.x = point.x;
+      p.y = point.y;
+      p.z = 0.0;
+      marker.points.push_back(p);
+    }
+    // Close the loop
+    geometry_msgs::Point p;
+    p.x = polygon[0].x;
+    p.y = polygon[0].y;
+    p.z = 0.0;
+    marker.points.push_back(p);
+
+    pub_untrack_marker_.publish(marker);
+  }
 }
 
 void StateProcess::odometryHandler(const nav_msgs::Odometry::ConstPtr& odom)
@@ -343,6 +381,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
         pub_map_reset_.publish(msg);
       }
     }
+    // publishPolygons();
     nav_num = 0;
   }
 

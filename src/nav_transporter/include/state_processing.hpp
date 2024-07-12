@@ -6,6 +6,9 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/Point32.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
@@ -38,6 +41,8 @@ class StateProcess {
 
 	private:
 		NAV_EXEC_STATE exec_state_;
+
+	  void publishPolygons();
 
 		void odometryHandler(const nav_msgs::Odometry::ConstPtr& odom);
 
@@ -90,6 +95,7 @@ class StateProcess {
 		ros::Publisher pub_waypoint_;
 		ros::Publisher pub_map_reset_;
 		ros::Publisher pub_track_dis_;
+  	ros::Publisher pub_untrack_marker_;
 
 		bool use_map_ = false;
 		bool reset_map_ = false;
