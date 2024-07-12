@@ -7,12 +7,15 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Point.h>
+#include <std_msgs/UInt16.h>
 #include <std_msgs/Bool.h>
 #include <visualization_msgs/Marker.h>
 
 #include "usb.hpp"
 #include "sentry_msgs/RefereeInformation.h"
-#include "sentry_msgs/RecordInformation.h"
 #include "sentry_srvs/BuyBullets.h"
 
 namespace nav_transporter {
@@ -76,17 +79,26 @@ class UsbCommNode {
 		ros::Subscriber sub_vel_;
 		ros::Subscriber sub_path_;
 		ros::Publisher pub_referee_info_;
-		ros::Publisher pub_record_info_;
 		ros::Publisher pub_color_info_;
 		ros::Publisher pub_uwb_;
+
+		ros::Publisher pub_record_time_;
+		ros::Publisher pub_record_odom_;
+		ros::Publisher pub_record_twist_;
+		ros::Publisher pub_record_uwb_;
 
 		ros::Timer send_vel_timer_;
 		ros::Timer send_record_timer_;
 
     sentry_msgs::RefereeInformation referee_info_;
-    sentry_msgs::RecordInformation record_info_;
     geometry_msgs::Quaternion odom_quat_;
 		geometry_msgs::PointStamped uwb_;
+		
+		std_msgs::UInt16 record_time_;
+		geometry_msgs::Pose record_odom_;
+		geometry_msgs::Twist record_twist_;
+		geometry_msgs::Point record_uwb_;
+
     double odom_time_;
     bool new_odom_ = false;
 		bool in_supply_ = false;
