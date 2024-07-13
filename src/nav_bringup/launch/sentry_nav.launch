@@ -1,44 +1,53 @@
 <launch>
 
+    <!-- /////////////////////// TF /////////////////////// -->
     <include file="$(find nav_bringup)/launch/robot_state_publisher.launch" />
+
+    <!-- /////////////////////// DRIVER /////////////////////// -->
     <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360_c.launch" />
     <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch" /> -->
+
+    <!-- /////////////////////// PRECLOUD /////////////////////// -->
     <include file="$(find pointcloud_repub)/launch/pointcloud_repub.launch" >
         <arg name="undecay_dis" value="0.33"/>
         <arg name="undecay_angle" value="0.18"/> <!-- rad -->
         <arg name="adjust_height" value="false"/>
     </include>
+
+    <!-- /////////////////////// LIO /////////////////////// -->
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
 	    <arg name="rviz" value="false" />
     </include>
+
+    <!-- /////////////////////// LOOP /////////////////////// -->
     <include file="$(find fast_gicp)/launch/gicp_loop.launch" />
 
-    <include file="$(find far_planner)/launch/far_planner.launch" />
-
+    <!-- /////////////////////// CLOUD SEGMENTATION /////////////////////// -->
     <include file="$(find obstacle_generater)/launch/obstacle_generater.launch" />
     <include file="$(find terrain_analysis)/launch/terrain_analysis.launch" />
     <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" />
 
+    <!-- /////////////////////// GLOBAL PLANNER /////////////////////// -->
+    <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
+    <include file="$(find far_planner)/launch/far_planner.launch" />
+
+    <!-- /////////////////////// LOCAL PLANNER /////////////////////// -->
     <include file="$(find local_planner)/launch/local_planner.launch" />
     <!-- <include file="$(find ego_planner)/launch/run_in_sim.launch" /> -->
 
-    <!-- <include file="./src/planner/waypoint_example/launch/waypoint_example_garage.launch" /> -->
-    <!-- <include file="$(find global_planner)/launch/AStar_node.launch" /> -->
-
-    <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
+    <!-- /////////////////////// TRANSPORTER /////////////////////// -->
     <include file="$(find nav_transporter)/launch/transporter.launch" >
-        <arg name="use_pose_goal" value="false"/>
-        <arg name="track_target" value="true"/>
-        <arg name="use_map" value="false"/>
-        <arg name="is_test" value="false"/>
-        <arg name="restricted_track" value="true"/>
-        <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/>
+        <arg name="use_pose_goal" value="false"/> <!-- A star or far planner -->
+        <arg name="track_target" value="true"/> <!-- Follow autoaim target or not -->
+        <arg name="use_map" value="false"/> <!-- Use map of far planner -->
+        <arg name="is_test" value="false"/> <!-- Can publish goal point in rviz or not -->
+        <arg name="restricted_track" value="true"/> <!-- Stop in some area when tracking autoaim target or not -->
+        <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/> <!-- If use_map, path of map file -->
     </include>
-    <!-- <node pkg="global_planner" type="publisher_goal" respawn="true" name="publisher_goal" output="screen"></node> -->
 
-    <!-- /////////////////////// rviz /////////////////////// -->
+    <!-- /////////////////////// RVIZ /////////////////////// -->
     <!-- <include file="$(find ego_planner)/launch/rviz.launch"/> -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
     <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" /> -->
