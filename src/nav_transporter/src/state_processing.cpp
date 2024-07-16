@@ -427,7 +427,7 @@ void StateProcess::loop(const ros::TimerEvent& event)
         pub_map_reset_.publish(msg);
       }
     }
-    publishPolygons();
+    // publishPolygons();
     nav_num = 0;
   }
 
