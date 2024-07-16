@@ -267,32 +267,13 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       static tf::TransformListener ls;
       tf::StampedTransform map2gimbal_transform;
       ros::Time t = ros::Time().fromSec(ros::Time::now().toSec() - 0.15);
-      // ros::Time t = ros::Time::now() - ros::Duration(0.15);
-      if (req.gimbal) // 0 for right, 1 for left
-      {
-        try {
-          // ls.lookupTransform("/map", "/left_gimbal",  
-          //                     ros::Time(0), map2gimbal_transform);
-          ls.lookupTransform("/map", "/left_gimbal",  
-                              t, map2gimbal_transform);
-        }
-        catch (tf::TransformException &ex) {
-          ROS_WARN("TargetTrans : %s",ex.what());
-          return true;
-        }
+      try {
+        ls.lookupTransform("/map", "/world",  
+                            t, map2gimbal_transform);
       }
-      else
-      {
-        try {
-          // ls.lookupTransform("/map", "/right_gimbal",  
-          //                     ros::Time(0), map2gimbal_transform);
-          ls.lookupTransform("/map", "/right_gimbal",  
-                              t, map2gimbal_transform);
-        }
-        catch (tf::TransformException &ex) {
-          ROS_WARN("TargetTrans : %s",ex.what());
-          return true;
-        }
+      catch (tf::TransformException &ex) {
+        ROS_WARN("TargetTrans : %s",ex.what());
+        return true;
       }
       double yaw = tf::getYaw(map2gimbal_transform.getRotation());
       double cos_yaw = cos(yaw);
@@ -313,21 +294,6 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       target_z_ = req.pose.pose.position.z;
     }
 
-    // std::cout << "gimbal:" << static_cast<int>(req.gimbal) << std::endl;
-    // std::cout << "yaw:" << yaw << " " << req.pose.pose.position.x << " " << req.pose.pose.position.y << std::endl; 
-    
-    // if(req.is_lost)
-    //   way_point_.point.z = 0;
-    // else
-
-    // rmul 在对面补给区
-    // if (way_point_.point.x > 7.55 && way_point_.point.x < 9.35 &&
-    //     way_point_.point.y > -3.9 && way_point_.point.y < -1.1)
-    // {
-    //   res.success = false;
-    //   return true;
-    // }
-
     // rmuc 在对面补给区
     if (way_point_.point.x > 19.0 && way_point_.point.x < 21.3 &&
         way_point_.point.y > 5.0 && way_point_.point.y < 8.0)
@@ -336,11 +302,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       return true;
     }
 
-    if (req.gimbal) // 0 for right, 1 for left
-      way_point_.point.z = -0.1;
-    else
-      way_point_.point.z = -0.2;
-
+    way_point_.point.z = -0.1;
     if (!req.is_dynamic) // static
     {
       way_point_.point.z -= 0.2;
