@@ -107,8 +107,6 @@ class UsbCommNode {
     double last_timestamp_quat;
 
     tf::Transform trans_;
-    tf::Transform right_trans_;
-    tf::Transform left_trans_;
 		tf::TransformBroadcaster br_;
 
     int interface_usb_vid_;

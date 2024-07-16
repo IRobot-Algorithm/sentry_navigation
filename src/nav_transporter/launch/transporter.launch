@@ -6,7 +6,6 @@
     <arg name="restricted_track" default="true"/>
     <arg name="map_path" default=""/>
 
-	<rosparam command="load" file="$(find nav_transporter)/config/config.yaml" />
 	<rosparam command="load" file="$(find nav_transporter)/config/hardware_settings.yaml" />
 
     <node pkg="nav_transporter" type="state_processing" respawn="true" name="state_processing" output="screen" >

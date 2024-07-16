@@ -95,22 +95,8 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
   }
   ROS_INFO("Finish Init");
 
-  std::vector<double> right_gimbal_T{3, 0.0};  // lidar-imu translation
-  std::vector<double> left_gimbal_T{3, 0.0};  // lidar-imu rotation
-
-  nh.param<std::vector<double>>("extrinsic/right_gimbal/extrinsic_T", right_gimbal_T, std::vector<double>());
-  nh.param<std::vector<double>>("extrinsic/left_gimbal/extrinsic_T", left_gimbal_T, std::vector<double>());
-
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans_.setOrigin(tf::Vector3(0, 0, 0));
-  right_trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
-  right_trans_.setOrigin(tf::Vector3(right_gimbal_T[0],
-                                     right_gimbal_T[1],
-                                     right_gimbal_T[2]));
-  left_trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
-  left_trans_.setOrigin(tf::Vector3(left_gimbal_T[0],
-                                    left_gimbal_T[1],
-                                    left_gimbal_T[2]));
 
   // package init
   send_package_._SOF = 0x55;
@@ -420,12 +406,6 @@ void UsbCommNode::receiveCallback()
         quat_buffer_.emplace_back(msg);
         if (quat_buffer_.size() > 1000)
           quat_buffer_.pop_front();
-
-        right_trans_.setRotation(tf::createQuaternionFromYaw(package.RightMotorAngle));
-        left_trans_.setRotation(tf::createQuaternionFromYaw(package.LeftMotorAngle));
-
-        br_.sendTransform(tf::StampedTransform(right_trans_, ros::Time::now(), "base_link", "right_gimbal"));
-        br_.sendTransform(tf::StampedTransform(left_trans_, ros::Time::now(), "base_link", "left_gimbal"));
 
         break;
       }
