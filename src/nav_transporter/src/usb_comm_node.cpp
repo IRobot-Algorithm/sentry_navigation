@@ -166,11 +166,11 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   }
   else if (vel->twist.linear.z < 1 + 1e-4)
   {
-    send_package_.chassis_mode = 0; // RANDOM_ROTING
+    send_package_.chassis_mode = 1; // RANDOM_ROTING
   }
   else if (vel->twist.linear.z < 2 + 1e-4)
   {
-    send_package_.chassis_mode = 0; // QUICK_ROTING
+    send_package_.chassis_mode = 2; // QUICK_ROTING
   }
   else if (vel->twist.linear.z < 3 + 1e-4)
   {
