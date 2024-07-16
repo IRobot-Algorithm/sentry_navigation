@@ -115,17 +115,19 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   {
     // 我方台阶
     {
-      cv::Point2f(7.483, 6.339),
-      cv::Point2f(6.566, 7.420),
+      cv::Point2f(8.236, 6.339),
+      cv::Point2f(8.236, 7.480),
+      cv::Point2f(6.566, 7.480),
       cv::Point2f(5.521, 5.975),
       cv::Point2f(6.587, 5.230)
     },
     // 敌方台阶
     {
-      cv::Point2f(8.408, -7.350),
+      cv::Point2f(8.408, -7.480),
       cv::Point2f(9.546, -6.038),
       cv::Point2f(8.448, -5.270),
-      cv::Point2f(7.551, -6.379)
+      cv::Point2f(6.799, -6.379),
+      cv::Point2f(6.799, -7.520),
     },
     // 我方右侧梯高
     {
@@ -140,6 +142,20 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
       cv::Point2f(18.093, 3.978),
       cv::Point2f(16.994, 3.978),
       cv::Point2f(16.994, 3.110)
+    },
+    // 我方左侧梯高
+    {
+      cv::Point2f(0.739, 6.340),
+      cv::Point2f(0.739, 7.480),
+      cv::Point2f(-0.261, 7.480),
+      cv::Point2f(-0.261, 5.200),
+    },
+    // 敌方左侧梯高
+    {
+      cv::Point2f(15.296, -7.480),
+      cv::Point2f(15.296, -5.200),
+      cv::Point2f(14.296, -6.340),
+      cv::Point2f(14.296, -7.480),
     },
   };
   */
