@@ -570,8 +570,6 @@ int main(int argc, char** argv)
       // pubSpeed.publish(cmd_vel);
       // continue;
 
-      // normal
-      cmd_vel.twist.angular.x = 0.0;
       // closed
       cmd_vel.twist.angular.y = 0.0;
       
@@ -581,24 +579,6 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
         float pathDir = atan2(endDisY, endDisX);
-        float yawDiff = pathDir - worldYaw;
-        if (yawDiff > PI) 
-          yawDiff -= 2 * PI;
-        else if (yawDiff < -PI) 
-          yawDiff += 2 * PI;
-        cmd_vel.twist.angular.z = yawDiff;
-        float vehicleDiff = pathDir - vehicleYaw;
-        if (vehicleDiff > PI) 
-          vehicleDiff -= 2 * PI;
-        else if (vehicleDiff < -PI) 
-          vehicleDiff += 2 * PI;
-        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
-        {
-          if (goalZ >= -0.35) // left
-            cmd_vel.twist.angular.x = 1.0;
-          else // right
-            cmd_vel.twist.angular.x = 2.0;
-        }
         publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         continue; 
       }
@@ -609,24 +589,6 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
         float pathDir = atan2(endDisY, endDisX);
-        float yawDiff = pathDir - worldYaw;
-        if (yawDiff > PI) 
-          yawDiff -= 2 * PI;
-        else if (yawDiff < -PI) 
-          yawDiff += 2 * PI;
-        cmd_vel.twist.angular.z = yawDiff;
-        float vehicleDiff = pathDir - vehicleYaw;
-        if (vehicleDiff > PI) 
-          vehicleDiff -= 2 * PI;
-        else if (vehicleDiff < -PI) 
-          vehicleDiff += 2 * PI;
-        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
-        {
-          if (goalZ >= -0.15) // left
-            cmd_vel.twist.angular.x = 1.0;
-          else // right
-            cmd_vel.twist.angular.x = 2.0;
-        }
         publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         continue;
       }
@@ -635,7 +597,6 @@ int main(int argc, char** argv)
         cmd_vel.twist.linear.x = 0.0;
         cmd_vel.twist.linear.y = 0.0;
         cmd_vel.twist.linear.z = 1.0;
-        cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.15;
         // publishVel(cmd_vel, pubSpeed, endDis, -5.0);
         publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         continue;
@@ -648,25 +609,6 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 1.0;
           float pathDir = atan2(endDisY, endDisX);
-          float yawDiff = pathDir - worldYaw;
-          if (yawDiff > PI) 
-            yawDiff -= 2 * PI;
-          else if (yawDiff < -PI) 
-            yawDiff += 2 * PI;
-          cmd_vel.twist.angular.z = yawDiff;
-          float vehicleDiff = pathDir - vehicleYaw;
-          if (vehicleDiff > PI) 
-            vehicleDiff -= 2 * PI;
-          else if (vehicleDiff < -PI) 
-            vehicleDiff += 2 * PI;
-          if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
-          {
-            if (goalZ >= -0.15) // left
-              cmd_vel.twist.angular.x = 1.0;
-            else // right
-              cmd_vel.twist.angular.x = 2.0;
-          }
-          // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
           publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
         }
         else
@@ -674,7 +616,6 @@ int main(int argc, char** argv)
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
           cmd_vel.twist.linear.z = 1.0;
-          cmd_vel.twist.angular.z = vehicleYaw - worldYaw + 0.2;
           publishVel(cmd_vel, pubSpeed, pathDis, -5.0);
         }
         continue;
@@ -724,65 +665,17 @@ int main(int argc, char** argv)
       float speed_x = v_kp * dis_x;
       float speed_y = v_kp * dis_y;
 
-      float yawDiff, pathDir;
+      float pathDir;
       if (goalZ < -0.05)
-      {
         pathDir = atan2(endDisY, endDisX);
-        yawDiff = pathDir - worldYaw;
-        if (yawDiff > PI) 
-          yawDiff -= 2 * PI;
-        else if (yawDiff < -PI) 
-          yawDiff += 2 * PI;
-        cmd_vel.twist.angular.z = yawDiff;
-        float vehicleDiff = pathDir - vehicleYaw;
-        if (vehicleDiff > PI) 
-          vehicleDiff -= 2 * PI;
-        else if (vehicleDiff < -PI) 
-          vehicleDiff += 2 * PI;
-        if (fabs(vehicleDiff) > 3.0 * PI / 4.0)
-        {
-          if (goalZ >= -0.15) // left
-            cmd_vel.twist.angular.x = 1.0;
-          else // right
-            cmd_vel.twist.angular.x = 2.0;
-        }
-      }
       else
-      {
-        // angle
-        pathDir = atan2(speed_y, speed_x);
-        yawDiff = pathDir - worldYaw;
-
-        if (yawDiff > PI) 
-          yawDiff -= 2 * PI;
-        else if (yawDiff < -PI) 
-          yawDiff += 2 * PI;
-        if (yawDiff > PI) 
-          yawDiff -= 2 * PI;
-        else if (yawDiff < -PI) 
-          yawDiff += 2 * PI;
-
-        /*
-        if (fabs(pathDir - vehicleYaw) > PI / 3 && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872)))
-        {
-          cmd_vel.twist.linear.x = 0.0;
-          cmd_vel.twist.linear.y = 0.0;
-          cmd_vel.twist.linear.z = 0.0;
-          cmd_vel.twist.angular.z = yawDiff;
-          // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
-          publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
-          continue;
-        } 
-        */       
-      }
-
+        pathDir = atan2(speed_y, speed_x);   
 
       pubSkipCount--;
       if (pubSkipCount < 0) {
         cmd_vel.twist.linear.x = cos(worldYaw) * speed_x + sin(worldYaw) * speed_y;
         cmd_vel.twist.linear.y = -sin(worldYaw) * speed_x + cos(worldYaw) * speed_y;
         cmd_vel.twist.linear.z = 0.0;
-        cmd_vel.twist.angular.z = yawDiff;
         // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
         publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
 
