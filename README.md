@@ -1,4 +1,11 @@
 # Sentry Navigation
+
+## introduction
+
+本仓库为2024哨兵导航仓库
+
+main为双头构型，spare-sentry为单头构型
+
 ## environment
 
 - 下载所需依赖：
