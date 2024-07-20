@@ -153,8 +153,8 @@ typedef struct
     uint16_t start_position_x;
     uint16_t start_position_y;
     // 增量数组 单位dm
-    int8_t delta_x[49];
-    int8_t delta_y[49];
+    int8_t delta_x[27];
+    int8_t delta_y[27];
     // 发送者ID
     uint16_t sender_id;
     // 包尾

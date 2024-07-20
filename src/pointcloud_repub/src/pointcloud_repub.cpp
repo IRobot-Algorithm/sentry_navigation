@@ -16,11 +16,25 @@ PointCloudProcess::PointCloudProcess()
   polygons_ = 
   {
     // 我方环高玻璃区域
+    // {
+    //   cv::Point2f(3.836, -0.244),
+    //   cv::Point2f(3.836, 1.300),
+    //   cv::Point2f(2.336, 1.773),
+    //   cv::Point2f(2.336, -0.718)
+    // },
+    // 敌方环高玻璃区域
     {
-      cv::Point2f(3.836, -0.244),
-      cv::Point2f(3.836, 1.300),
-      cv::Point2f(2.336, 1.773),
-      cv::Point2f(2.336, -0.718)
+      cv::Point2f(12.699, -1.813),
+      cv::Point2f(12.699, 0.678),
+      cv::Point2f(11.199, 0.205),
+      cv::Point2f(11.199, -1.340)
+    },
+    // 敌方环高玻璃区域
+    {
+      cv::Point2f(12.699, -1.813),
+      cv::Point2f(12.699, 0.678),
+      cv::Point2f(11.199, 0.205),
+      cv::Point2f(11.199, -1.340)
     },
     // 敌方环高玻璃区域
     {

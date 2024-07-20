@@ -231,8 +231,8 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     for (const auto& p : path->points)
     {
       geometry_msgs::Point point;
-      point.x = 7.5 - p.y;
-      point.y = p.x + 6.5;
+      point.x = p.x + 6.5;
+      point.y = p.y + 7.5;
       points.push_back(point);
     }
   }
@@ -241,19 +241,14 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     for (const auto& p : path->points)
     {
       geometry_msgs::Point point;
-      point.x = p.y + 7.5;
-      point.y = 21.5 - p.x;
+      point.x = 21.5 - p.x;
+      point.y = 7.5 - p.y;
       points.push_back(point);
     }
   }
 
   if (points.size() > 50)
     points.resize(50);
-
-  points[0].x = std::max(points[0].x, 0.0);
-  points[0].y = std::max(points[0].y, 0.0);
-  points[0].x = std::min(points[0].x, 15.0);
-  points[0].y = std::min(points[0].y, 28.0);
 
   map_data_package_.start_position_x = static_cast<uint16_t>(points[0].x * 10);
   map_data_package_.start_position_y = static_cast<uint16_t>(points[0].y * 10);
@@ -295,8 +290,8 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     }
   }
 
-  if (deltas.size() > 49)
-    deltas.resize(49);
+  if (deltas.size() > 27)
+    deltas.resize(27);
 
   for (size_t i = 0; i < deltas.size(); ++i)
   {
@@ -509,13 +504,13 @@ void UsbCommNode::receiveCallback()
         uwb_.header.frame_id = "map";
         if (map_data_package_.sender_id < 10) // red
         {
-          uwb_.point.x = package.y - 6.5;
-          uwb_.point.y = 7.5 - package.x;
+          uwb_.point.x = package.x - 6.5;
+          uwb_.point.y = package.y - 7.5;
         }
         else // blue
         {
-          uwb_.point.x = 21.5 - package.y;
-          uwb_.point.y = package.x - 7.5;
+          uwb_.point.x = 21.5 - package.x;
+          uwb_.point.y = 7.5 - package.y;
         }
 
         pub_uwb_.publish(uwb_);
