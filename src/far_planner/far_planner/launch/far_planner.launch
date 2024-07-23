@@ -4,7 +4,7 @@
     <arg name="terrain_local_topic" default="/terrain_map_ext"/>
     <arg name="scan_cloud_topic" default="/registered_scan"/>
     <arg name="config" default="matterport"/>
-    <node pkg="far_planner" type="far_planner" name="far_planner" output="screen">
+    <node pkg="far_planner" type="far_planner" name="far_planner" output="screen" respawn="true">
         <rosparam command="load" file="$(find far_planner)/config/$(arg config).yaml" />
         <remap from="/odom_world" to="$(arg odom_topic)"/> 
         <remap from="/terrain_cloud" to="$(arg terrain_cloud_topic)"/>

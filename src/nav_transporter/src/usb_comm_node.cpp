@@ -176,10 +176,6 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
   {
     send_package_.chassis_mode = 3; // KEEP
   }
-  if (in_supply_ || referee_info_.our_outpost_hp > 0)
-  {
-    send_package_.chassis_mode = 3; // KEEP
-  }
 
   send_package_.vx = static_cast<float>(vel->twist.linear.x);
   send_package_.vy = static_cast<float>(vel->twist.linear.y);
@@ -247,8 +243,8 @@ void UsbCommNode::vizPathHandler(const visualization_msgs::Marker::ConstPtr& pat
     }
   }
 
-  if (points.size() > 50)
-    points.resize(50);
+  if (points.size() > 27)
+    points.resize(27);
 
   map_data_package_.start_position_x = static_cast<uint16_t>(points[0].x * 10);
   map_data_package_.start_position_y = static_cast<uint16_t>(points[0].y * 10);

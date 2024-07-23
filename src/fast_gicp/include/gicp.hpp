@@ -59,6 +59,7 @@ class GicpLooper
     PointCloudT::Ptr cloud_scan_;
     fast_gicp::FastGICP<PointT, PointT> fgicp_mt_;
     Eigen::Matrix4f last_result_;
+    int icp_failed_time_;
 
     std::mutex mtx_scan_;
     std::mutex mtx_tf_;

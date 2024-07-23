@@ -35,6 +35,7 @@ GicpLooper::GicpLooper()
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
   trans_.setOrigin(tf::Vector3(0, 0, 0));
   last_result_ = Eigen::Matrix4f::Identity();
+  icp_failed_time_ = 0;
 }
 
 void GicpLooper::Load(ros::NodeHandle &nh)
@@ -124,7 +125,8 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
 
   std_msgs::Bool msg;
   if (fabs(odom2baselink_transform.getOrigin().x()) > 50.0 ||
-      fabs(odom2baselink_transform.getOrigin().y()) > 50.0) // 定位跑飞
+      fabs(odom2baselink_transform.getOrigin().y()) > 50.0 ||
+      icp_failed_time_ > 10) // 定位跑飞
   {
     // stop robot
     msg.data = true;
@@ -135,6 +137,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     while (!success)
       success = Relocalize();
 
+    icp_failed_time_ = 0;
     return;
   }
   else
@@ -162,6 +165,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
 
   if (fitness_score < 0.3)
   {
+    icp_failed_time_ = 0;
     last_result_ = fgicp_mt_.getFinalTransformation();
     mtx_tf_.lock();
     trans_ = eigenMatrixToTf(last_result_);
@@ -185,6 +189,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   }
   else
   {
+    icp_failed_time_++;
     ROS_WARN("[Gicp node]:Gicp failed!!!");
   }
 
