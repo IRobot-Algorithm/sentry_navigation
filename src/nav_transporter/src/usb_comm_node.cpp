@@ -378,6 +378,7 @@ void UsbCommNode::receiveCallback()
     uint8_t receive_package[64];
     int read_size = transporter_->read(receive_package, 64);
     // ROS_INFO("read_size: %d", read_size);
+    // ROS_INFO("ID : %d", static_cast<int>(receive_package[1]));
 
     // if (read_size == -1)
     //   return;
@@ -410,6 +411,39 @@ void UsbCommNode::receiveCallback()
         transporter::DesicionRefereeReceivePackage package;
         memcpy(&package, receive_package, 
                   sizeof(transporter::DesicionRefereeReceivePackage));
+
+// std::cout << static_cast<int>(package._SOF) << " "
+//           << static_cast<int>(package.ID) << " "
+//           << static_cast<int>(package.game_type_progress) << " "
+//           << static_cast<int>(package.game_stage_remain_time) << " "
+//           << static_cast<int>(package.red_hero_remain_HP) << " "
+//           << static_cast<int>(package.red_engineer_remain_HP) << " "
+//           << static_cast<int>(package.red_infantry3_remain_HP) << " "
+//           << static_cast<int>(package.red_infantry4_remain_HP) << " "
+//           << static_cast<int>(package.red_infantry5_remain_HP) << " "
+//           << static_cast<int>(package.red_sentry_remain_HP) << " "
+//           << static_cast<int>(package.red_outpose_HP) << " "
+//           << static_cast<int>(package.red_base_HP) << " "
+//           << static_cast<int>(package.blue_hero_remain_HP) << " "
+//           << static_cast<int>(package.blue_engineer_remain_HP) << " "
+//           << static_cast<int>(package.blue_infantry3_remain_HP) << " "
+//           << static_cast<int>(package.blue_infantry4_remain_HP) << " "
+//           << static_cast<int>(package.blue_infantry5_remain_HP) << " "
+//           << static_cast<int>(package.blue_sentry_remain_HP) << " "
+//           << static_cast<int>(package.blue_outpose_HP) << " "
+//           << static_cast<int>(package.blue_base_HP) << " "
+//           << static_cast<int>(package.base_state) << " "
+//           << static_cast<int>(package.robot_id) << " "
+//           << static_cast<int>(package.max_HP) << " "
+//           << static_cast<int>(package.projectile_allowance_17mm) << " "
+//           << static_cast<int>(package.remaining_gold_coin) << " "
+//           << static_cast<int>(package.bought_bullets) << " "
+//           << static_cast<int>(package.rfid_status) << " "
+//           << static_cast<int>(package.x) << " "
+//           << static_cast<int>(package.y) << " "
+//           << static_cast<int>(package.key) << " "
+//           << static_cast<int>(package._EOF) << " "
+//           << std::endl;
 
         int progress = static_cast<int>((package.game_type_progress & 0xf0) >> 4);
         if (progress == 4)

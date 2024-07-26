@@ -567,6 +567,8 @@ int main(int argc, char** argv)
       // cmd_vel.twist.linear.z = 3.0;
       // cmd_vel.twist.angular.z = -worldYaw;
       // // publishVel(cmd_vel, pubSpeed, endDis, pathDir);
+      // cmd_vel.twist.linear.x = 0.3;
+      // cmd_vel.twist.linear.y = 0.0;
       // pubSpeed.publish(cmd_vel);
       // continue;
 

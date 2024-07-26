@@ -61,13 +61,13 @@ double vehicleRadio = 0.3;
 float terrainVoxelSize = 0.1;
 int terrainVoxelShiftX = 0;
 int terrainVoxelShiftY = 0;
-const int terrainVoxelWidth = 101;
+const int terrainVoxelWidth = 141;
 int terrainVoxelHalfWidth = (terrainVoxelWidth - 1) / 2;
 const int terrainVoxelNum = terrainVoxelWidth * terrainVoxelWidth;
 
 // planar voxel parameters
 float planarVoxelSize = 0.1;
-const int planarVoxelWidth =81;
+const int planarVoxelWidth =101;
 int planarVoxelHalfWidth = (planarVoxelWidth - 1) / 2;
 const int planarVoxelNum = planarVoxelWidth * planarVoxelWidth;
 
@@ -81,6 +81,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloud[terrainVoxelNum];
 
 int terrainVoxelUpdateNum[terrainVoxelNum] = {0};
 float terrainVoxelUpdateTime[terrainVoxelNum] = {0};
+float terrainVoxelYaw[terrainVoxelNum] = {0};
 float terrainVoxelDis[terrainVoxelNum] = {0};
 float planarVoxelElev[planarVoxelNum] = {0};
 int planarVoxelEdge[planarVoxelNum] = {0};
@@ -102,6 +103,7 @@ float sinVehicleRoll = 0, cosVehicleRoll = 0;
 float sinVehiclePitch = 0, cosVehiclePitch = 0;
 float sinVehicleYaw = 0, cosVehicleYaw = 0;
 
+double cloudRoll = 0, cloudPitch = 0, cloudYaw = 0;
 bool is_reboot = false;
 
 pcl::VoxelGrid<pcl::PointXYZI> downSizeFilter;
@@ -183,6 +185,20 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud2)
   }
 
   newlaserCloud = true;
+
+  static tf::TransformListener ls;
+  tf::StampedTransform transform;
+  try{
+    ls.lookupTransform("/map", "/base_link",  
+                            ros::Time(0), transform);
+  }
+  catch (tf::TransformException &ex) {
+    ROS_WARN("%s",ex.what());
+    cloudYaw = vehicleYaw;
+    return;
+  }
+  tf::Matrix3x3 rotation(transform.getRotation());
+  rotation.getRPY(cloudRoll, cloudPitch, cloudYaw);
 
 }
 
@@ -292,6 +308,18 @@ int main(int argc, char** argv)
     terrainVoxelCloud[i].reset(new pcl::PointCloud<pcl::PointXYZI>());
   }
 
+  for (int ind = 0; ind < terrainVoxelNum; ind++)
+  {
+    int indX = ind / terrainVoxelWidth;
+    int indY = ind % terrainVoxelWidth;
+
+    float voxelYaw = atan2(indY - terrainVoxelHalfWidth, indX - terrainVoxelHalfWidth); 
+    terrainVoxelYaw[ind] = voxelYaw;
+    float voxelDis = sqrt((indY - terrainVoxelHalfWidth) * (indY - terrainVoxelHalfWidth) + 
+                          (indX - terrainVoxelHalfWidth) * (indX - terrainVoxelHalfWidth)) * terrainVoxelSize; 
+    terrainVoxelDis[ind] = voxelDis;
+  }
+
   downSizeFilter.setLeafSize(scanVoxelSize, scanVoxelSize, scanVoxelSize);
 
   ros::Rate rate(100);
@@ -385,9 +413,27 @@ int main(int argc, char** argv)
       }
 
       for (int ind = 0; ind < terrainVoxelNum; ind++) {
+        double yawDiff = cloudYaw - terrainVoxelYaw[ind];
+        if (yawDiff > 2.0 * PI)
+          yawDiff -= 2.0 * PI;
+        else if (yawDiff < -2.0 * PI)
+          yawDiff += 2.0 * PI;
         if (terrainVoxelUpdateNum[ind] >= voxelPointUpdateThre || clearingCloud || is_reboot ||
-           (laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre))
+           (laserCloudTime - systemInitTime - terrainVoxelUpdateTime[ind] >= voxelTimeUpdateThre &&
+            fabs(yawDiff) < PI / 2.0))
         {
+          // if (terrainVoxelDis[ind] <= 0.4)
+          // {
+            
+          //   if (fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
+          //     continue;
+          // }
+          if (terrainVoxelDis[ind] <= 1.0)
+          { 
+            if (fabs(cos(yawDiff) * terrainVoxelDis[ind]) <= 0.4 &&
+                fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
+              continue;
+          }
           pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloudPtr = terrainVoxelCloud[ind];
 
           laserCloudDwz->clear();

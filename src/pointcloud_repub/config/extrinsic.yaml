@@ -1,8 +1,8 @@
 lidar:
   # 老哨兵
-  extrinsic_T: [ -0.18, 0, 0 ]
-  extrinsic_R: [ 1, 0, 0,
-                 0, 1, 0,
+  extrinsic_T: [ -0.18, 0, -0.04 ]
+  extrinsic_R: [ -1, 0, 0,
+                 0, -1, 0,
                  0, 0, 1]
   # 备用哨兵
   # extrinsic_T: [0, 0, -0.32]

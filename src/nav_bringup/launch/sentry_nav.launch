@@ -18,7 +18,7 @@
     <!-- <include file="$(find point_lio)/launch/mapping_mid360.launch" /> -->
     <!-- <include file="$(find FAST_LIO)/launch/mapping_mid360.launch" /> -->
     <include file="$(find faster_lio)/launch/mapping_mid360.launch" >
-	    <arg name="rviz" value="false" />
+	    <arg name="rviz" value="true" />
     </include>
 
     <!-- /////////////////////// LOOP /////////////////////// -->
@@ -42,7 +42,7 @@
         <arg name="use_pose_goal" value="false"/> <!-- A star or far planner -->
         <arg name="track_target" value="true"/> <!-- Follow autoaim target or not -->
         <arg name="use_map" value="false"/> <!-- Use map of far planner -->
-        <arg name="is_test" value="false"/> <!-- Can publish goal point in rviz or not -->
+        <arg name="is_test" value="true"/> <!-- Can publish goal point in rviz or not -->
         <arg name="restricted_track" value="true"/> <!-- Stop in some area when tracking autoaim target or not -->
         <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/> <!-- If use_map, path of map file -->
     </include>
@@ -50,6 +50,6 @@
     <!-- /////////////////////// RVIZ /////////////////////// -->
     <!-- <include file="$(find ego_planner)/launch/rviz.launch"/> -->
     <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
-    <!-- <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" /> -->
-    <!-- <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/> -->
+    <node name="local_rviz" pkg="rviz" type="rviz" args="-d $(find nav_bringup)/rviz/local.rviz" required="false" />
+    <node type="rviz" name="far_rviz" pkg="rviz" args="-d $(find far_planner)/rviz/matterport.rviz" respawn="false"/>
 </launch>
