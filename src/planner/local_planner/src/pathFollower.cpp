@@ -429,7 +429,7 @@ void publishVel(geometry_msgs::TwistStamped& vel, ros::Publisher& pub, const flo
   {
     vel.twist.linear.x = 0.0;
     vel.twist.linear.y = 0.0;
-    vel.twist.linear.z = 3.0; // KEEP
+    vel.twist.linear.z = 1.0;
     vel.twist.angular.z = 0.0;
   }
 
