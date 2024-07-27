@@ -126,7 +126,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   std_msgs::Bool msg;
   if (fabs(odom2baselink_transform.getOrigin().x()) > 50.0 ||
       fabs(odom2baselink_transform.getOrigin().y()) > 50.0 ||
-      icp_failed_time_ > 10) // 定位跑飞
+      icp_failed_time_ > 30) // 定位跑飞
   {
     // stop robot
     msg.data = true;
