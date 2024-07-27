@@ -303,13 +303,13 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
       target_z_ = map2gimbal_transform.getOrigin().z() + req.pose.pose.position.z + 0.35; // 雷达距地面高度0.35
       
       double distance = sqrt(pow(req.pose.pose.position.x, 2) + pow(req.pose.pose.position.y, 2));
-      if (distance < req.distance)
-      {
-        double diff_x = (map2gimbal_transform.getOrigin().x() - way_point_.point.x) * 2 * req.distance / distance;
-        double diff_y = (map2gimbal_transform.getOrigin().y() - way_point_.point.y) * 2 * req.distance / distance;
-        way_point_.point.x += diff_x;
-        way_point_.point.y += diff_y;
-      }
+      // if (distance < req.distance)
+      // {
+      //   double diff_x = (map2gimbal_transform.getOrigin().x() - way_point_.point.x) * 2 * req.distance / distance;
+      //   double diff_y = (map2gimbal_transform.getOrigin().y() - way_point_.point.y) * 2 * req.distance / distance;
+      //   way_point_.point.x += diff_x;
+      //   way_point_.point.y += diff_y;
+      // }
     }
 
     if (req.restricted_area == 4)

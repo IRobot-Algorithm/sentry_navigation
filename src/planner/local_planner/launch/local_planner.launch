@@ -1,7 +1,7 @@
 <launch>
 
   <arg name="twoWayDrive" default="true"/><!--false-->
-  <arg name="maxSpeed" default="2.5"/><!--2.0-->
+  <arg name="maxSpeed" default="1.5"/><!--2.0-->
   <arg name="maxAccel" default="5.0"/>
   <arg name="cameraOffsetZ" default="0"/>
   <arg name="autonomyMode" default="true"/>

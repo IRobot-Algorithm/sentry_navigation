@@ -61,13 +61,13 @@ double vehicleRadio = 0.3;
 float terrainVoxelSize = 0.1;
 int terrainVoxelShiftX = 0;
 int terrainVoxelShiftY = 0;
-const int terrainVoxelWidth = 141;
+const int terrainVoxelWidth = 161;
 int terrainVoxelHalfWidth = (terrainVoxelWidth - 1) / 2;
 const int terrainVoxelNum = terrainVoxelWidth * terrainVoxelWidth;
 
 // planar voxel parameters
 float planarVoxelSize = 0.1;
-const int planarVoxelWidth =101;
+const int planarVoxelWidth =121;
 int planarVoxelHalfWidth = (planarVoxelWidth - 1) / 2;
 const int planarVoxelNum = planarVoxelWidth * planarVoxelWidth;
 
@@ -328,6 +328,8 @@ int main(int argc, char** argv)
     ros::spinOnce();
 
     if (newlaserCloud) {
+      double t1 = ros::Time::now().toSec();
+
       newlaserCloud = false;
 
       // terrain voxel roll over
@@ -428,12 +430,6 @@ int main(int argc, char** argv)
           //   if (fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
           //     continue;
           // }
-          if (terrainVoxelDis[ind] <= 1.0)
-          { 
-            if (fabs(cos(yawDiff) * terrainVoxelDis[ind]) <= 0.4 &&
-                fabs(sin(yawDiff) * terrainVoxelDis[ind]) > 0.1)
-              continue;
-          }
           pcl::PointCloud<pcl::PointXYZI>::Ptr terrainVoxelCloudPtr = terrainVoxelCloud[ind];
 
           laserCloudDwz->clear();
@@ -721,7 +717,12 @@ int main(int argc, char** argv)
       terrainCloud2.header.stamp = ros::Time().fromSec(laserCloudTime);
       terrainCloud2.header.frame_id = "map";
       pubLaserCloud.publish(terrainCloud2);
+      
+      double t2 = ros::Time::now().toSec();
+      std::cout << static_cast<int>(1000 * (t2 - t1)) << "ms\n";
+
     }
+
 
     status = ros::ok();
     rate.sleep();
