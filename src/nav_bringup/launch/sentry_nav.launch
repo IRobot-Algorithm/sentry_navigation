@@ -41,7 +41,7 @@
     <include file="$(find nav_transporter)/launch/transporter.launch" >
         <arg name="use_pose_goal" value="false"/> <!-- A star or far planner -->
         <arg name="track_target" value="true"/> <!-- Follow autoaim target or not -->
-        <arg name="use_map" value="false"/> <!-- Use map of far planner -->
+        <arg name="use_map" value="true"/> <!-- Use map of far planner -->
         <arg name="is_test" value="false"/> <!-- Can publish goal point in rviz or not -->
         <arg name="restricted_track" value="true"/> <!-- Stop in some area when tracking autoaim target or not -->
         <arg name="map_path" value="$(find far_planner)/data/rmuc2024.vgh"/> <!-- If use_map, path of map file -->

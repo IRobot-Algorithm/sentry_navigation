@@ -96,7 +96,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
   }
   pub_untrack_marker_ = nh.advertise<visualization_msgs::Marker>("/untrack_area", 10);
   
-  // /*
+  /*
   polygons_ = 
   {
     // 三楼
@@ -108,9 +108,9 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
       cv::Point2f(7.689121, 3.650847)
     },
   };
-  // */
+  */
 
-  /*
+  // /*
   polygons_ = 
   {
     // 我方台阶
@@ -158,7 +158,7 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
       cv::Point2f(14.296, -7.480),
     },
   };
-  */
+  // */
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &StateProcess::loop, this);
 }
