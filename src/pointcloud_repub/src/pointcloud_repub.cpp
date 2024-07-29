@@ -280,14 +280,14 @@ void PointCloudProcess::LivoxCloudHandler(const sensor_msgs::PointCloud2ConstPtr
 
     std::for_each(std::execution::unseq, index.begin(), index.end(), [&](const size_t &i)
     {
-      if (livox_cloud_map->points[i].z < 0.273)
+      if (livox_cloud_map->points[i].z < 0.253)
       {
         for (const auto& polygon : polygons_)
         {
           if (cv::pointPolygonTest(polygon, 
               cv::Point2f(livox_cloud_map->points[i].x, livox_cloud_map->points[i].y), false) >= 0)
           {
-            livox_cloud_map->points[i].z = 0.273;
+            livox_cloud_map->points[i].z = 0.253;
             break;
           }
         }
