@@ -30,7 +30,7 @@
 	<param name="enable_imu_bag" type="bool" value="$(arg imu_bag)"/>
 
 	<node name="livox_lidar_publisher2" pkg="livox_ros_driver2"
-	      type="livox_ros_driver2_node" required="true"
+	      type="livox_ros_driver2_node" respawn="true"
 	      output="screen" args="$(arg cmdline_arg)"/>
 
 	<group if="$(arg rosbag_enable)">

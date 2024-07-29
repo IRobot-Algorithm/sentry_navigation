@@ -1,6 +1,6 @@
 <launch>
 
-  <node pkg="terrain_analysis" type="terrainAnalysis" name="terrainAnalysis" output="screen" required="true">
+  <node pkg="terrain_analysis" type="terrainAnalysis" name="terrainAnalysis" output="screen" respawn="true" >
     <param name="scanVoxelSize" type="double" value="0.01" />
     <param name="decayTime" type="double" value="0.3" /><!--点云考虑时间 超出不考虑-->
     <param name="noDecayDis" type="double" value="0.01" />

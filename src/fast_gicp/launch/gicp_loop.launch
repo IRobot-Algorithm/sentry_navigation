@@ -2,6 +2,6 @@
 	<param name="icp/pub_result" type="bool" value="true"/>
 	<param name="icp/blue_map_pcd_path" type="string" value="$(find faster_lio)/PCD/3floor.pcd"/>
 	<param name="icp/red_map_pcd_path" type="string" value="$(find faster_lio)/PCD/3floor.pcd"/>
-    <node pkg="fast_gicp" type="gicp_node" name="gicp_node" output="screen" />
+    <node pkg="fast_gicp" type="gicp_node" name="gicp_node" output="screen" respawn="true" />
 
 </launch>

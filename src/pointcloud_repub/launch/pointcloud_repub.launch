@@ -4,7 +4,7 @@
   <arg name="adjust_height" default="true"/>
 	<rosparam command="load" file="$(find pointcloud_repub)/config/extrinsic.yaml" />
 
-  <node pkg="pointcloud_repub" type="pointcloud_repub" name="pointcloud_repub" output="screen" >
+  <node pkg="pointcloud_repub" type="pointcloud_repub" name="pointcloud_repub" output="screen" respawn="true" >
     <param name="undecay_dis" type="double" value="$(arg undecay_dis)" />
     <param name="undecay_angle" type="double" value="$(arg undecay_angle)" />
     <param name="adjust_height" type="bool" value="$(arg adjust_height)" />

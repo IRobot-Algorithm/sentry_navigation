@@ -14,7 +14,7 @@
   <arg name="v_ki" default="0"/>
   <arg name="v_kd" default="2"/>
 
-  <node pkg="local_planner" type="localPlanner" name="localPlanner" output="screen" required="true">
+  <node pkg="local_planner" type="localPlanner" name="localPlanner" output="screen" respawn="true">
     <param name="pathFolder" type="string" value="$(find local_planner)/paths" />
     <param name="vehicleLength" type="double" value="0.2" />
     <param name="vehicleWidth" type="double" value="0.2" />
@@ -57,7 +57,7 @@
     <param name="vehicleRadio" type="double" value="0.35" />
   </node>
 
-  <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" required="true">
+  <node pkg="local_planner" type="pathFollower" name="pathFollower" output="screen" respawn="true">
     <param name="pubSkipNum" type="int" value="1" /><!--1-->
     <param name="twoWayDrive" value="false" />
     <param name="lookAheadDis" type="double" value="0.3" /><!--xz:0.5 xy:0.5-->

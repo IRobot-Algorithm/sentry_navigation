@@ -2,7 +2,7 @@
 
   <arg name="checkTerrainConn" default="false"/>
 
-  <node pkg="terrain_analysis_ext" type="terrainAnalysisExt" name="terrainAnalysisExt" output="screen" required="true">
+  <node pkg="terrain_analysis_ext" type="terrainAnalysisExt" name="terrainAnalysisExt" output="screen" respawn="true">
     <param name="scanVoxelSize" type="double" value="0.02" />
     <param name="decayTime" type="double" value="0.2" />
     <param name="noDecayDis" type="double" value="0.01" />
