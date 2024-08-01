@@ -190,7 +190,7 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud2)
   tf::StampedTransform transform;
   try{
     ls.lookupTransform("/map", "/base_link",  
-                            laserCloud2->header.stamp, transform);
+                           ros::Time(0), transform);
   }
   catch (tf::TransformException &ex) {
     ROS_WARN("%s",ex.what());
