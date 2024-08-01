@@ -762,8 +762,7 @@ int main(int argc, char** argv)
         else if (yawDiff < -PI) 
           yawDiff += 2 * PI;
 
-        /*
-        if (fabs(pathDir - vehicleYaw) > PI / 3 && (!is_on_slope || (is_on_slope && fabs(vehicleSlopeAngle) < 0.0872)))
+        if (fabs(pathDir - vehicleYaw) > PI / 2 && !is_on_slope)
         {
           cmd_vel.twist.linear.x = 0.0;
           cmd_vel.twist.linear.y = 0.0;
@@ -773,7 +772,6 @@ int main(int argc, char** argv)
           publishVel(cmd_vel, pubSpeed, pathDis, pathDir);
           continue;
         } 
-        */       
       }
 
 
