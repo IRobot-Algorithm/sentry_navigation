@@ -2,13 +2,13 @@
 <launch>
 
   <!-- 启动地图 -->
-  <node pkg="map_server" name="map_server" type="map_server" args="$(find global_planner)/maps/3floor.yaml"/>
+  <node pkg="map_server" name="map_server" type="map_server" args="$(find global_planner)/maps/map.yaml"/>
 
   <!--启动A*全局规划器-->
   <node pkg="global_planner" type="planner" respawn="true" name="global_planner" output="screen">
     <rosparam file="$(find global_planner)/params/A_star_planner.yaml" command="load"/>
   </node>
   
-  <!-- <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" /> -->
+  <node name="global_rviz" pkg="rviz" type="rviz" args="-d $(find global_planner)/params/rviz.rviz" required="false" />
 
 </launch>

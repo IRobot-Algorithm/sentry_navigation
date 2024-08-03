@@ -119,13 +119,13 @@ void StateProcess::SubAndPubToROS(ros::NodeHandle &nh)
       cv::Point2f(8.236, 7.480),
       cv::Point2f(6.566, 7.480),
       cv::Point2f(5.521, 5.975),
-      cv::Point2f(6.587, 5.230)
+      cv::Point2f(6.087, 4.730)
     },
     // 敌方台阶
     {
       cv::Point2f(8.408, -7.480),
       cv::Point2f(9.546, -6.038),
-      cv::Point2f(8.448, -5.270),
+      cv::Point2f(8.948, -4.770),
       cv::Point2f(6.799, -6.379),
       cv::Point2f(6.799, -7.520),
     },
