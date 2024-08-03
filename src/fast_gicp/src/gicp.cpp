@@ -109,6 +109,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     }
     voxelgrid.setInputCloud(cloud_map);
     voxelgrid.filter(*cloud_target_);
+    cloud_map->clear();
     map_init_ = true;
   }
 
