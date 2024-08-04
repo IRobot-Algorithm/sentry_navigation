@@ -15,7 +15,7 @@
 #include <fast_gicp/gicp/fast_gicp_st.hpp>
 #include <fast_gicp/gicp/fast_vgicp.hpp>
 
-#define inverse
+// #define inverse
 
 #ifdef USE_VGICP_CUDA
 #include <fast_gicp/ndt/ndt_cuda.hpp>
@@ -234,6 +234,7 @@ int main(int argc, char** argv) {
   // 对点云应用变换
   pcl::transformPointCloud(*filtered, *transformed_cloud, transform);
   *filtered = *transformed_cloud;
+
 #endif
 
   Eigen::Matrix4f final_transform = fgicp_mt.getFinalTransformation();
@@ -242,8 +243,30 @@ int main(int argc, char** argv) {
   pcl::transformPointCloud(*filtered, *final, final_transform);
 
 #ifdef inverse
+  target_cloud->erase(
+    std::remove_if(target_cloud->begin(), target_cloud->end(), [=](const pcl::PointXYZ& pt) { return (pt.getVector3fMap()(0) < -6.698110 ||
+                                                                                                      pt.getVector3fMap()(0) > -3.322271 ||
+                                                                                                      pt.getVector3fMap()(1) < -7.500000 ||
+                                                                                                      pt.getVector3fMap()(1) > -3.549477 ||
+                                                                                                      pt.getVector3fMap()(2) < -0.35); }),
+    target_cloud->end());
+
+  pcl::io::savePCDFileASCII("cutted_target.pcd", *target_cloud);
+
+  *final += *target_cloud;
   pcl::io::savePCDFileASCII("inverse_final.pcd", *final);
 #else
+  target_cloud->erase(
+    std::remove_if(target_cloud->begin(), target_cloud->end(), [=](const pcl::PointXYZ& pt) { return (pt.getVector3fMap()(0) < 18.322205 ||
+                                                                                                      pt.getVector3fMap()(0) > 21.767000 ||
+                                                                                                      pt.getVector3fMap()(1) < 3.549477 ||
+                                                                                                      pt.getVector3fMap()(1) > 7.419621 ||
+                                                                                                      pt.getVector3fMap()(2) < -0.35); }),
+    target_cloud->end());
+
+  pcl::io::savePCDFileASCII("cutted_target.pcd", *target_cloud);
+
+  *final += *target_cloud;
   pcl::io::savePCDFileASCII("final.pcd", *final);
 #endif
 

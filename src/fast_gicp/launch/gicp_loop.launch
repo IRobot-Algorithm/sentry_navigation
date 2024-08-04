@@ -1,7 +1,7 @@
 <launch>
 	<param name="icp/pub_result" type="bool" value="true"/>
-	<param name="icp/blue_map_pcd_path" type="string" value="$(find fast_gicp)/data/scans.pcd"/>
-	<param name="icp/red_map_pcd_path" type="string" value="$(find fast_gicp)/data/scans.pcd"/>
+	<param name="icp/blue_map_pcd_path" type="string" value="$(find fast_gicp)/data/blue.pcd"/>
+	<param name="icp/red_map_pcd_path" type="string" value="$(find fast_gicp)/data/red.pcd"/>
     <node pkg="fast_gicp" type="gicp_node" name="gicp_node" output="screen" respawn="true" />
 
 </launch>
