@@ -345,7 +345,7 @@ bool StateProcess::navTargetHandler(sentry_srvs::NavTarget::Request &req, sentry
     // }
 
     // rmuc 在对面补给区
-    if (way_point_.point.x > 19.0 && way_point_.point.x < 21.3 &&
+    if (way_point_.point.x > 18.4 && way_point_.point.x < 21.3 &&
         way_point_.point.y > 5.0 && way_point_.point.y < 8.0)
     {
       res.success = false;
