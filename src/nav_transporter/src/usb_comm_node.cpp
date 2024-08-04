@@ -177,6 +177,9 @@ void UsbCommNode::velHandler(const geometry_msgs::TwistStamped::ConstPtr& vel)
     send_package_.chassis_mode = 3; // KEEP
   }
 
+  if (in_supply_ || referee_info_.our_outpost_hp > 0)
+    send_package_.chassis_mode = 3; // KEEP
+
   send_package_.vx = static_cast<float>(vel->twist.linear.x);
   send_package_.vy = static_cast<float>(vel->twist.linear.y);
   send_package_.yaw_imu = static_cast<float>(vel->twist.angular.z);
