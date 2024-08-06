@@ -289,6 +289,7 @@ void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
     pub_odom_aft_mapped_ = nh.advertise<nav_msgs::Odometry>("/Odometry", 100000);
     pub_path_ = nh.advertise<nav_msgs::Path>("/path", 100000);
     pub_vel_ = nh.advertise<geometry_msgs::TwistStamped>("/odom_vel", 100000);
+    pub_record_odom_ = nh.advertise<geometry_msgs::PoseStamped>("/record/odom", 1);
 }
 
 LaserMapping::LaserMapping() {
@@ -913,6 +914,17 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                                     odom_base.pose.pose.position.z));
     transform.setRotation(tf_q);
     br.sendTransform(tf::StampedTransform(transform, odom_base.header.stamp, "odom", "base_link"));
+
+    static uint8_t cnt = 0;
+    cnt++;
+    if (cnt % 50 == 0)
+    {
+        geometry_msgs::PoseStamped odom_pose;
+        odom_pose.pose = odom_base.pose.pose;
+        odom_pose.header.stamp = ros::Time::now();
+        odom_pose.header.frame_id = "map";
+        pub_record_odom_.publish(odom_pose);
+    }
 
     tf::Pose tf_odom_pose;
     tf::poseMsgToTF(odom_base.pose.pose, tf_odom_pose);

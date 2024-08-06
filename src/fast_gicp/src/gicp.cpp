@@ -154,7 +154,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   std::cout << "\033[1;33m" << "icp_cost:" << cost << "[msec] " << "\033[0m" << std::flush;
   std::cout << "\033[1;33m" << "fitness_score:" << fitness_score << "\033[0m" << std::flush;
 
-  if (fitness_score < 0.3)
+  if (fitness_score < 0.1)
   {
     icp_failed_time_ = 0;
     last_result_ = fgicp_mt_.getFinalTransformation();
@@ -264,7 +264,7 @@ bool GicpLooper::Relocalize()
         pub_scan_.publish(scan_msg);
       }
 
-      if (fitness_score < 0.3 && 
+      if (fitness_score < 0.2 && 
          (fgicp_mt_.getFinalTransformation().block<1, 2>(0, 3) - translation.block<1, 2>(0, 0)).norm() < 2.0)
       {
         ROS_INFO_STREAM("\033[1;32m[Gicp node]:Relocalization succeed!!!\033[0m");

@@ -7,9 +7,9 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Twist.h>
-#include <geometry_msgs/Point.h>
+#include <geometry_msgs/PointStamped.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Bool.h>
 #include <visualization_msgs/Marker.h>
@@ -83,9 +83,9 @@ class UsbCommNode {
 		ros::Publisher pub_uwb_;
 
 		ros::Publisher pub_record_time_;
-		ros::Publisher pub_record_odom_;
 		ros::Publisher pub_record_twist_;
 		ros::Publisher pub_record_uwb_;
+		ros::Publisher pub_record_pose_;
 
 		ros::Timer send_vel_timer_;
 		ros::Timer send_record_timer_;
@@ -95,9 +95,9 @@ class UsbCommNode {
 		geometry_msgs::PointStamped uwb_;
 		
 		std_msgs::UInt16 record_time_;
-		geometry_msgs::Pose record_odom_;
 		geometry_msgs::Twist record_twist_;
-		geometry_msgs::Point record_uwb_;
+		geometry_msgs::PointStamped record_uwb_;
+		geometry_msgs::PoseStamped record_pose_;
 
     double odom_time_;
     bool new_odom_ = false;

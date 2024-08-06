@@ -31,6 +31,8 @@ void printBinary(uint32_t num) {
 UsbCommNode::UsbCommNode()
 {
   referee_info_.enemy_hp.resize(8);
+  record_uwb_.header.frame_id = "map";
+  record_pose_.header.frame_id = "map";
 }
 
 UsbCommNode::~UsbCommNode()
@@ -54,9 +56,9 @@ void UsbCommNode::SubAndPubToROS(ros::NodeHandle &nh)
   this->pub_uwb_ = nh.advertise<geometry_msgs::PointStamped>("/clicked_point", 10);
 
   this->pub_record_time_ = nh.advertise<std_msgs::UInt16>("/record/time", 1);
-  this->pub_record_odom_ = nh.advertise<geometry_msgs::Pose>("/record/odom", 1);
   this->pub_record_twist_ = nh.advertise<geometry_msgs::Twist>("/record/twist", 1);
-  this->pub_record_uwb_ = nh.advertise<geometry_msgs::Point>("/record/uwb", 1);
+  this->pub_record_uwb_ = nh.advertise<geometry_msgs::PointStamped>("/record/uwb", 1);
+  this->pub_record_pose_ = nh.advertise<geometry_msgs::PoseStamped>("/record/pose", 1);
 
   // ROS timer initialization
   // this->send_vel_timer_ = nh.createTimer(ros::Duration(0.005), &UsbCommNode::sendVelCallback, this);
@@ -148,7 +150,8 @@ void UsbCommNode::LoadParams(ros::NodeHandle &nh)
 
 void UsbCommNode::odomHandler(const nav_msgs::Odometry::ConstPtr& odom)
 {
-  record_odom_ = odom->pose.pose;
+  record_pose_.pose = odom->pose.pose;
+  record_pose_.header.stamp = ros::Time::now();
   odom_quat_ = odom->pose.pose.orientation;
   odom_time_ = odom->header.stamp.toSec();
   new_odom_ = true;
@@ -318,14 +321,14 @@ void UsbCommNode::sendVelCallback(const ros::TimerEvent& event)
 void UsbCommNode::sendRecordCallback(const ros::TimerEvent& event)
 {
   record_time_.data = referee_info_.gameover_time;
-  // record_odom_ had change
   record_twist_.linear.x = static_cast<double>(send_package_.vx);
   record_twist_.linear.y = static_cast<double>(send_package_.vy);
   record_twist_.linear.z = static_cast<double>(send_package_.chassis_mode);
-  record_uwb_ = uwb_.point;
+  record_uwb_.point = uwb_.point;
+  record_uwb_.header.stamp = ros::Time::now();
 
   pub_record_time_.publish(record_time_);
-  pub_record_odom_.publish(record_odom_);
+  pub_record_pose_.publish(record_pose_);
   pub_record_twist_.publish(record_twist_);
   pub_record_uwb_.publish(record_uwb_);
 }
