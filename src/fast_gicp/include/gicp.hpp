@@ -5,6 +5,7 @@
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/point_cloud_conversion.h>
 #include <geometry_msgs/PointStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <std_msgs/Bool.h>
 
 #include <pcl/io/pcd_io.h>
@@ -40,6 +41,8 @@ class GicpLooper
 
     void UwbHandler(const geometry_msgs::PointStamped::ConstPtr &uwb);
 
+    void OdomHandler(const nav_msgs::Odometry::ConstPtr &odom);
+
   private:
     void Loop(const ros::TimerEvent& event);
     
@@ -47,7 +50,7 @@ class GicpLooper
 
     bool Relocalize();
 
-    ros::Subscriber sub_scan_, sub_color_info_, sub_uwb_;
+    ros::Subscriber sub_scan_, sub_color_info_, sub_uwb_, sub_odom_;
     ros::Publisher pub_map_, pub_scan_, pub_reboot_;
 
     tf::Transform trans_;
@@ -69,6 +72,7 @@ class GicpLooper
     std::string blue_map_pcd_path_;
     std::string red_map_pcd_path_;
 
+    uint32_t lost_time_ = 0;
     bool save_result_ = false;
     bool pub_result_ = false;
     bool color_init_ = false;

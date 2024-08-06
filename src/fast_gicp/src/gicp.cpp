@@ -51,6 +51,8 @@ void GicpLooper::Load(ros::NodeHandle &nh)
                                             [this](const std_msgs::Bool::ConstPtr &msg) {ColorInfoHandler(msg);});
   sub_uwb_ = nh.subscribe<geometry_msgs::PointStamped>("/clicked_point", 5,
                                             [this](const geometry_msgs::PointStamped::ConstPtr &msg) {UwbHandler(msg);});
+  sub_odom_ = nh.subscribe<nav_msgs::Odometry>("/Odometry", 5,
+                                            [this](const nav_msgs::Odometry::ConstPtr &msg) {OdomHandler(msg);});
 
   pub_reboot_ = nh.advertise<std_msgs::Bool>("/reboot_localization", 1);
   if (pub_result_)
@@ -113,21 +115,8 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     map_init_ = true;
   }
 
-  static tf::TransformListener ls;
-  tf::StampedTransform odom2baselink_transform;
-  try {
-    ls.lookupTransform("/odom", "/base_link",  
-                      ros::Time(0), odom2baselink_transform);
-  }
-  catch (tf::TransformException &ex) {
-    ROS_WARN("GicpTrans : %s",ex.what());
-    return;
-  }
-
   std_msgs::Bool msg;
-  if (fabs(odom2baselink_transform.getOrigin().x()) > 50.0 ||
-      fabs(odom2baselink_transform.getOrigin().y()) > 50.0)// ||
-      // icp_failed_time_ > 30) // 定位跑飞
+  if (lost_time_ > 600)
   {
     // stop robot
     msg.data = true;
@@ -138,6 +127,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     while (!success)
       success = Relocalize();
 
+    lost_time_ = 0;
     icp_failed_time_ = 0;
     return;
   }
@@ -223,67 +213,72 @@ bool GicpLooper::Relocalize()
   cloud_scan_->clear();
   mtx_scan_.unlock();
 
-  for (int i = 0; i < 18; i++)
+  for (int i = 1; i < 9; i++)
   {
-    // 定义旋转矩阵
-    Eigen::Matrix3f rotation = Eigen::Matrix3f::Identity();
-    float theta = i * M_PI / 9.0;
-    rotation(0, 0) = cos(theta);
-    rotation(0, 1) = -sin(theta);
-    rotation(1, 0) = sin(theta);
-    rotation(1, 1) = cos(theta);
-
-    // 定义平移向量
-    Eigen::Vector3f translation(uwb_.point.x, uwb_.point.y, 0.0); // uwb
-
-    // 创建4x4的变换矩阵
-    Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
-    transform.block<3, 3>(0, 0) = rotation;
-    transform.block<3, 1>(0, 3) = translation;
-
-    PointCloudT::Ptr aligned(new PointCloudT);
-
-    double fitness_score = 0.0;
-
-    auto t1 = std::chrono::high_resolution_clock::now();
-    fgicp_mt_.clearTarget();
-    fgicp_mt_.clearSource();
-    fgicp_mt_.setInputTarget(cloud_target_);
-    fgicp_mt_.setInputSource(cloud_source);
-    fgicp_mt_.align(*aligned, transform);
-    auto t2 = std::chrono::high_resolution_clock::now();
-    fitness_score = fgicp_mt_.getFitnessScore();
-    double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
-
-    std::cout << "\033[1;33m" << "relocalizaion_icp_cost:" << cost << "[msec] " <<  "\033[0m" << std::flush;
-    std::cout << "\033[1;33m" << "relocalizaion_fitness_score:" << fitness_score << "\033[0m" << std::flush;
-
-    if (pub_result_)
+    for (int j = 0; j < 2; j++)
     {
-      sensor_msgs::PointCloud2 map_msg;
-      pcl::toROSMsg(*cloud_target_, map_msg);
-      map_msg.header.frame_id = "map";
-      pub_map_.publish(map_msg);
+      int bias = (j == 0 ? 1 : -1);
+      // 定义旋转矩阵
+      Eigen::Matrix3f rotation = Eigen::Matrix3f::Identity();
+      float theta = bias * (i - 0.5) * M_PI / 9.0;
+      rotation(0, 0) = cos(theta);
+      rotation(0, 1) = -sin(theta);
+      rotation(1, 0) = sin(theta);
+      rotation(1, 1) = cos(theta);
 
-      sensor_msgs::PointCloud2 scan_msg;
-      pcl::toROSMsg(*aligned, scan_msg);
-      scan_msg.header.frame_id = "map";
-      pub_scan_.publish(scan_msg);
-    }
+      // 定义平移向量
+      Eigen::Vector3f translation(uwb_.point.x, uwb_.point.y, 0.0); // uwb
 
-    if (fitness_score < 0.3)
-    {
-      ROS_INFO_STREAM("\033[1;32m[Gicp node]:Relocalization succeed!!!\033[0m");
-      last_result_ = fgicp_mt_.getFinalTransformation();
-      mtx_tf_.lock();
-      trans_ = eigenMatrixToTf(last_result_).inverse();
-      mtx_tf_.unlock();
+      // 创建4x4的变换矩阵
+      Eigen::Matrix4f transform = Eigen::Matrix4f::Identity();
+      transform.block<3, 3>(0, 0) = rotation;
+      transform.block<3, 1>(0, 3) = translation;
 
-      return true;
-    }
-    else
-    {
-      ROS_WARN("[Gicp node]:Relocalization failed!!!");
+      PointCloudT::Ptr aligned(new PointCloudT);
+
+      double fitness_score = 0.0;
+
+      auto t1 = std::chrono::high_resolution_clock::now();
+      fgicp_mt_.clearTarget();
+      fgicp_mt_.clearSource();
+      fgicp_mt_.setInputTarget(cloud_target_);
+      fgicp_mt_.setInputSource(cloud_source);
+      fgicp_mt_.align(*aligned, transform);
+      auto t2 = std::chrono::high_resolution_clock::now();
+      fitness_score = fgicp_mt_.getFitnessScore();
+      double cost = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
+
+      std::cout << "\033[1;33m" << "relocalizaion_icp_cost:" << cost << "[msec] " <<  "\033[0m" << std::flush;
+      std::cout << "\033[1;33m" << "relocalizaion_fitness_score:" << fitness_score << "\033[0m" << std::flush;
+
+      if (pub_result_)
+      {
+        sensor_msgs::PointCloud2 map_msg;
+        pcl::toROSMsg(*cloud_target_, map_msg);
+        map_msg.header.frame_id = "map";
+        pub_map_.publish(map_msg);
+
+        sensor_msgs::PointCloud2 scan_msg;
+        pcl::toROSMsg(*aligned, scan_msg);
+        scan_msg.header.frame_id = "map";
+        pub_scan_.publish(scan_msg);
+      }
+
+      if (fitness_score < 0.3 && 
+         (fgicp_mt_.getFinalTransformation().block<1, 2>(0, 3) - translation.block<1, 2>(0, 0)).norm() < 2.0)
+      {
+        ROS_INFO_STREAM("\033[1;32m[Gicp node]:Relocalization succeed!!!\033[0m");
+        last_result_ = fgicp_mt_.getFinalTransformation();
+        mtx_tf_.lock();
+        trans_ = eigenMatrixToTf(last_result_);
+        mtx_tf_.unlock();
+
+        return true;
+      }
+      else
+      {
+        ROS_WARN("[Gicp node]:Relocalization failed!!!");
+      }
     }
   }
 
@@ -309,6 +304,16 @@ void GicpLooper::ColorInfoHandler(const std_msgs::Bool::ConstPtr& color)
 void GicpLooper::UwbHandler(const geometry_msgs::PointStamped::ConstPtr& uwb)
 {
   uwb_ = *uwb;
+}
+
+void GicpLooper::OdomHandler(const nav_msgs::Odometry::ConstPtr &odom)
+{
+  if (sqrt((odom->pose.pose.position.x - uwb_.point.x) * (odom->pose.pose.position.x - uwb_.point.x) +
+           (odom->pose.pose.position.y - uwb_.point.y) * (odom->pose.pose.position.y - uwb_.point.y)) > 5.0)// ||
+      // icp_failed_time_ > 30) // 定位跑飞
+    lost_time_++;
+  else
+    lost_time_ = 0;
 }
 
 int main(int argc, char** argv)
