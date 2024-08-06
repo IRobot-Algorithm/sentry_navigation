@@ -290,6 +290,7 @@ void LaserMapping::SubAndPubToROS(ros::NodeHandle &nh) {
     pub_path_ = nh.advertise<nav_msgs::Path>("/path", 100000);
     pub_vel_ = nh.advertise<geometry_msgs::TwistStamped>("/odom_vel", 100000);
     pub_record_odom_ = nh.advertise<geometry_msgs::PoseStamped>("/record/odom", 1);
+    pub_record_imu_ = nh.advertise<sensor_msgs::Imu>("/record/imu", 1);
 }
 
 LaserMapping::LaserMapping() {
@@ -637,6 +638,14 @@ void LaserMapping::IMUCallBack(const sensor_msgs::Imu::ConstPtr &msg_in) {
     imu_buffer_.emplace_back(msg);
     imu_buf_.emplace_back(msg);
     mtx_buffer_.unlock();
+
+    static uint8_t cnt = 0;
+    cnt++;
+    if (cnt % 50 == 0)
+    {
+        sensor_msgs::Imu record_imu = *msg_in;
+        pub_record_imu_.publish(record_imu);
+    }
 }
 
 void LaserMapping::ColorInfoCallBack(const std_msgs::Bool::ConstPtr &msg_in)
