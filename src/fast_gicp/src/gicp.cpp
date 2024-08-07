@@ -29,7 +29,7 @@ GicpLooper::GicpLooper()
 {
   cloud_target_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
   cloud_scan_ = boost::shared_ptr<PointCloudT>(new PointCloudT());
-  fgicp_mt_.setNumThreads(4);
+  fgicp_mt_.setNumThreads(3);
   fgicp_mt_.setMaxCorrespondenceDistance(1.0);
   
   trans_.setRotation(tf::Quaternion(0, 0, 0, 1));
@@ -62,7 +62,7 @@ void GicpLooper::Load(ros::NodeHandle &nh)
   }
 
   this->loop_timer_ = nh.createTimer(ros::Duration(0.01), &GicpLooper::Loop, this);
-  this->icp_timer_ = nh.createTimer(ros::Duration(3.0), &GicpLooper::Icp, this);
+  this->icp_timer_ = nh.createTimer(ros::Duration(4.0), &GicpLooper::Icp, this);
 
 }
 
