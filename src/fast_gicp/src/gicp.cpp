@@ -121,7 +121,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
     // stop robot
     msg.data = true;
     pub_reboot_.publish(msg);
-    sleep(2);
+    sleep(1);
 
     bool success = false;
     while (!success)
@@ -213,14 +213,14 @@ bool GicpLooper::Relocalize()
   cloud_scan_->clear();
   mtx_scan_.unlock();
 
-  for (int i = 1; i < 9; i++)
+  for (int i = 0; i < 2; i++)
   {
-    for (int j = 0; j < 2; j++)
+    float bias = (i == 0 ? 0 : (M_PI / 6.0));
+    for (int j = 0; j < 6; j++)
     {
-      int bias = (j == 0 ? 1 : -1);
       // 定义旋转矩阵
       Eigen::Matrix3f rotation = Eigen::Matrix3f::Identity();
-      float theta = bias * (i - 0.5) * M_PI / 9.0;
+      float theta = j * M_PI / 3.0 + bias;
       rotation(0, 0) = cos(theta);
       rotation(0, 1) = -sin(theta);
       rotation(1, 0) = sin(theta);

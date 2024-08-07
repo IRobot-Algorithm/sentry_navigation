@@ -123,6 +123,7 @@ float trackDis = 3.0;
 bool is_reboot = false;
 
 ros::Time sendTime;
+ros::Time receiveTime;
 
 nav_msgs::Path path;
 
@@ -238,6 +239,7 @@ void odomHandler(const nav_msgs::Odometry::ConstPtr& odomIn)
   }
 
   odomInit = true;
+  receiveTime = ros::Time::now();
 
   if ((fabs(roll) > inclThre * PI / 180.0 || fabs(pitch) > inclThre * PI / 180.0) && useInclToStop) {
     stopInitTime = odomIn->header.stamp.toSec();
@@ -531,7 +533,7 @@ int main(int argc, char** argv)
 
     rate.sleep();
     ros::spinOnce();
-    if (pathInit && odomInit) {
+    if (pathInit && odomInit && ros::Time::now().toSec() - receiveTime.toSec() < 0.5) {
       tf::StampedTransform transform;
       try{
         ls.lookupTransform("/map_link", "/world",  
