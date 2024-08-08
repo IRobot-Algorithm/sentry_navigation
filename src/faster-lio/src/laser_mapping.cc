@@ -667,7 +667,7 @@ void LaserMapping::MapIncremental() {
     PointVector point_no_need_downsample;
 
     auto max_size = std::min(points_to_add.max_size(), point_no_need_downsample.max_size());
-    int cur_pts = scan_down_body_->size();
+    long cur_pts = scan_down_body_->size();
 
     if (cur_pts > max_size)
     {

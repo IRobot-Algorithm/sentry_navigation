@@ -116,7 +116,7 @@ void GicpLooper::Icp(const ros::TimerEvent& event)
   }
 
   std_msgs::Bool msg;
-  if (lost_time_ > 600)
+  if (lost_time_ > 800)
   {
     // stop robot
     msg.data = true;
