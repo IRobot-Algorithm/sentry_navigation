@@ -1,0 +1,31 @@
+name: Build-CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Pull Docker image
+      run: docker pull ghcr.io/irobot-algorithm/sentry_navigation:latest
+
+    - name: Run the CI process inside Docker container
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          ghcr.io/irobot-algorithm/sentry_navigation:latest \
+          bash -c "
+
+            # 构建工作区
+            sudo chmod 777 build.sh
+            ./build.sh
+
+            # 运行测试
+            source /opt/ros/noetic/setup.sh
+            catkin_test_results build
+          "
