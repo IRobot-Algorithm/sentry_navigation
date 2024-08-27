@@ -24,11 +24,11 @@ jobs:
           ghcr.io/irobot-algorithm/sentry_navigation:latest \
           bash -c "
 
-            # 构建工作区
+            echo "### 构建工作区 ###"
             sudo chmod 777 build.sh
             ./build.sh
 
-            # 运行测试
+            echo "### 运行测试 ###"
             source /opt/ros/noetic/setup.sh
             catkin_test_results build
           "
