@@ -16,22 +16,18 @@ jobs:
     - name: Pull Docker image
       run: docker pull ghcr.io/irobot-algorithm/sentry_navigation:latest
 
-    - name: Start SSH Service
-      uses: mxschmitt/action-tmate@v2
-
     - name: Run the CI process inside Docker container
       run: |
         docker run --rm \
-          -v ${{ github.workspace }}:/workspace \
-          -w /workspace \
-          ghcr.io/irobot-algorithm/sentry_navigation:latest \
-          bash -c "
+        -v .:/workspace \
+        -w /workspace \
+        ghcr.io/irobot-algorithm/sentry_navigation:latest \
+        bash -c "
+          echo '### 构建工作区 ###'
+          sudo chmod 777 build.sh
+          ./build.sh
 
-            echo "### 构建工作区 ###"
-            sudo chmod 777 build.sh
-            ./build.sh
-
-            echo "### 运行测试 ###"
-            source /opt/ros/noetic/setup.sh
-            catkin_test_results build
-          "
+          echo '### 运行测试 ###'
+          source /opt/ros/noetic/setup.sh
+          catkin_test_results build
+        "
