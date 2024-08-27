@@ -10,6 +10,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Log in to GitHub Container Registry using GITHUB_TOKEN
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
     - name: Pull Docker image
       run: docker pull ghcr.io/irobot-algorithm/sentry_navigation:latest
 
