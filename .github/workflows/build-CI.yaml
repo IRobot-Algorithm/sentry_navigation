@@ -12,15 +12,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Start SSH Service
-      uses: mxschmitt/action-tmate@v2
-
-    - name: Run the CI process inside Docker container
+    - name: Build the workspace
       run: |
-        echo '### 构建工作区 ###'
         sudo chmod 777 build.sh
         ./build.sh
 
-        echo '### 运行测试 ###'
+    - name: Run tests
+      run: |
         source /opt/ros/noetic/setup.sh
         catkin_test_results build
