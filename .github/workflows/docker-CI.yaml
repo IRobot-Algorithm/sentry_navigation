@@ -17,17 +17,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
+    - name: Cache Docker layers
+      uses: actions/cache@v2
       with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Build Docker image
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    
+    - name: Login to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    
+    - name: Build and push Docker images
       run: |
-        docker build -t ghcr.io/irobot-algorithm/sentry_navigation:latest .
-
-    - name: Push Docker image
-      run: |
-        docker push ghcr.io/irobot-algorithm/sentry_navigation:latest
+        docker buildx build --platform linux/amd64,linux/arm64 \
+          -t ghcr.io/irobot-algorithm/sentry_navigation:latest \
+          --push .
