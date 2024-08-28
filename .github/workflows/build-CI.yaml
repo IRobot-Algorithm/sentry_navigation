@@ -1,0 +1,23 @@
+name: Build-CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    container:
+      image: ghcr.io/irobot-algorithm/sentry_navigation:latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build the workspace
+      run: |
+        sudo chmod 777 build.sh
+        ./build.sh
+
+    - name: Run tests
+      run: |
+        source /opt/ros/noetic/setup.sh
+        catkin_test_results build
