@@ -8,13 +8,13 @@
 
 main为双头构型，spare-sentry为单头构型
 
-- 决策
+-  📊 决策
 
   - **state_processing**
 
     维护一个状态机执行更上层的决策指令
 
-- 定位
+- :round_pushpin: 定位
 
   - **faster_lio**
 
@@ -24,7 +24,7 @@ main为双头构型，spare-sentry为单头构型
 
     将实时采集的pcd与建图获得的pcd进行icp，维护map->odom的回环检测；经赛场测试，官方uwb定位精度极高，因此选择在uwb和定位高度不匹配时在此线程重启lio进行重定位
 
-- 感知
+- 👁️ 感知
 
   - **pointcloud_repub**
 
@@ -38,7 +38,7 @@ main为双头构型，spare-sentry为单头构型
 
     根据赛场已知地图，将静态障碍物发布为障碍物点云供规划使用
 
-- 规划
+- 📅 规划
 
   - **far_planner**
 
@@ -48,13 +48,13 @@ main为双头构型，spare-sentry为单头构型
 
     cmu_exploration的local_planner，以离线轨迹为基础，为适应全向移动在轨迹评分上有部分改动
 
-- 执行
+- ⚙️ 执行
 
   - **path_follow**
 
     简单的比例跟随轨迹，为适应赛场决策，目标跟随，云台控制，小陀螺等决策指令也在这里一并处理发出
 
-- 通信
+- 📡 通信
 
   - **nav_transporter**
 
