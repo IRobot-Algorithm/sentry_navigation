@@ -1,5 +1,7 @@
 # Sentry Navigation
 
+[![Build Test](https://github.com/IRobot-Algorithm/sentry_navigation/actions/workflows/build-CI.yaml/badge.svg)](https://github.com/IRobot-Algorithm/sentry_navigation/actions/workflows/build-CI.yaml)
+
 ## introduction
 
 本仓库为2024哨兵导航仓库
