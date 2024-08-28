@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - main
-  workflow_run:
-    workflows: ["Build-CI"]
-    types:
-      - completed
-
+  pull_request:
+    branches:
+      - main
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +19,9 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Start SSH Service
+      uses: mxschmitt/action-tmate@v2
 
     - name: Build Docker image
       run: |
