@@ -1,4 +1,4 @@
-FROM ros:noetic-ros-core-focal
+FROM ghcr.io/irobot-algorithm/sentry_navigation/environment:latest
 
 # Create workspace
 RUN mkdir -p /home/nav_ws
