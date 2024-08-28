@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     container:
-      image: ghcr.io/irobot-algorithm/sentry_navigation:latest  # 替换为你的基础镜像
+      image: ghcr.io/irobot-algorithm/sentry_navigation:latest
     
     steps:
     - name: Checkout code
