@@ -7,7 +7,6 @@ WORKDIR /home/nav_ws
 
 # Copy files
 ADD src /home/nav_ws/src
-ADD thirdparty /home/nav_ws/thirdparty
 ADD build.sh /home/nav_ws
 
 # Build the workspace
