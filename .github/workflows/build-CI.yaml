@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     container:
-      image: ghcr.io/irobot-algorithm/sentry_navigation:latest
+      image: ghcr.io/irobot-algorithm/sentry_navigation/environment:latest
     
     steps:
     - name: Checkout code
@@ -19,5 +19,5 @@ jobs:
 
     - name: Run tests
       run: |
-        source /opt/ros/noetic/setup.sh
+        . /opt/ros/noetic/setup.sh
         catkin_test_results build
