@@ -63,7 +63,6 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     std::vector<double> extrinT_IMU_BOT{3, 0.0};  // lidar-imu translation
     std::vector<double> extrinR_IMU_BOT{9, 0.0};  // lidar-imu rotation
 
-    nh.param<bool>("icp/use_icp", use_icp_, false);
     nh.param<bool>("path_save_en", path_save_en_, true);
     nh.param<bool>("publish/path_publish_en", path_pub_en_, true);
     nh.param<bool>("publish/scan_publish_en", scan_pub_en_, true);
@@ -127,11 +126,6 @@ bool LaserMapping::LoadParams(ros::NodeHandle &nh) {
     } else {
         LOG(WARNING) << "unknown ivox_nearby_type, use NEARBY18";
         ivox_options_.nearby_type_ = IVoxType::NearbyType::NEARBY18;
-    }
-
-    if (use_icp_)
-    {
-        init_localization_ = true;
     }
 
     path_.header.stamp = ros::Time::now();
@@ -402,71 +396,6 @@ void LaserMapping::Run() {
         return;
     }
 
-    if (use_icp_ && init_localization_)
-    {
-        if (!relocalization_.IsInit())
-            relocalization_.InitParams(nh_, color_info_);
-
-        if (lidar_buffer_.size() < 10)
-        // if (lidar_buffer_.empty())
-            return;
-
-        LOG(INFO) << "Localization Initing!";
-        PointCloudType::Ptr cloud_xyzi(new PointCloudType());
-        
-        mtx_buffer_.lock();
-        for (int i = 0; i < 10; i++)
-        {
-            *cloud_xyzi += *(lidar_buffer_.back());
-            lidar_buffer_.pop_back();
-        }
-        // cloud_xyzi = lidar_buffer_.back();
-        lidar_buffer_.clear();
-        time_buffer_.clear();
-        imu_buffer_.clear();
-        imu_buf_.clear();
-        mtx_buffer_.unlock();
-
-        int size = cloud_xyzi->size();
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>(size, 1));
-        int i = 0;
-        for (const PointType& point_xyzi : *cloud_xyzi)
-        {
-            common::V3D p_lidar(point_xyzi.x, point_xyzi.y, point_xyzi.z);
-            common::V3D p_BOT(R_wrt_ * p_lidar + T_wrt_);
-
-            pcl::PointXYZ point_xyz;
-            point_xyz.x = p_BOT(0);
-            point_xyz.y = p_BOT(1);
-            point_xyz.z = p_BOT(2);
-            cloud_xyz->points[i] = point_xyz;
-            i++;
-        }
-
-        Eigen::Isometry3d result = Eigen::Isometry3d::Identity();
-        if (relocalization_.InitExtrinsic(result, cloud_xyz))
-        {
-            icp_R_wrt_ = result.rotation();
-            icp_T_wrt_ = result.translation();
-            R_wrt_ = result.rotation() * R_wrt_;
-            T_wrt_ = result.rotation() * T_wrt_ + result.translation();
-            R_wrt_inv_ = R_wrt_.inverse();
-            init_localization_ = false;
-            // relocalization_.clear();
-            LOG(INFO) << "\033[1;32m----> Init Localization Finished.\033[0m";
-            lidar_buffer_.clear();
-            time_buffer_.clear();
-            imu_buffer_.clear();
-            imu_buf_.clear();
-        }
-        else
-        {
-            LOG(WARNING) << "----> Init Localization Failed!";
-        }
-
-        return;
-    }
-
     if (!SyncPackages()) {
         if (flg_first_odom_ && IMUUpdate())
         {
@@ -533,8 +462,20 @@ void LaserMapping::Run() {
 
     state_imu_ = state_point_;
     imu_buf_ = imu_buffer_;
-    sensor_msgs::Imu::Ptr msg(new sensor_msgs::Imu(*(measures_.imu_.back())));
-    msg->header.stamp = ros::Time().fromSec(measures_.lidar_end_time_);
+    sensor_msgs::Imu::Ptr msg;
+    if (!measures_.imu_.empty()) {
+        msg = sensor_msgs::Imu::Ptr(new sensor_msgs::Imu(*(measures_.imu_.back())));
+        msg->header.stamp = ros::Time().fromSec(measures_.lidar_end_time_);
+    } else {
+        msg = sensor_msgs::Imu::Ptr(new sensor_msgs::Imu());
+        msg->header.stamp = ros::Time().fromSec(measures_.lidar_end_time_);
+        msg->angular_velocity.x = 0;
+        msg->angular_velocity.y = 0;
+        msg->angular_velocity.z = 0;
+        msg->linear_acceleration.x = 0;
+        msg->linear_acceleration.y = 0;
+        msg->linear_acceleration.z = 0;
+    }
     last_imu_ = msg;
     flg_first_odom_ = true;
 
@@ -550,7 +491,7 @@ void LaserMapping::Run() {
     if (scan_pub_en_ || pcd_save_en_) {
         PublishFrameWorld();
     }
-    if (use_icp_ || (scan_pub_en_ && scan_body_pub_en_)) {
+    if (scan_pub_en_ && scan_body_pub_en_) {
         PublishFrameBody(pub_laser_cloud_body_);
     }
     if (scan_pub_en_ && scan_effect_pub_en_) {
@@ -881,8 +822,6 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                                   odom_lidar.pose.pose.orientation.z);
     common::M3D init_R_lidar = eigen_quat.toRotationMatrix();
     common::M3D MAP_R_BOT = BOT_R_wrt_IMU_ * init_R_lidar * IMU_R_wrt_BOT_;
-    if (use_icp_)
-        MAP_R_BOT = icp_R_wrt_ * MAP_R_BOT;
 
     // 转换为tf与odom
     Eigen::Quaterniond q(MAP_R_BOT);
@@ -895,8 +834,6 @@ void LaserMapping::PublishOdometry(const ros::Publisher &pub_odom_aft_mapped, na
                              odom_lidar.pose.pose.position.z);
     common::V3D MAP_T_lidar(BOT_R_wrt_IMU_ * init_T_lidar + BOT_T_wrt_IMU_);
     common::V3D MAP_T_BOT(MAP_T_lidar - MAP_R_BOT * BOT_T_wrt_IMU_);
-    if (use_icp_)
-        MAP_T_BOT = icp_R_wrt_ * MAP_T_BOT + icp_T_wrt_;
 
     odom_base.pose.pose.position.x = MAP_T_BOT(0);
     odom_base.pose.pose.position.y = MAP_T_BOT(1);

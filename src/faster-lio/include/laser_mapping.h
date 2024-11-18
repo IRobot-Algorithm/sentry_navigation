@@ -15,7 +15,6 @@
 #include "ivox3d/ivox3d.h"
 #include "options.h"
 #include "pointcloud_preprocess.h"
-#include "relocalization.hpp"
 
 namespace faster_lio {
 
@@ -199,12 +198,6 @@ class LaserMapping {
     common::V3D BOT_T_wrt_IMU_;
     common::M3D BOT_R_wrt_IMU_;
     tf::Vector3 tf_T_;
-
-    // relocalization
-    std::thread relocalization_thread_;
-    Relocalization relocalization_;
-    bool use_icp_ = false;
-    bool init_localization_ = false;
 
     // icp RT
     common::V3D icp_T_wrt_;
