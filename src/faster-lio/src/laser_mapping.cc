@@ -365,7 +365,7 @@ bool LaserMapping::IMUUpdate()
 
         dt = p_imu->header.stamp.toSec() - last_imu_->header.stamp.toSec();
 
-        MTK::vectview<const double, 24> f = get_f(state_imu_, in);
+        Eigen::Matrix<double, 24, 1> f = get_f(state_imu_, in);
         state_imu_.oplus(f, dt);
 
         last_imu_ = p_imu;
