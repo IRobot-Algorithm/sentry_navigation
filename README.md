@@ -8,6 +8,8 @@
 
 main为双头构型，spare-sentry为单头构型
 
+<img src="images/nav_live.gif" alt="navigation" style="width:50%; display:block; margin:auto 0;"/>
+
 -  📊 决策
   
    - **state_processing**
